@@ -1,0 +1,162 @@
+Act as a senior resume writer and ATS optimization specialist.
+
+I will give you
+1. My info
+2. A target job description
+3. (Optional) Questions are asked in the job posting
+
+Instructions
+- Identify the top skills a recruiter would search for in the ATS from the attached job description and incorporate them into my resume.
+- Sound less generic while maintaining a strong, action-driven tone. Use strong power action verbs but not repeated more than once. Avoid using generic words like experience, expertise, achieved, influenced, increased.
+- It should give non ai generated feeling. Please rewrite in a more engaging and natural way. Use nondramatic language.
+- The summary should include my relevant professional experience like my job title and experience in the field and mention my areas of expertise, specializations and skill and one or two impressive achievements to show what I can do and how I can contribute to the company.
+- In the Experience section, provide 6–10 bullet points for each company. Include deep technical details. Add without bullet points. Add line breaks instead.
+- In the Skills section, please include a broader range of relevant skills. Make sure to cover both hard and soft skills, and organize them into clearly classified bullet points. Write in the following format : "Frontend Development: React, Angular, React Native, TypeScript, JavaScript (ES6+)".
+- Answer job questions shortly based on JD and CV. Give none AI generate feeling. Use human words. Answer in verbal style. Answer within 20 words.
+- Generate CV in the following JSON format.
+{
+personNameOnCV: "xxx",
+personLocation: "xxx",
+personEmail: "xxx",
+personUniversity: "xxx",
+personDegree: "xxx",
+companyNameApplyJob: "xxx",
+summary: "xxx",
+experience: [
+	{companyName: "xxx", jobTitle: "", startDate: "xx/20xx", endDate: "xx/20xx", content: ["xxx", "xxx", "xxx", ...]},
+	...
+],
+skills: [
+	{categoryName: "xxx", skillItems: ["xx", "xx", ]},
+	...
+]
+}
+
+
+----------------------------------------------
+------------------Basic Info------------------
+----------------------------------------------
+Name: Robson Oliveira
+Email: robson.se.oliveira@proton.me
+Phone: +‪1 (343) 303-5131
+Address: Jacobina, Bahia, Brazil
+University: Pitágoras Unopar University | Higher Technology Degree in Systems Analysis and Development
+
+
+----------------------------------------------
+------------------Experience------------------
+----------------------------------------------
+I worked at SoftXPro from 11/2023 to 07/2026. SoftXPro is a IT consulting firm, and I worked on several projects with various tech stack.
+Then, I worked at STS Software from 01/2020 ~ 10/2023. STS Software is a premier software development company, specializing in custom software and AI-driven solutions.
+I worked at SDLC Corp from 04/2016 ~ 12/2019. SDLC Corp is a technology services company specializing in software development and digital transformation.
+
+
+
+------------------------------------------------------
+--------Questions Asked in the job posting------------
+------------------------------------------------------
+
+
+
+
+------------------------------------------------------
+------------------Job Description---------------------
+------------------------------------------------------
+AI Product Engineer, Finance Systems (Full Stack, Next.js + Supabase)
+RemoteFull time005
+
+El Salvador
+Uruguay
+Colombia
+Argentina
+Brazil
+Chile
+Overview
+Application
+Description
+Koin Limited is a fast-growing, multi-brand direct-to-consumer (D2C) e-commerce group headquartered in Poole, UK. The company operates across the UK, USA, Canada, and Australia and is working towards £100 million in annual revenue by 2030. 
+
+Koin is an AI-first company. We believe that AI is not a nice-to-have but a fundamental part of how we operate, compete, and scale. We are actively incorporating AI into every element of the business — from marketing and operations to finance and customer experience — and this role sits at the centre of that transformation. 
+
+Koin builds and scales digitally-led brands through strong commercial strategy, data-led decision making, and high-performance e-commerce operations. 
+
+The brand portfolio includes: 
+
+The Koin Club — licensed collectible coins and medallions 
+Tilly Pig — financial literacy products for children 
+Jonny’s Sister — personalised gifts and homeware 
+Bubba Boo — eco-conscious baby, toddler and adult clothing 
+The Wessex Mint — precious metals savings and investment platform 
+Pastel Sixteen — contemporary fashion and accessories
+The AI Product Engineer is a mid to senior level individual contributor responsible for designing, building, and shipping the internal tools, applications, dashboards, and automations that power Koin’s operations. Everything you build ships to real users across the business and directly supports revenue, margin, and operational efficiency. 
+
+This is a product engineering role with a difference: we build AI-natively. Claude Code is the primary development environment, and the expectation is that you orchestrate AI to produce production-grade software rather than hand-coding it line by line. You must, however, genuinely understand what is being built. Reading the code, questioning the architecture, and catching what the AI gets wrong is central to the job. 
+
+You will take features from an approved Statement of Work through Technical Design Document, build, testing, and deployment on our internal product stack: Next.js applications hosted on Vercel, Supabase as the data layer (Postgres, Row Level Security, edge functions), n8n for workflow orchestration, and GitHub for source control. The wider business runs on NetSuite, Shopify, and Patchworks, and the tools you build will frequently integrate with them. 
+
+Beyond product delivery, the role carries responsibility for process automation and for upskilling the wider team: building Claude-powered automations across departments, creating reusable templates and skills, and coaching colleagues so that AI-augmented work is the default across the business, not the exception. 
+
+We are looking for someone who gets genuinely excited by new technology, systems, and logic. Someone with a natural problem-solving mindset who sees an inefficient process and immediately starts thinking about how to fix it. Curiosity and initiative matter as much as technical skill. 
+
+This role reports to the Head of Systems & Data and works cross-functionally with all departments. Full training will be provided on Koin’s internal systems and tech stack. 
+
+Key Responsibilities
+
+Process Automation & Workflow Building
+
+Identify and prioritise manual, repetitive, or inefficient processes across all departments for automation 
+Design, build, and maintain Claude-powered automations that deliver measurable time and cost savings 
+Develop multi-step workflows in n8n that integrate Claude with existing business systems and tools 
+Design and implement agent-based architectures, including sub-agents and orchestration agents, to handle complex multi-stage business processes 
+Build and maintain reusable prompt templates, Claude Projects, custom skills, and automation patterns 
+Training & Team Enablement
+
+Design and deliver structured training programmes to upskill team members across all departments in effective AI usage 
+Create formal training materials including guides, video walkthroughs, and reference documentation 
+Provide one-to-one coaching and ad-hoc support to help individuals integrate AI into their specific workflows 
+Build self-serve templates, tools, and resources that enable teams to leverage Claude independently 
+Stay current on Claude product updates, new capabilities, and emerging AI tools, and communicate relevant changes to the team 
+Prompt Engineering & Output Quality
+
+Develop and refine prompting strategies to maximise the accuracy, consistency, and quality of Claude’s outputs across Chat, Cowork, and Code 
+Establish best practices and style guides for prompt engineering across different use cases 
+Build and maintain a library of tested, high-performance prompts for recurring business tasks 
+Troubleshoot and resolve issues with prompt performance, hallucination, or inconsistent outputs 
+AI Strategy & Innovation
+
+Contribute to the development of the business’s AI adoption roadmap and strategic priorities 
+Research and evaluate new AI tools, models, and capabilities relevant to Koin’s operations 
+Provide input on build-vs-buy decisions for AI-powered tooling and integrations 
+Cross-Functional Collaboration
+
+Work with marketing, operations, finance, customer service, and e-commerce teams to understand their workflows and pain points 
+Partner with the Systems & Data team to ensure solutions integrate cleanly with existing data pipelines and platforms 
+Communicate progress, impact, and learnings through regular reporting to leadership 
+Requirements
+Proven track record of shipping production web applications using AI-accelerated development, with real examples you can walk us through 
+Deep hands-on experience with Claude Code as a primary development environment, alongside strong knowledge of Claude across Chat and Cowork 
+Strong Supabase experience: Postgres data modelling, Row Level Security policies, and edge functions are essential 
+Experience deploying and running applications on Vercel with Next.js 
+Disciplined GitHub workflow: branching strategies, pull requests, and managing preview/production environments through Vercel 
+Experience building and operating n8n workflows, including error handling and integrations via APIs and webhooks 
+The ability to read and reason about the code AI produces (TypeScript, SQL): you will not be hand-coding, but you must understand what is happening under the hood and catch what the AI gets wrong 
+Able to produce Technical Design Documents (with AI) covering architecture, data model, and security to a standard fit for approval 
+Experience designing and building agent-based workflows, including sub-agents and orchestration agents 
+Experience working within Agile frameworks: sprint planning, daily standups, and delivering in sprint increments 
+Strong prompt engineering skills with the ability to design, test, and iterate on complex prompts for diverse use cases 
+Comfortable working with APIs (REST, webhooks, OAuth) and JSON 
+Excellent analytical and problem-solving skills with the ability to break down complex processes into buildable, automatable steps 
+Strong written and spoken English with the ability to create clear documentation and training materials 
+Ability to clearly communicate technical concepts to non-technical stakeholders 
+Self-directed and structured working style, able to manage workload independently in a remote environment aligned with UK business hours 
+Naturally curious with a bias toward continuous improvement and staying ahead of the rapidly evolving AI landscape 
+Desirable (But Not Essential) 
+
+A formal software development background: professional experience writing code by hand before adopting AI-accelerated workflows 
+Any NetSuite experience: administration, saved searches, SuiteQL, or REST/OAuth integrations 
+Experience with iPaaS or middleware platforms for system integration, particularly Patchworks 
+Familiarity with MCP (Model Context Protocol) or similar AI integration standards 
+Familiarity with other AI platforms and models (e.g. OpenAI, Gemini) and the ability to compare capabilities objectively 
+Experience working with e-commerce platforms, particularly Shopify 
+Understanding of e-commerce operations including order management, inventory, and customer lifecycle 
+Experience working in or with D2C or multi-brand retail businesses 

@@ -1,0 +1,127 @@
+------------------------------------------------------
+Here is basic information you should use.
+Name: Richard Wang
+Email: richard.zu.wang@gmail.com
+Phone: +‪1 (343) 303-5131
+Address: North York, ON, Canada
+University: Saigon University - Bachelor of Science in Computer Science
+
+
+
+Here is my professional experience.
+----------------------------------------------
+I worked at SoftXPro from 11/2023 to 04/2026. SoftXPro is a IT consulting firm, and I worked on several projects with various tech stack.
+----------------------------------------------
+Then, I worked at STS Software from 01/2020 ~ 10/2023. STS Software is a premier software development company, specializing in custom software and AI-driven solutions.
+----------------------------------------------
+I worked at SDLC Corp from 04/2016 ~ 12/2019. SDLC Corp is a technology services company specializing in software development and digital transformation.
+----------------------------------------------
+
+
+
+Please write tailored CV following the below guidelines.Don't ask questions. generated CV is just for demonstrate purpose. So please generate the best info tailored to JD.
+- Identify the top skills a recruiter would search for in the ATS from the attached job description and incorporate them into my resume. Make the CV ATS-friendly.
+- Sound less generic while maintaining a strong, action-driven tone. Use strong power action verbs but not repeated more than once. Avoid using generic words like experience, expertise, achieved, influenced, increased.
+- The summary should include my relevant professional experience like my job title and experience in the field and mention my areas of expertise, specializations and skill and one or two impressive achievements to show what I can do and how I can contribute to the company.
+- In the Experience section, provide 6–10 bullet points for each company. Include deep technical details.
+- In the Skills section, please include a broader range of relevant skills. Make sure to cover both hard and soft skills, and organize them into clearly classified bullet points.
+- It should give non ai generated feeling. Please rewrite in a more engaging and natural way. Use nondramatic language.
+- On Experience section, add without bullet points. Add line breaks instead.
+- On Skill section, write in the following format : "Frontend Development: React, Angular, React Native, TypeScript, JavaScript (ES6+)"
+
+
+
+
+Answer questions shortly based on JD and CV. Give none AI generate feeling. Use human words. Answer in verbal style. Answer within 10 words.
+----------------------Questions-----------------------
+Tell us about a front-end problem you solved that you're proud of and why? (2-3 sentences)
+Why are you interested in working at Symbiotic?
+------------------------------------------------------
+
+
+
+
+Here is a JD, and write tailored CV & answers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------
+Senior Front-End Engineer (React)
+Symbiotic
+Hong Kong • Dubai • Canada • London • Portugal • New York • Switzerland
+Remote
+About Symbiotic
+Symbiotic is the infrastructure beneath collateral markets, where capital can secure financial obligations, remain productive, and be enforced by code.
+
+By changing the economics of onchain collateral, Symbiotic enables new categories of neofinance applications that were previously impossible to build - including credit, insurance, RWA liquidity, and more.
+
+As institutional capital increasingly moves onchain, Symbiotic is positioned to become the coordination layer connecting capital and risk across the onchain economy.
+
+
+Backed by Paradigm, Pantera, Cyber.fund, and Coinbase Ventures, we power 80+ vaults, 74,000+ active stakers, and 111 operators - with Chainlink, Nexus Mutual, and Cap Labs among the teams live in production.
+
+See how Symbiotic is powering the next generation of onchain finance: symbiotic.fi
+
+Our People
+We’re a tight-knit team of experienced builders working at the forefront of financial infrastructure. Our backgrounds span high-growth tech start-ups, leading crypto companies, major banks, insurers, and financial institutions. We work with ownership, a high bar for craft, and the urgency of an early-stage company - in an environment where people are trusted to take initiative and supported to do their best work.
+
+We’re looking for talented professionals to join us at a defining moment, as Symbiotic helps shape the next generation of onchain finance.
+
+What You'll Do
+• Participate in all phases of frontend development: requirements analysis, architecture and design, implementation, documentation, testing, and delivery.
+
+• Build responsive and accessible user interfaces based on Figma designs.
+
+• Prototype interfaces for testing mvps.
+
+• Develop reusable components and maintain them in Storybook.
+
+• Integrate new features into the existing codebase.
+
+• Implement blockchain and wallet interactions.
+
+• Design efficient approaches to client-side state management, server-state synchronization, caching, and error handling.
+
+• Write unit, integration, and end-to-end tests.
+
+• Monitor production issues and application performance using Sentry.
+
+• Contribute to project estimation, planning, and technical decision-making.
+
+• Review code written by other team members and help maintain engineering standards.
+
+• Communicate effectively with engineers, designers, product stakeholders, and company partners.
+
+Who You Are
+• Expert in modern React and TypeScript, with strong instincts for component architecture and type-safe design
+
+• Production experience with Next.js, Vite, and pnpm-based monorepos
+
+• Deep understanding of state management — server state (TanStack Query), lightweight client state (Zustand or similar), and when to use which
+
+• Strong CSS and responsive design fundamentals; experience with component libraries such as Chakra UI
+
+• Able to turn Figma designs into accessible, reusable components, ideally documented in Storybook
+
+• Solid testing practice across unit, integration, and E2E (Vitest, Playwright), including async and wallet-interaction flows
+
+• Able to optimize performance (code splitting, memoization, bundle analysis, Core Web Vitals) and debug production issues with tools like Sentry
+
+• Security-conscious: CSP, secure wallet interactions, input validation, and safe handling of secrets
+
+• Confident with Git workflows, Docker, and GitHub CI/CD; basic familiarity with Kubernetes and CDNs
+
+• Nice to have: experience integrating frontends with blockchain networks — wagmi/viem, wallet connection flows, transaction lifecycles, and Web3 UX

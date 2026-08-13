@@ -1,0 +1,597 @@
+Act as a senior resume writer and ATS optimization specialist.
+
+I will give you
+1. My info
+2. A target job description
+3. (Optional) Questions are asked in the job posting
+
+Instructions
+- Identify the top skills a recruiter would search for in the ATS from the attached job description and incorporate them into my resume.
+- Sound less generic while maintaining a strong, action-driven tone. Use strong power action verbs but not repeated more than once. Avoid using generic words like experience, expertise, achieved, influenced, increased.
+- It should give non ai generated feeling. Please rewrite in a more engaging and natural way. Use nondramatic language.
+- The summary should include my relevant professional experience like my job title and experience in the field and mention my areas of expertise, specializations and skill and one or two impressive achievements to show what I can do and how I can contribute to the company.
+- In the Experience section, provide 6–10 bullet points for each company. Include deep technical details. Add without bullet points. Add line breaks instead.
+- In the Skills section, please include a broader range of relevant skills. Make sure to cover both hard and soft skills, and organize them into clearly classified bullet points. Write in the following format : "Frontend Development: React, Angular, React Native, TypeScript, JavaScript (ES6+)".
+- Answer job questions shortly based on JD and CV. Give none AI generate feeling. Use human words. Answer in verbal style. Answer within 20 words.
+- Generate CV in the following JSON format.
+{
+personNameOnCV: "xxx",
+personLocation: "xxx",
+personEmail: "xxx",
+personUniversity: "xxx",
+personDegree: "xxx",
+companyNameApplyJob: "xxx",
+summary: "xxx",
+experience: [
+	{companyName: "xxx", jobTitle: "", startDate: "xx/20xx", endDate: "xx/20xx", content: ["xxx", "xxx", "xxx", ...]},
+	...
+],
+skills: [
+	{categoryName: "xxx", skillItems: ["xx", "xx", ]},
+	...
+]
+}
+
+
+----------------------------------------------
+------------------Basic Info------------------
+----------------------------------------------
+Name: Robson Oliveira
+Email: robson.se.oliveira@proton.me
+Phone: +‪1 (343) 303-5131
+Address: Jacobina, Bahia, Brazil
+University: Pitágoras Unopar University | Higher Technology Degree in Systems Analysis and Development
+
+
+----------------------------------------------
+------------------Experience------------------
+----------------------------------------------
+I worked at SoftXPro from 11/2023 to 07/2026. SoftXPro is a IT consulting firm, and I worked on several projects with various tech stack.
+Then, I worked at STS Software from 01/2020 ~ 10/2023. STS Software is a premier software development company, specializing in custom software and AI-driven solutions.
+I worked at SDLC Corp from 04/2016 ~ 12/2019. SDLC Corp is a technology services company specializing in software development and digital transformation.
+
+
+
+#########################################
+Use the examples only as style and structure references. Do not copy their candidate facts, technologies, projects, metrics, employers, or achievements unless they are supported by the candidate information or target JD. Match their level of technical depth, sentence structure, keyword integration, and natural writing style.
+#########################################
+
+------------------------------------------------------------
+----------------Example Job Description 1-------------------
+------------------------------------------------------------
+Partner One Capital
+Fullstack Developer
+Remote
+
+Turkey
+Tunisia
+Argentina
+Brazil
+Colombia
+Egypt
+Overview
+Application
+Description
+We are looking for a versatile and talented Full-stack Developer to grow with our global development team. You will be working remotely on the main Assima platform application. Your key role will be to implement features and maintain our platform developed in C# and .NET framework.
+
+There will be opportunities to work on the future version of our application as a backend developer (Python) or frontend (React), depending on priorities and skills.
+
+Roles and Responsibilities
+
+Develop and maintain features for our main platform
+Deploy code to production and respond to live incidents in production
+Work closely with developers and QA testers to deliver and meet expectations
+Work in an international environment with teams in multiple time zones
+Think out of the box and solve unique problems
+Attention to detail
+Requirements
+Core skills
+
+3+ years of experience with C#
+Strong experience with .NET Framework (ASPX) and ASP.NET
+Experience with .NET Core / ASP.NET Core
+Experience with Microsoft SQL Server
+Extensive experience with legacy ASP.NET is mandatory
+Bonus
+
+Experience with Entity Framework (EF / EF Core)
+Experience with WCF (Windows Communication Foundation) services
+Experience with RabbitMQ or other message brokers
+Strong knowledge of JavaScript, HTML, CSS, JQuery
+Understanding of asynchronous programming and multithreading
+Experience with TFS (Team Foundation Server) / Azure DevOps
+Familiarity with non-relational databases such as MongoDB and Apache Solr
+Special Requirements for the Role
+
+Ability to work and communicate clearly and efficiently with team members, with strong English communication both written and spoken
+M.S. Degree in Computer Science or similar
+Work within a successful, dynamic, small and growing team
+Availability to work during CET business hours
+
+
+------------------------------------------------------------
+---------------Example Tailored CV Output 1-----------------
+------------------------------------------------------------
+
+{
+  "personNameOnCV": "Robson Oliveira",
+  "personLocation": "Jacobina, Bahia, Brazil",
+  "personEmail": "robson.se.oliveira@proton.me",
+  "personUniversity": "Pitágoras Unopar University",
+  "personDegree": "Higher Technology Degree in Systems Analysis and Development",
+  "companyNameApplyJob": "Partner One Capital",
+  "summary": "Full-stack .NET developer with close to ten years building and running C# applications, weighted toward legacy ASP.NET Web Forms (ASPX) and the steady move onto ASP.NET Core. At home across the stack — SQL Server data layers, WCF and RabbitMQ messaging, and jQuery/JavaScript front ends — and used to carrying code from first commit through late-night production incidents. On the current platform, took a heavily used report from roughly 40 seconds down to under 6 through smarter indexing, and chased a stubborn production deadlock back to its root cause. Now looking to bring that blend of legacy know-how and careful modernization to a distributed team spanning time zones.",
+  "experience": [
+    {
+      "companyName": "SoftXPro",
+      "jobTitle": "Senior Full-Stack .NET Developer",
+      "startDate": "11/2023",
+      "endDate": "07/2026",
+      "content": [
+        "Owned the day-to-day upkeep of a large ASP.NET Web Forms (ASPX) product on .NET Framework 4.7, working through ViewState quirks, page-lifecycle bugs, and IIS configuration on the way to steady releases.",
+        "Ported several high-traffic modules from .NET Framework to ASP.NET Core 8, running the old and new stacks side by side behind a reverse proxy so the cutover stayed low-risk.",
+        "Engineered new reporting and scheduling features end to end — C# service layer, SQL Server storage, and Razor/jQuery front end — rolling them out in two-week increments.",
+        "Traced a recurring production deadlock to a long-running transaction, then resolved it by reordering writes and adjusting the isolation level, which stopped the nightly failures.",
+        "Introduced RabbitMQ (via MassTransit) to move email, PDF generation, and audit logging off the request thread, smoothing out load spikes during peak hours.",
+        "Reworked the data access layer with Entity Framework Core for standard CRUD and hand-written Dapper queries on the hot paths, keeping SQL Server round-trips predictable.",
+        "Rebuilt front-end interactions in jQuery and plain JavaScript, tidying up AJAX calls and form validation on the pages users hit most.",
+        "Profiled slow T-SQL with execution plans and added covering indexes, trimming a core report from roughly 40 seconds to under 6."
+      ]
+    },
+    {
+      "companyName": "STS Software",
+      "jobTitle": ".NET Software Developer",
+      "startDate": "01/2020",
+      "endDate": "10/2023",
+      "content": [
+        "Wrote WCF services with netTcpBinding and basicHttpBinding to connect an internal desktop client to back-end business logic, versioning contracts so older clients kept working.",
+        "Overhauled a fault-prone nightly billing job that had been throwing silent errors, rebuilding it as an idempotent batch process with retry logic and clear logging.",
+        "Automated build and release in Azure DevOps with YAML pipelines, gated deployments, and automatic rollback, replacing a manual copy-to-server routine.",
+        "Untangled a race condition in a multithreaded import routine using async/await, SemaphoreSlim, and cancellation tokens, which cleared up intermittent data corruption.",
+        "Modeled the SQL Server schema for a new claims module — tables, views, indexes, and stored procedures — and kept migrations under source control.",
+        "Integrated Apache Solr for full-text search and MongoDB for semi-structured document storage, sitting them alongside the primary SQL Server database.",
+        "Cut average API response time from around 800ms to roughly 250ms by caching reference data and removing N+1 query patterns in Entity Framework.",
+        "Partnered with QA testers to write reproducible test cases, sit through triage, and close the loop on defects before each release."
+      ]
+    },
+    {
+      "companyName": "SDLC Corp",
+      "jobTitle": "Software Developer",
+      "startDate": "04/2016",
+      "endDate": "12/2019",
+      "content": [
+        "Delivered features across ASP.NET MVC and Web Forms for client-facing web apps, working from tickets through to production.",
+        "Configured Team Foundation Server (TFS) for branching, gated check-ins, and nightly builds, keeping a mixed-skill team in sync.",
+        "Modernized aging classic ASP and early Web Forms pages by rewriting them against newer ASP.NET patterns and cleaning up inline SQL.",
+        "Authored T-SQL stored procedures, views, and user-defined functions on SQL Server, and tuned the ones that showed up in slow-query logs.",
+        "Fixed a steady backlog of UI defects on jQuery-heavy pages, chasing down cross-browser issues and flaky event handlers.",
+        "Styled responsive layouts with HTML, CSS, jQuery, and Bootstrap so the same pages held up on desktop and tablet.",
+        "Supported production releases on call, documented deployment runbooks, and walked newer developers through the codebase."
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "categoryName": ".NET & Backend",
+      "skillItems": ["C#", ".NET Framework", "ASP.NET Web Forms (ASPX)", "ASP.NET", "ASP.NET Core", ".NET Core", "ASP.NET MVC", "REST API design"]
+    },
+    {
+      "categoryName": "Frontend",
+      "skillItems": ["JavaScript (ES6+)", "jQuery", "HTML5", "CSS3", "Bootstrap", "Razor", "React (foundational)"]
+    },
+    {
+      "categoryName": "Databases & Search",
+      "skillItems": ["Microsoft SQL Server", "T-SQL", "Entity Framework / EF Core", "Dapper", "MongoDB", "Apache Solr"]
+    },
+    {
+      "categoryName": "Services & Messaging",
+      "skillItems": ["WCF (Windows Communication Foundation)", "RabbitMQ", "MassTransit", "SOAP", "SignalR"]
+    },
+    {
+      "categoryName": "Concurrency & Performance",
+      "skillItems": ["Asynchronous programming (async/await)", "Multithreading", "Task Parallel Library", "Query tuning", "Caching"]
+    },
+    {
+      "categoryName": "DevOps & Source Control",
+      "skillItems": ["Azure DevOps", "TFS (Team Foundation Server)", "Git", "CI/CD pipelines", "IIS"]
+    },
+    {
+      "categoryName": "Engineering Practice",
+      "skillItems": ["Legacy modernization & migration", "Production incident response", "Debugging", "Unit testing", "Code review", "Agile / Scrum"]
+    },
+    {
+      "categoryName": "Communication & Working Style",
+      "skillItems": ["Cross-time-zone collaboration", "Attention to detail", "Out-of-the-box problem solving"]
+    }
+  ]
+}
+
+
+------------------------------------------------------------
+----------------Example Job Description 2-------------------
+------------------------------------------------------------
+
+AI Product Engineer | REMOTE
+Remote, WorldwideEngineering /Full-time /Remote
+Powering Trade For The Emerging Cannabis Industry
+ 
+Distru is the #1 ERP in the Cannabis Industry with $3B in annual sales processed through our platform! We are a fully remote and global team building a software platform to streamline the supply chain for the cannabis industry. Most of the top cannabis brands and distributors across the United States use our software to manage their entire operation and stay compliant.
+ 
+As part of our next phase of growth, last year we launched Distru Commerce; a wholesale platform that extends our ERP into the B2B marketplace layer, giving operators a single system to manage their internal operations and their external wholesale sales channels in one fully integrated system. But we're not stopping here. AI is now a core part of how we build and where we're placing our bets. The AI Order Agent is live and already changing how our customers operate: buyers can submit orders from any source and any format saving time spent on manual data entry. That's one piece of a bigger picture: using AI to take the repetitive, heavy-lifting work out of running an ERP so operators can focus on running their business. 
+ 
+We take a tremendous amount of pride in our culture and have 5/5 stars on Glassdoor because we truly care about our people. We are stable, profitable, and heavily investing in growing new product lines to expand our reach. Our investors include Felicis Ventures, Global Founders Capital, Poseidon Asset Management, and Village Global who have funded companies such as Shopify, Cruise, HelloFresh, Facebook, Slack, and Opendoor.
+ 
+ 
+The Opportunity
+We're looking for an AI Product Engineer, working directly with our CTO, to architect and build an agentic harness — think of it as the Claude Cowork for vertical-specific SaaS. This product will bridge the tools businesses already use to run their operations (ERP, CRM, spreadsheets, calendars, email, analytics, compliance systems) and fundamentally change how they interface with their own data and systems.
+
+This is not a "bolt AI onto existing features" role. You'll be building a new, standalone agentic product from the ground up, which means you'll operate as both the engineer and the product owner: scoping the problem, making architecture calls, and shipping without a lot of structure around you. You'll report directly to the CTO and work closely with product, engineering, and design as this fits into Distru's broader AI-native roadmap.
+
+Distru is at an inflection point. We have deep market penetration in cannabis ERP, a commerce layer live and growing, and a roadmap that's increasingly AI-native. This role owns one of the most ambitious pieces of that roadmap — building the connective tissue that lets an entire industry run its business through an agentic interface.
+
+Our Team Culture
+ 
+Rather than us defining our culture, check out what the team has to say! 
+What You'll Own
+Build the agentic harness
+
+Architect and build a multi-agent system in production — one capable of safely operating across a business's core tools (ERP, CRM, spreadsheets, calendars, email, analytics, compliance systems)
+Build and maintain MCPs (Model Context Protocol integrations) that connect the harness to real business systems
+Own production system concerns end-to-end: reliability, observability, permissions, and safe workflow execution — this is a system that will take real actions on customers' data, and the bar for getting it right is high
+Tech Stack: LangGraph, Next.js, React, Prisma, Claude Code
+Own the product, not just the code
+
+Since there's no existing playbook here, you'll define scope, make the call on tradeoffs, and drive execution with minimal oversight
+Design for the user, not just the architecture — a product-first mindset that prioritizes how this actually gets used over what's technically interesting to build
+Proactively identify and raise risks or open questions before they become blockers, and bring structured solutions, not just problems
+
+Stay at the edge of the AI ecosystem
+
+Keep pace with a fast-moving space — agent frameworks, harness toolkits, MCP standards — and bring in better approaches as they emerge rather than waiting to be told
+Work hands-on with tools like Claude Code as part of your own build process
+Who You Are
+Must-Haves
+
+5+ years of full-stack development experience, ideally in B2B SaaS applications
+Hands-on experience building multi-agent harnesses in production — not just prototypes or personal projects
+Experience building MCPs (Model Context Protocol) that are actually used in production
+Strong grasp of production system concerns: reliability, observability, permissions, and safe workflow execution
+Experience across product and engineering — you've operated as both. You should be comfortable owning scoping and decision-making, not just implementation
+Proficiency in modern technologies such as React, TypeScript, Node, PostgreSQL, GraphQL, and LangGraph, with the ability to quickly pick up new tools and frameworks
+Startup agility: experience at an early-stage startup (under 20 engineers) where you've operated effectively in ambiguous, unstructured environments
+Low ego, team-first mentality — you measure success by what shipped and whether it worked, not by internal politics
+Clear, proactive communicator — you raise concerns and propose solutions before being asked
+Nice-to-Haves
+
+Background building in supply chain, ERP, CRM, B2B marketplaces, or accounting software
+Experience with UX design
+Familiarity with agentic systems and multi-agent orchestration beyond what's listed above (e.g., evaluation frameworks, agent-to-agent protocols)
+Experience using Claude Code or similar tools to build products independently
+Cannabis industry experience
+$120,000 - $200,000 a year
+Placement within this range will be determined by the candidate's knowledge, experience and skills.
+
+
+------------------------------------------------------------
+---------------Example Tailored CV Output 2-----------------
+------------------------------------------------------------
+
+
+{
+  "personNameOnCV": "Robson Oliveira",
+  "personLocation": "Jacobina, Bahia, Brazil",
+  "personEmail": "robson.se.oliveira@proton.me",
+  "personUniversity": "Pitágoras Unopar University",
+  "personDegree": "Higher Technology Degree in Systems Analysis and Development",
+  "companyNameApplyJob": "Distru",
+  "summary": "Full-stack engineer and AI product builder with close to a decade in B2B SaaS, now focused on production multi-agent systems. Operates as both engineer and product owner — scoping the problem, calling the architecture, and getting working software in front of users with little structure around it. Recent work centers on agentic harnesses built with LangGraph and Model Context Protocol (MCP) integrations that let AI safely read from and act on ERP, CRM, and internal tooling behind permission checks. Fluent across React, Next.js, TypeScript, Node, PostgreSQL, GraphQL, and Prisma, and in the habit of wiring observability and tracing into a system before it hits scale. Recent wins include a multi-agent order-intake system that cut manual data entry for operations teams, and an MCP layer connecting a live product to a dozen external business systems.",
+  "experience": [
+    {
+      "companyName": "SoftXPro",
+      "jobTitle": "AI Product Engineer",
+      "startDate": "11/2023",
+      "endDate": "07/2026",
+      "content": [
+        "Architected a production multi-agent harness on LangGraph that coordinates planner, executor, and reviewer agents to run multi-step workflows across a client's ERP, CRM, and analytics stack.",
+        "Built and maintained Model Context Protocol (MCP) servers exposing typed tools for order management, inventory lookups, and calendar actions, so agents could read from and write to real business systems behind permission checks.",
+        "Owned production concerns end to end — wired structured logging, per-agent tracing, and token and cost telemetry into the harness so every agent action stayed observable and replayable.",
+        "Designed a permissioning layer that scoped each agent's tool access by role and gated state-changing operations behind human approval, keeping unsafe actions away from customer data.",
+        "Shipped an order-intake agent that parses purchase orders from email, PDF, and spreadsheet formats into structured records, trimming manual entry for operations teams.",
+        "Partnered with product and design to scope the harness roadmap, paring an over-ambitious v1 down to a shippable slice and putting the tradeoffs in writing before build started.",
+        "Instrumented an evaluation harness with golden-set test cases and regression checks so agent behavior could be measured across model and prompt changes rather than eyeballed.",
+        "Used Claude Code daily to prototype, refactor, and debug the Next.js and React front end that operators rely on to review, approve, and audit agent runs.",
+        "Hardened the system against tool-call failures with retries, timeouts, and graceful fallbacks, keeping long-running agent workflows from silently stalling.",
+        "Mentored two engineers on agent design patterns and MCP integration, and set the internal standard for how new tools get added to the harness."
+      ]
+    },
+    {
+      "companyName": "STS Software",
+      "jobTitle": "Senior Software Engineer",
+      "startDate": "01/2020",
+      "endDate": "10/2023",
+      "content": [
+        "Engineered core features for a B2B SaaS platform serving distribution and supply-chain clients, spanning a React and TypeScript front end and a Node and PostgreSQL back end.",
+        "Integrated large language models (OpenAI GPT-3.5 and GPT-4) into the product for document classification and natural-language search, among the company's first LLM-backed features.",
+        "Delivered a retrieval-augmented search service using vector embeddings and pgvector so users could query unstructured records in plain language.",
+        "Modeled and tuned a GraphQL API layer over PostgreSQL, curbing over-fetching and dropping average response times on the busiest queries.",
+        "Assembled background job pipelines for data ingestion and enrichment with queue-based workers, keeping heavy processing off the request path.",
+        "Rolled out CI/CD with automated tests and containerized deploys, shrinking release cycles from weekly to on-demand.",
+        "Collaborated with product managers to turn fuzzy client requirements into scoped tickets and land them against tight timelines.",
+        "Diagnosed and resolved production incidents on an on-call rotation, tightening error handling and adding alerting around the most fragile paths."
+      ]
+    },
+    {
+      "companyName": "SDLC Corp",
+      "jobTitle": "Software Engineer",
+      "startDate": "04/2016",
+      "endDate": "12/2019",
+      "content": [
+        "Programmed responsive, accessible web apps for enterprise clients modernizing legacy systems, working across React on the front end and Node with Express on the back end.",
+        "Migrated a monolithic PHP application to a React and Node stack in phases, keeping the product live throughout the cutover.",
+        "Refactored a sprawling REST API toward GraphQL, giving front-end teams a single typed endpoint and thinning payloads.",
+        "Automated build, test, and deploy steps with Jenkins pipelines, replacing a manual release process that had been error-prone.",
+        "Optimized slow PostgreSQL queries with indexing and rewrites, pulling page loads on data-heavy dashboards down noticeably.",
+        "Standardized front-end component patterns and a shared UI library across three client teams, trimming duplicate work.",
+        "Coordinated with QA and product to define acceptance criteria and close out releases on schedule.",
+        "Coached junior developers through code reviews and pairing, raising the team's baseline on testing and Git hygiene."
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "categoryName": "AI & Agentic Systems",
+      "skillItems": ["Multi-agent orchestration", "LangGraph", "Model Context Protocol (MCP)", "Agent evaluation frameworks", "Retrieval-augmented generation (RAG)", "LLM integration (Claude, GPT-4)", "Prompt engineering", "Claude Code"]
+    },
+    {
+      "categoryName": "Frontend Development",
+      "skillItems": ["React", "Next.js", "TypeScript", "JavaScript (ES6+)", "React Native", "Tailwind CSS"]
+    },
+    {
+      "categoryName": "Backend Development",
+      "skillItems": ["Node.js", "GraphQL", "REST APIs", "Prisma", "Python", "Express"]
+    },
+    {
+      "categoryName": "Databases & Data",
+      "skillItems": ["PostgreSQL", "pgvector", "Redis", "Vector embeddings", "SQL"]
+    },
+    {
+      "categoryName": "Cloud, DevOps & Reliability",
+      "skillItems": ["Docker", "CI/CD", "GitHub Actions", "AWS", "Observability & distributed tracing"]
+    },
+    {
+      "categoryName": "Product & Delivery",
+      "skillItems": ["Product scoping", "Roadmapping", "Technical tradeoff analysis", "Agile / Scrum", "Stakeholder communication"]
+    },
+    {
+      "categoryName": "Working Style",
+      "skillItems": ["End-to-end ownership", "Cross-functional collaboration", "Clear written communication", "Proactive risk-raising", "Low-ego, team-first mindset"]
+    }
+  ]
+}
+
+
+------------------------------------------------------------
+----------------Example Job Description 3-------------------
+------------------------------------------------------------
+
+Java Developer for a Fintect Project (b2b, Poland-based)
+SFox GmbH
+
+Copy link
+$$$$
+S* S* Inc
+
+S* S* Science Inc is a U.S.-based fintech company operating in the investment and financial services space. Our distributed teams work across Poland, the United States, and Ireland, collaborating on technology-driven solutions related to stocks and investments.
+
+Security, compliance, and the responsible handling of sensitive financial data are central to how we operate as we build scalable products in a regulated environment.
+
+Project
+
+The engineer will initially get familiar with the product, domain, and existing codebase by working on current issues and fixes. After onboarding, the role will gradually expand into the development of new change requests and product enhancements.
+
+The project is focused on backend development within a complex fintech environment involving distributed systems, microservices, event-driven architecture, cloud technologies, and data-intensive applications.
+
+Requirements
+
+We are looking for an experienced backend engineer with strong hands-on experience in:
+
+Core Java and Spring
+Server-side development
+SQL
+Microservices
+REST APIs
+Kafka and event-driven architectures
+Python
+Kubernetes
+GitHub
+Redis and caching
+Azure
+Snowflake
+PostgreSQL
+Cloud-native development
+CI/CD
+Distributed systems
+Concurrency
+Multi-tenancy
+Data governance
+Experience with modern LLM and agentic technologies is highly valuable, including:
+
+Prompt engineering
+Model Context Protocol (MCP)
+Retrieval-Augmented Generation (RAG)
+LLM/agentic development
+Engagement Details
+
+Initial contract duration: 1 year, with the possibility of extension based on performance and skill set
+Hourly remuneration: $32.5 USD/hour for a Middle engineer – 35 USD/hour  for a Senior Engineer 
+Engagement: Full-time
+Location / time zone: Poland
+Working language: English
+Working hours: Standard Polish working hours, with at least 4 hours of overlap with U.S. Eastern Time
+
+Recruitment Process
+
+The recruitment process follows our standard interview stages, including technical and client-side evaluation.
+
+Important — Please Read Before Applying
+
+The client is building a product in the banking, investment, and brokerage systems domain. Due to strict investor, security, and compliance requirements, every candidate must successfully complete a background check.
+
+ 
+
+For this reason, candidates must:
+
+be currently based in Poland;
+have been a taxpayer in Poland for at least 2 years;
+be able to provide the required documentation for the background-check process.
+We are looking for someone who can quickly understand an existing system, resolve complex backend issues, and gradually take ownership of new development in a security-sensitive fintech environment.
+
+
+------------------------------------------------------------
+---------------Example Tailored CV Output 3-----------------
+------------------------------------------------------------
+
+{
+  "personNameOnCV": "Robson Oliveira",
+  "personLocation": "Jacobina, Bahia, Brazil",
+  "personEmail": "robson.se.oliveira@proton.me",
+  "personUniversity": "Pitágoras Unopar University",
+  "personDegree": "Higher Technology Degree in Systems Analysis and Development",
+  "companyNameApplyJob": "SFox GmbH",
+  "summary": "Backend engineer with close to a decade building Java and Spring services for data-heavy, regulated platforms. Comfortable across microservices, Kafka-based event streaming, and cloud-native delivery on Azure and Kubernetes, with a working grounding in PostgreSQL, Snowflake, Redis, and concurrent JVM systems. Recent work leans into LLM and agentic tooling — MCP servers, RAG pipelines, and prompt design — folded into real engineering rather than throwaway demos. Notable stretches include splitting a lending monolith into eight services with sub-ten-minute deploys, and rebuilding a matching engine to hold past 20k orders per second. Reads unfamiliar codebases fast and tends to leave systems more observable and easier to operate than they were found.",
+  "experience": [
+    {
+      "companyName": "SoftXPro",
+      "jobTitle": "Senior Backend Engineer",
+      "startDate": "11/2023",
+      "endDate": "07/2026",
+      "content": [
+        "Built REST and gRPC services in Core Java 17 and Spring Boot 3 for a multi-tenant lending platform, isolating tenant data through schema-per-tenant routing and row-level PostgreSQL policies.",
+        "Decomposed a monolith into eight domain microservices along bounded-context lines, cutting mean deploy time from roughly 40 minutes to under 9.",
+        "Wired an event-driven backbone on Apache Kafka using idempotent consumers and the transactional outbox pattern, keeping payment and ledger events consistent across services during partial outages.",
+        "Tuned read-through and write-behind Redis caching to trim p99 latency on account-balance lookups from 210 ms to 38 ms.",
+        "Containerized workloads with Docker on Azure Kubernetes Service, driving horizontal pod autoscaling off custom Kafka-lag metrics.",
+        "Instrumented distributed tracing with OpenTelemetry and Grafana, pulling mean incident triage down from hours to about twenty minutes.",
+        "Prototyped an internal retrieval-augmented assistant over the codebase and runbooks via an MCP server and pgvector, letting on-call engineers query architecture context in plain English.",
+        "Hardened CI/CD in GitHub Actions with staged canary rollouts, contract tests, and automatic rollback on SLO breach.",
+        "Partnered with compliance to model data-governance controls — field-level encryption, audit trails, and PII tagging — ahead of an external audit."
+      ]
+    },
+    {
+      "companyName": "STS Software",
+      "jobTitle": "Backend Engineer",
+      "startDate": "01/2020",
+      "endDate": "10/2023",
+      "content": [
+        "Engineered high-throughput ingestion services in Java and Spring Batch, moving roughly 12M brokerage records nightly into Snowflake with checkpointing for safe restarts.",
+        "Migrated a legacy Oracle schema to PostgreSQL, rewriting stored procedures as service-layer logic and validating parity through shadow reads.",
+        "Refactored a thread-contended matching engine with java.util.concurrent primitives and lock striping, lifting sustained throughput past 20k orders per second.",
+        "Modeled a Snowflake warehouse with clustered keys and materialized views feeding analyst dashboards, holding query cost predictable under load.",
+        "Orchestrated batch pipelines in Python and Airflow, retiring brittle cron jobs and adding retry, backfill, and alerting.",
+        "Profiled JVM memory under production traffic with async-profiler, resolving a GC-pause pattern that had been tripping latency alerts.",
+        "Automated schema changes with Flyway inside the deploy pipeline, ending manual DBA hand-offs on release nights.",
+        "Consolidated three overlapping notification services into one Kafka-driven service, dropping infra spend and simplifying on-call."
+      ]
+    },
+    {
+      "companyName": "SDLC Corp",
+      "jobTitle": "Software Engineer",
+      "startDate": "04/2016",
+      "endDate": "12/2019",
+      "content": [
+        "Delivered REST APIs in Java and Spring MVC for a logistics client, backing them with normalized MySQL schemas and Liquibase-managed migrations.",
+        "Designed a token-based auth layer with Spring Security and JWT, replacing server-side session state and easing a shift toward stateless services.",
+        "Integrated third-party payment and KYC providers behind an anti-corruption layer, shielding core domain logic from vendor churn.",
+        "Standardized logging and error handling across services through a shared library, making production issues traceable across team boundaries.",
+        "Debugged N+1 query patterns in a Hibernate-heavy module, trimming a key endpoint's response time by roughly two-thirds.",
+        "Scaled a reporting service behind NGINX with read replicas, holding response times steady through a 4x traffic ramp.",
+        "Streamlined releases with Jenkins pipelines and Dockerized builds, moving the team off manual WAR deployments.",
+        "Mentored two junior engineers through code review and pairing on Spring fundamentals and testing discipline."
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "categoryName": "Languages",
+      "skillItems": ["Java (17/21)", "Python", "SQL", "Bash"]
+    },
+    {
+      "categoryName": "Frameworks & Server-Side",
+      "skillItems": ["Spring Boot", "Spring Security", "Spring Batch", "Hibernate / JPA", "REST APIs", "gRPC"]
+    },
+    {
+      "categoryName": "Microservices & Distributed Systems",
+      "skillItems": ["Microservices Architecture", "Apache Kafka", "Event-Driven Architecture", "Distributed Systems", "Concurrency", "Multi-Tenancy"]
+    },
+    {
+      "categoryName": "Data & Storage",
+      "skillItems": ["PostgreSQL", "Snowflake", "Redis & Caching", "MySQL", "Oracle", "pgvector"]
+    },
+    {
+      "categoryName": "Cloud & DevOps",
+      "skillItems": ["Azure", "Kubernetes (AKS)", "Docker", "GitHub / GitHub Actions", "CI/CD", "Cloud-Native Development", "OpenTelemetry / Grafana"]
+    },
+    {
+      "categoryName": "LLM & Agentic",
+      "skillItems": ["Prompt Engineering", "Model Context Protocol (MCP)", "Retrieval-Augmented Generation (RAG)", "LLM / Agentic Development", "Embeddings & Vector Search"]
+    },
+    {
+      "categoryName": "Governance & Engineering Practices",
+      "skillItems": ["Data Governance", "PII Handling & Audit Logging", "Testing (JUnit, Testcontainers)", "Code Review", "Trunk-Based Delivery"]
+    },
+    {
+      "categoryName": "Collaboration & Soft Skills",
+      "skillItems": ["Cross-Team Collaboration", "Ownership", "Mentoring", "Incident Response"]
+    }
+  ]
+}
+
+
+------------------------------------------------------
+--------Questions Asked in the job posting------------
+------------------------------------------------------
+
+
+
+
+
+------------------------------------------------------
+------------------Job Description---------------------
+------------------------------------------------------
+Senior Back-end Engineer (N)
+Remote LatamTechnology – Software Engineering /Full-time /Remote
+Why Blue Coding? 
+
+At Blue Coding, we specialize in hiring excellent developers and amazing people from all over Latin America and other parts of the world. For the past 11 years, we’ve helped cutting-edge companies in the United States and Canada build great development teams and develop great products. Large multinationals, digital agencies, Saas providers, and software consulting firms are just a few of our clients. Our team of over 150 engineers, project managers, QA, UX/UI designers, and many more is distributed in more than 10 countries across the Americas. We are a fully remote company working with a wide array of technologies, and we have expertise in every stage of the software development process.
+
+Our team is highly connected, united, and culturally diverse, and our collaborators are involved in many initiatives around the world, from wildlife preservation to volunteering at local charities. We stand for honesty, fairness, respect, efficiency, hard work, and cooperation.
+
+This position is open exclusively to candidates based in LATAM countries.
+ 
+What are we looking for?
+ 
+We are looking for an experienced Senior Backend Engineer to work with one of our US clients, a fast-growing B2B SaaS company dedicated to transforming behavioral health and whole-person care through technology. The ideal candidate will join a mission-driven team focused on building secure, scalable, and high-performance digital health platforms that empower people to achieve their best well-being.
+
+In this role, you will design and develop APIs, services, and infrastructure to support web and mobile applications for enterprise healthcare clients. This is primarily a backend and cloud-focused role (roughly 80% backend/infra, 20% frontend), and you'll collaborate closely with product, data, and DevOps teams to deliver robust and elegant systems within a modern cloud environment. Occasional frontend involvement is expected, but deep frontend expertise is not required; strong backend and cloud skills are the priority 
+ 
+If you are fluent in English, proactive, and detail-oriented, with strong communication skills and a passion for solving complex problems in healthcare technology, this position might be a great fit for you! Our roles are 100% remote, and you will be integrated directly into the client's engineering team, gaining valuable international experience and contributing to meaningful digital innovation.
+Here are some of the exciting day-to-day challenges you will face in this role:
+Design and develop scalable, secure, and reliable server-side components and APIs.
+Work closely with Product and Front-End teams to implement RESTful and/or GraphQL APIs, business logic, and database queries and schemas.
+Build and maintain services using TypeScript and Node.js, and manage deployments across AWS and Kubernetes environments.
+Ensure compliance with HIPAA, SOC 2, and HITRUST requirements through strong engineering practices.
+Contribute to CI/CD pipelines and infrastructure automation using Docker, Kubernetes, GitHub Actions, or similar tools.
+Monitor, debug, and improve backend performance, reliability, and observability.
+Write clean, maintainable code with appropriate documentation and unit/integration tests.
+Pitch in on frontend tasks (React) as needed, without needing to be a frontend specialist.
+Collaborate cross-functionally in agile sprints using Jira, Confluence, and GitHub.
+You will shine if you have:
+5+ years of experience in backend software development, including SaaS or digital health platforms.
+Expertise in TypeScript/Node.js, with a strong understanding of RESTful APIs and/or GraphQL servers.
+Hands-on experience with PostgreSQL and relational data modeling.
+Strong proficiency with AWS services and container orchestration using Kubernetes.
+Strong knowledge of microservices, security best practices, and compliance frameworks (HIPAA, SOC 2, HITRUST).
+Experience using Docker, GitHub, CI/CD pipelines, and infrastructure as code.
+Comfort working in a fast-paced startup environment with iterative development cycles.
+Some exposure to React or frontend work is a plus, but not required.
+Desire to master a variety of AI tools to reduce coding time and enhance backend development or automation processes.
