@@ -1,0 +1,37 @@
+{
+  "personNameOnCV": "Alex Latoszek",
+  "personLocation": "Warsaw, Poland",
+  "personEmail": "alexlatozek@gmail.com",
+  "personUniversity": "Warsaw University of Technology",
+  "personDegree": "Bachelor of Science in Computer Science",
+  "companyNameApplyJob": "RecargaPay",
+  "jobTitleApplyJob": "Sr Software Engineer (Fraud)",
+  "summary": null,
+  "experience": [
+    {
+      "companyName": "XB Software",
+      "jobTitle": null,
+      "startDate": "11/2023",
+      "endDate": "07/2026",
+      "content": [
+        "Worked on several consulting projects with varied technology stacks."
+      ]
+    },
+    {
+      "companyName": "Selleo Labs",
+      "jobTitle": null,
+      "startDate": "01/2020",
+      "endDate": "10/2023",
+      "content": []
+    },
+    {
+      "companyName": "Gecko Dynamics",
+      "jobTitle": null,
+      "startDate": "04/2016",
+      "endDate": "12/2019",
+      "content": []
+    }
+  ],
+  "skills": [],
+  "jobQuestionAnswers": []
+}

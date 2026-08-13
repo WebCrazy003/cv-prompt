@@ -1,0 +1,16 @@
+Alex's original combined prompt has been split for the alex-cv-generator skill.
+
+Reusable instructions:
+../.codex/skills/alex-cv-generator/
+
+Runtime candidate data:
+candidate-profile.md
+
+Runtime job description and questions:
+job-application.md
+
+Generated JSON output:
+cv-output.json
+
+Invocation:
+Use $alex-cv-generator to generate Alex's tailored CV JSON from the runtime files.
