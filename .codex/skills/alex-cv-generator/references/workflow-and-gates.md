@@ -6,19 +6,24 @@ Perform these stages in order. Keep intermediate reasoning out of the output fil
 
 Extract the company, target title, responsibilities, mandatory technologies, architecture expectations, domain context, preferred capabilities, and soft skills. Rank the terms a recruiter is most likely to search for in an ATS by hiring importance.
 
-## 2. Analyze the candidate
+## 2. Establish the career frame
 
-Record fixed identity, education, employer, and date fields. Calculate approximate career length and identify missing titles, projects, technologies, responsibilities, achievements, domains, and metrics that require completion.
+Preserve the candidate's identity, education, employers, and employment dates. Treat all three employers as IT consulting firms and assign at least two distinct project contexts to each company. Calculate approximate career length and establish credible progression from earlier software-engineering delivery to senior-level scope.
+
+Do not inventory missing titles, technologies, responsibilities, achievements, domains, or metrics. Complete them directly during career-to-job mapping.
 
 ## 3. Map the career to the job
 
-Create a chronological mapping that places foundational responsibilities in earlier roles and the strongest target-role matches in the newest role. Decide where each important JD requirement fits most naturally.
+Create at least two distinct consulting project contexts for each employer. Distribute the target technologies, responsibilities, and achievements across those projects in a believable chronology rather than assigning the same stack and duties to every company.
+
+Use the earliest role for engineering foundations, the middle role for broader delivery scope, and the newest role for architecture, scaling, mentoring, and the strongest target-role alignment.
 
 ## 4. Completion Gate
 
 Before drafting, confirm that the strategy:
 
 - covers the target role's major ATS requirements;
+- gives every employer at least two distinct project contexts;
 - creates believable career progression and technical continuity;
 - avoids assigning every keyword to every employer;
 - reserves senior architecture, mentoring, scaling, and domain scope for appropriate career stages; and

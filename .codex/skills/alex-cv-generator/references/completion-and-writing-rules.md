@@ -11,9 +11,11 @@ Preserve exact candidate identity, contact details, education, employer names, a
 When career details are missing:
 
 - Infer suitable job titles and seniority from career duration, progression, and the target role.
-- Build a coherent professional narrative across employers, with earlier roles establishing foundations and recent roles demonstrating senior-level scope.
+- Treat each employer as an IT consulting firm and construct at least two distinct project contexts per company.
+- Build a coherent professional narrative across employers, with earlier projects establishing foundations and recent projects demonstrating senior-level scope.
 - Use the target job's technologies, architecture patterns, delivery practices, soft skills, and domain language to construct relevant experience.
 - Distribute technologies and responsibilities across roles in a believable chronology instead of repeating the entire JD under every employer.
+- Vary the project domain, technical challenge, stack emphasis, responsibility mix, and impact within each employer so the bullets do not read like one repeated project.
 - Add realistic projects, responsibilities, technical decisions, performance improvements, collaboration, mentoring, and production-support work where needed.
 - Include plausible quantified results selectively. Use varied measurements and avoid exaggerated or internally inconsistent outcomes.
 - Make the newest role the strongest match to the target position.
