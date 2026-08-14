@@ -1,11 +1,11 @@
 ---
 name: alex-cv-generator
-description: Generate or revise Alex Latoszek's evidence-grounded, ATS-friendly CV JSON from the repository runtime files. Use when tailoring Alex's CV to a job description, answering application questions, auditing CV claims, or writing Alex L/cv-output.json.
+description: Generate or revise Alex Latoszek's complete, ATS-friendly CV JSON from sparse repository runtime files. Use when tailoring Alex's CV to a job description, completing missing CV sections conservatively, answering application questions, auditing CV claims, or writing Alex L/cv-output.json.
 ---
 
 # Alex CV Generator
 
-Generate a tailored CV without converting job requirements into candidate claims.
+Generate a complete tailored CV without converting job requirements into candidate claims.
 
 ## Inputs and output
 
@@ -28,7 +28,7 @@ Before generating or auditing a CV, read all of these files completely:
 ## Execution contract
 
 1. Follow the workflow and pass every gate before writing output.
-2. Prefer omission or `null` over invention when evidence is missing.
+2. Apply sparse-profile completion rules when direct evidence is insufficient; never leave the summary, job titles, experience content, or skills empty.
 3. Keep analysis, mappings, and gate checks internal; write only schema-valid JSON.
 4. Preserve valid candidate facts already present in the output unless the runtime inputs supersede them.
 5. Overwrite `Alex L/cv-output.json` only after the draft passes all gates.

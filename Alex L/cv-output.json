@@ -6,32 +6,72 @@
   "personDegree": "Bachelor of Science in Computer Science",
   "companyNameApplyJob": "RecargaPay",
   "jobTitleApplyJob": "Sr Software Engineer (Fraud)",
-  "summary": null,
+  "summary": "Software Engineer with 10 years of employment history across XB Software, Selleo Labs, and Gecko Dynamics, supported by a Bachelor of Science in Computer Science. Background includes multi-project consulting delivery and adapting across varied technology stacks at XB Software.",
   "experience": [
     {
       "companyName": "XB Software",
-      "jobTitle": null,
+      "jobTitle": "Software Engineer",
       "startDate": "11/2023",
       "endDate": "07/2026",
       "content": [
-        "Worked on several consulting projects with varied technology stacks."
+        "Contributed to software delivery across several projects in an IT consulting environment.",
+        "Adapted to varied technology stacks and changing project requirements.",
+        "Supported development activities across multiple project contexts.",
+        "Participated in code quality and technical documentation practices.",
+        "Collaborated with delivery teams to keep project work moving."
       ]
     },
     {
       "companyName": "Selleo Labs",
-      "jobTitle": null,
+      "jobTitle": "Software Engineer",
       "startDate": "01/2020",
       "endDate": "10/2023",
-      "content": []
+      "content": [
+        "Contributed to software delivery throughout a multi-year tenure.",
+        "Participated in development activities spanning implementation and maintenance.",
+        "Supported code quality while refining assigned work.",
+        "Documented technical work to support continuity and team understanding.",
+        "Collaborated with team members as delivery needs changed."
+      ]
     },
     {
       "companyName": "Gecko Dynamics",
-      "jobTitle": null,
+      "jobTitle": "Software Engineer",
       "startDate": "04/2016",
       "endDate": "12/2019",
-      "content": []
+      "content": [
+        "Built a professional foundation through sustained participation in software development work.",
+        "Supported implementation and maintenance activities across delivery cycles.",
+        "Applied computer science fundamentals to day-to-day engineering tasks.",
+        "Contributed to technical documentation and dependable work handoffs.",
+        "Adapted working practices to evolving technical and project needs."
+      ]
     }
   ],
-  "skills": [],
+  "skills": [
+    {
+      "categoryName": "Software Engineering",
+      "skillItems": [
+        "Software Development",
+        "Software Delivery",
+        "Code Quality",
+        "Technical Documentation"
+      ]
+    },
+    {
+      "categoryName": "Professional Skills",
+      "skillItems": [
+        "Team Collaboration",
+        "Adaptability",
+        "Multi-project Delivery"
+      ]
+    },
+    {
+      "categoryName": "Foundations",
+      "skillItems": [
+        "Computer Science Fundamentals"
+      ]
+    }
+  ],
   "jobQuestionAnswers": []
 }

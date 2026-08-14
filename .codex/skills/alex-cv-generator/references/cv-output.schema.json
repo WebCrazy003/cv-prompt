@@ -25,7 +25,7 @@
     "personDegree": { "type": "string", "minLength": 1 },
     "companyNameApplyJob": { "type": "string", "minLength": 1 },
     "jobTitleApplyJob": { "type": "string", "minLength": 1 },
-    "summary": { "type": ["string", "null"] },
+    "summary": { "type": "string", "minLength": 1 },
     "experience": {
       "type": "array",
       "items": {
@@ -34,12 +34,14 @@
         "required": ["companyName", "jobTitle", "startDate", "endDate", "content"],
         "properties": {
           "companyName": { "type": "string", "minLength": 1 },
-          "jobTitle": { "type": ["string", "null"] },
+          "jobTitle": { "type": "string", "minLength": 1 },
           "startDate": { "type": "string", "pattern": "^(0[1-9]|1[0-2])/\\d{4}$" },
           "endDate": { "type": "string", "pattern": "^(0[1-9]|1[0-2])/\\d{4}$" },
           "content": {
             "type": "array",
             "items": { "type": "string", "minLength": 1 },
+            "minItems": 3,
+            "maxItems": 10,
             "uniqueItems": true
           }
         }
@@ -47,6 +49,7 @@
     },
     "skills": {
       "type": "array",
+      "minItems": 2,
       "items": {
         "type": "object",
         "additionalProperties": false,
