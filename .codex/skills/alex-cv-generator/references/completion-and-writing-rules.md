@@ -21,17 +21,18 @@ When career details are missing:
 
 ## ATS and writing rules
 
-- Rank the job's mandatory requirements and high-value ATS terms before drafting.
-- Include the most important matching keywords naturally in the summary, recent experience, and skills.
-- Write a focused summary with career length, target-aligned specialization, core stack, architecture strengths, and one or two achievements.
-- Create 6–10 distinct experience entries per employer, emphasizing impact, technical depth, and scope.
-- Organize skills into concise categories covering backend development, architecture, databases, cloud, delivery, observability, domain knowledge, AI, and professional skills when relevant to the JD.
-- Use precise action verbs and avoid repeating the same opening verb within one employer.
-- Avoid generic filler, exaggerated marketing language, and vague self-assessment.
+- Identify and rank the top skills, technologies, qualifications, and phrases a recruiter is likely to search for in an ATS from the target job description.
+- Incorporate those high-value ATS terms naturally throughout the summary, experience bullets, and skills section. Prioritize strong contextual matches over keyword stuffing.
+- Write a focused summary that includes the relevant job title, years in the field, areas of expertise, specializations, core skills, and one or two impressive achievements. Explain through concrete positioning how the candidate can contribute to the target company.
+- Create 6–10 distinct bullet points per employer with deep technical detail, including architecture, implementation decisions, tools, scale, performance, reliability, delivery practices, and measurable impact where appropriate. Represent each bullet as one string in the employer's `content` array.
+- Build a broad skills section covering relevant hard and soft skills. Organize it into clearly classified bullets represented by `categoryName` and `skillItems`.
+- Make every skills object render naturally as `Category: item, item, item`, for example `Frontend Development: React, Angular, React Native, TypeScript, JavaScript (ES6+)`.
+- Maintain a strong, action-driven tone with precise power verbs. Do not reuse an opening action verb anywhere else in the complete experience section.
+- Avoid the generic words `experience`, `expertise`, `achieved`, `influenced`, and `increased` in generated CV prose. Rewrite around them with specific technical or business language.
+- Make the writing engaging, natural, and distinctly human rather than formulaic or AI-generated. Vary sentence structure and rhythm while keeping statements concise.
+- Use professional, non-dramatic language. Avoid inflated claims, excessive buzzwords, canned transitions, exaggerated marketing language, and vague self-assessment.
 - Keep technical claims mutually consistent across the summary, experience, and skills.
-- Keep each experience entry and skill item as one plain JSON string without bullet characters or unnecessary line breaks.
 - Avoid duplicating the same achievement or responsibility across employers.
-- Use natural, professional, non-dramatic language.
 
 ## Application-question rules
 
