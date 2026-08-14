@@ -26,6 +26,7 @@ This file is candidate evidence. A field marked "Not supplied" is unknown and mu
 ### Selleo Labs
 
 - Employment dates: 01/2020–10/2023
+- Company description: IT consulting firm
 - Job title: Not supplied
 - Projects: Not supplied
 - Technologies: Not supplied
@@ -35,6 +36,7 @@ This file is candidate evidence. A field marked "Not supplied" is unknown and mu
 ### Gecko Dynamics
 
 - Employment dates: 04/2016–12/2019
+- Company description: IT consulting firm
 - Job title: Not supplied
 - Projects: Not supplied
 - Technologies: Not supplied

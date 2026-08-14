@@ -1,4 +1,4 @@
 interface:
   display_name: "Alex CV Generator"
-  short_description: "Create complete, evidence-safe ATS CV JSON"
+  short_description: "Create complete, strongly tailored ATS CV JSON"
   default_prompt: "Use $alex-cv-generator to generate Alex’s tailored CV JSON from the runtime files."

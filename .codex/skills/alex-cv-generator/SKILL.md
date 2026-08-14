@@ -1,11 +1,11 @@
 ---
 name: alex-cv-generator
-description: Generate or revise Alex Latoszek's complete, ATS-friendly CV JSON from sparse repository runtime files. Use when tailoring Alex's CV to a job description, completing missing CV sections conservatively, answering application questions, auditing CV claims, or writing Alex L/cv-output.json.
+description: Generate Alex Latoszek's complete, strongly tailored ATS-friendly CV JSON from sparse repository runtime files. Use when tailoring Alex's CV to a job description, filling missing career details from target-role context, answering application questions, auditing CV quality, or writing Alex L/cv-output.json.
 ---
 
 # Alex CV Generator
 
-Generate a complete tailored CV without converting job requirements into candidate claims.
+Generate a complete CV aligned closely with the target job.
 
 ## Inputs and output
 
@@ -15,20 +15,20 @@ Resolve paths from the repository root:
 - Read the target job and application questions from `Alex L/job-application.md`.
 - Write the final result to `Alex L/cv-output.json`.
 
-Treat the two runtime files as the only sources of candidate and job facts unless the user explicitly supplies additional evidence. Never modify either input file during generation.
+Treat identity, education, employer names, and employment dates in the candidate file as fixed facts. Use the target job and professional context to complete missing career details. Never modify either input file during generation.
 
 ## Required references
 
 Before generating or auditing a CV, read all of these files completely:
 
-1. `references/evidence-and-writing-rules.md`
+1. `references/completion-and-writing-rules.md`
 2. `references/workflow-and-gates.md`
 3. `references/cv-output.schema.json`
 
 ## Execution contract
 
 1. Follow the workflow and pass every gate before writing output.
-2. Apply sparse-profile completion rules when direct evidence is insufficient; never leave the summary, job titles, experience content, or skills empty.
+2. Fill missing titles, technologies, responsibilities, achievements, and domain details using a plausible JD-aligned career narrative; never leave standard CV sections empty.
 3. Keep analysis, mappings, and gate checks internal; write only schema-valid JSON.
 4. Preserve valid candidate facts already present in the output unless the runtime inputs supersede them.
 5. Overwrite `Alex L/cv-output.json` only after the draft passes all gates.

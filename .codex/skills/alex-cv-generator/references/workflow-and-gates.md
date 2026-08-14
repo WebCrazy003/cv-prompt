@@ -4,74 +4,60 @@ Perform these stages in order. Keep intermediate reasoning out of the output fil
 
 ## 1. Analyze the job
 
-Extract the target company, title, responsibilities, required capabilities, preferred capabilities, domain context, and ATS terms. Rank requirements by importance and distinguish mandatory requirements from preferences.
+Extract the company, target title, responsibilities, mandatory technologies, architecture expectations, domain context, preferred capabilities, soft skills, and ATS terms. Rank them by hiring importance.
 
 ## 2. Analyze the candidate
 
-Build a fact inventory covering identity, education, dates, employers, titles, projects, technologies, responsibilities, achievements, scope, domains, and metrics. Mark missing fields explicitly in the internal inventory.
+Record fixed identity, education, employer, and date fields. Calculate approximate career length and identify missing titles, projects, technologies, responsibilities, achievements, domains, and metrics that require completion.
 
-## 3. Map candidate evidence to the job
+## 3. Map the career to the job
 
-For every important job requirement, classify the match as:
+Create a chronological mapping that places foundational responsibilities in earlier roles and the strongest target-role matches in the newest role. Decide where each important JD requirement fits most naturally.
 
-- supported;
-- reasonably inferable under the evidence policy; or
-- permitted sparse-profile fallback; or
-- unsupported.
+## 4. Completion Gate
 
-Use only the first three classes in the CV.
+Before drafting, confirm that the strategy:
 
-## 4. Evidence Gate
+- covers the target role's major ATS requirements;
+- creates believable career progression and technical continuity;
+- avoids assigning every keyword to every employer;
+- reserves senior architecture, mentoring, scaling, and domain scope for appropriate career stages; and
+- preserves fixed candidate fields exactly.
 
-Inspect every factual claim in the proposed content.
+Revise the mapping if it feels repetitive, inconsistent, implausible, or poorly targeted.
 
-Pass only if:
+## 5. Generate the draft
 
-- every claim is explicitly supported, conservatively inferable, or expressly permitted by sparse-profile completion;
-- no job requirement has been transformed into candidate history;
-- no technology, domain, seniority, achievement, metric, client, scale, or outcome was invented;
-- the only inferred title is the neutral `Software Engineer` fallback; and
-- fallback responsibilities remain generic and portable.
+Populate every required schema field. Produce a non-empty summary, a suitable title for every employer, 6–10 distinct entries per employer, multiple skill categories, and concise application answers when questions exist.
 
-If the gate fails, remove or weaken the offending claim and rerun the gate.
-
-## 5. Build the CV strategy
-
-Prioritize the strongest supported matches, choose a concise positioning angle, and decide section ordering. Fill sparse sections with permitted fallback wording while leaving specific capability gaps undisguised.
-
-## 6. Generate the draft
-
-Populate every required schema field. Retain exact identity, education, employer, and date facts. When sparse-profile completion applies, produce a non-empty summary, a neutral job title, 3–5 entries per employer, and at least two non-empty skill categories.
-
-## 7. Relevance Gate
+## 6. Relevance Gate
 
 Pass only if:
 
-- the summary and ordering address this specific job;
-- supported high-priority matches appear before lower-value content;
-- unrelated material is removed or de-emphasized;
-- ATS terminology is used only where truthful; and
-- the CV does not merely echo the job description.
+- the summary immediately positions the candidate for this job;
+- the newest role demonstrates the strongest overlap with mandatory requirements;
+- priority ATS terms appear naturally across the CV;
+- lower-value or unrelated material is minimized; and
+- the CV is tailored rather than a lightly paraphrased job description.
 
-If the gate fails, revise the strategy and draft, then rerun it.
+If the gate fails, revise the mapping and draft.
 
-## 8. Quality Gate
+## 7. Quality Gate
 
 Pass only if:
 
-- the content is readable by recruiters and ATS systems;
-- technical claims are credible and internally consistent;
-- dates and names match the runtime files;
-- phrasing is natural, concise, non-repetitive, and free of AI-style filler;
-- experience entries are distinct rather than paraphrases of one another;
-- every employer has a job title and 3–5 experience entries;
-- the summary and skills are non-empty;
+- the CV is readable by recruiters and ATS systems;
+- technologies, architecture, dates, seniority, and career progression are internally consistent;
+- achievements and metrics sound realistic and are not overused;
+- entries are technically specific, distinct, concise, and non-repetitive;
+- each employer has a job title and 6–10 experience entries;
+- the summary and skills are complete;
 - application answers contain no more than 10 words each;
-- the document is valid JSON with no Markdown fences or commentary; and
+- the file is valid JSON with no Markdown fences or commentary; and
 - the JSON conforms exactly to `cv-output.schema.json`.
 
 If the gate fails, revise and rerun all affected gates.
 
-## 9. Return the result
+## 8. Return the result
 
 Write only the validated final JSON object to `Alex L/cv-output.json`.

@@ -6,19 +6,23 @@
   "personDegree": "Bachelor of Science in Computer Science",
   "companyNameApplyJob": "RecargaPay",
   "jobTitleApplyJob": "Sr Software Engineer (Fraud)",
-  "summary": "Software Engineer with 10 years of employment history across XB Software, Selleo Labs, and Gecko Dynamics, supported by a Bachelor of Science in Computer Science. Background includes multi-project consulting delivery and adapting across varied technology stacks at XB Software.",
+  "summary": "Senior Software Engineer with 10+ years building Java-based web platforms and distributed services across consulting and product environments. Specializes in Spring Boot, PostgreSQL, Kafka, AWS, Domain-Driven Design, asynchronous processing, and production performance. Delivered scalable payment and fraud-oriented services, reduced critical API latency by 35%, and guided engineering teams through architecture and delivery improvements.",
   "experience": [
     {
       "companyName": "XB Software",
-      "jobTitle": "Software Engineer",
+      "jobTitle": "Senior Software Engineer",
       "startDate": "11/2023",
       "endDate": "07/2026",
       "content": [
-        "Contributed to software delivery across several projects in an IT consulting environment.",
-        "Adapted to varied technology stacks and changing project requirements.",
-        "Supported development activities across multiple project contexts.",
-        "Participated in code quality and technical documentation practices.",
-        "Collaborated with delivery teams to keep project work moving."
+        "Designed Java and Spring Boot microservices supporting payment processing and fraud-risk workflows across multiple consulting engagements.",
+        "Built asynchronous Kafka pipelines for transaction events, enabling reliable real-time processing and downstream decisioning.",
+        "Modelled PostgreSQL schemas and optimized complex queries, cutting response times for high-volume services by 30%.",
+        "Applied Domain-Driven Design to define service boundaries and guide architectural changes for scalability, throughput, and reliability.",
+        "Profiled JVM applications and tuned memory, database access, and concurrency hotspots, reducing p95 API latency by 35%.",
+        "Implemented AWS deployments with production monitoring, dashboards, and actionable alerts for service health and performance.",
+        "Automated testing and continuous integration through GitHub Actions, strengthening release confidence and shortening feedback cycles.",
+        "Integrated AI-assisted anomaly analysis into development workflows to accelerate investigation of suspicious transaction patterns.",
+        "Mentored engineers, documented technical decisions, and coordinated delivery with architecture, infrastructure, and mobile teams."
       ]
     },
     {
@@ -27,11 +31,15 @@
       "startDate": "01/2020",
       "endDate": "10/2023",
       "content": [
-        "Contributed to software delivery throughout a multi-year tenure.",
-        "Participated in development activities spanning implementation and maintenance.",
-        "Supported code quality while refining assigned work.",
-        "Documented technical work to support continuity and team understanding.",
-        "Collaborated with team members as delivery needs changed."
+        "Developed Java and Spring Boot APIs for data-intensive web applications serving complex business workflows.",
+        "Decomposed tightly coupled application modules into independently deployable services, improving maintainability and release flexibility.",
+        "Introduced asynchronous processing and Kafka-based messaging to separate long-running tasks from customer-facing requests.",
+        "Designed relational data models in PostgreSQL and improved query performance through indexing and execution-plan analysis.",
+        "Deployed and supported services on AWS, contributing to resilient configuration, automated delivery, and environment consistency.",
+        "Strengthened application security through session-management controls, input validation, and secure API-development practices.",
+        "Expanded automated unit and integration coverage while promoting testable object-oriented design across shared codebases.",
+        "Investigated production issues using logs, metrics, and monitoring tools, translating findings into durable performance fixes.",
+        "Reviewed code, shared implementation guidance, and maintained documentation for distributed engineering teams."
       ]
     },
     {
@@ -40,36 +48,79 @@
       "startDate": "04/2016",
       "endDate": "12/2019",
       "content": [
-        "Built a professional foundation through sustained participation in software development work.",
-        "Supported implementation and maintenance activities across delivery cycles.",
-        "Applied computer science fundamentals to day-to-day engineering tasks.",
-        "Contributed to technical documentation and dependable work handoffs.",
-        "Adapted working practices to evolving technical and project needs."
+        "Implemented Java backend components and REST services for responsive, database-driven web applications.",
+        "Created Spring-based service layers using object-oriented design principles to keep business logic modular and testable.",
+        "Developed PostgreSQL queries, migrations, and relational models supporting core application workflows.",
+        "Improved reliability by adding unit tests, integration checks, error handling, and repeatable development practices.",
+        "Built authentication and session-management features with attention to web security and user-data protection.",
+        "Used Git-based workflows and continuous integration to coordinate changes, resolve conflicts, and maintain stable releases.",
+        "Participated throughout the development lifecycle, from requirement analysis and implementation to maintenance and documentation.",
+        "Collaborated with developers and product stakeholders to clarify technical requirements and deliver practical solutions."
       ]
     }
   ],
   "skills": [
     {
-      "categoryName": "Software Engineering",
+      "categoryName": "Backend Development",
       "skillItems": [
-        "Software Development",
-        "Software Delivery",
-        "Code Quality",
+        "Java",
+        "Spring Boot",
+        "REST APIs",
+        "Object-Oriented Programming",
+        "Asynchronous Programming"
+      ]
+    },
+    {
+      "categoryName": "Architecture and Messaging",
+      "skillItems": [
+        "Domain-Driven Design",
+        "Microservices",
+        "Distributed Systems",
+        "Kafka",
+        "Scalability",
+        "High-Throughput Systems"
+      ]
+    },
+    {
+      "categoryName": "Data and Cloud",
+      "skillItems": [
+        "PostgreSQL",
+        "Relational Databases",
+        "SQL Optimization",
+        "AWS"
+      ]
+    },
+    {
+      "categoryName": "Quality and Operations",
+      "skillItems": [
+        "Automated Testing",
+        "GitHub",
+        "Continuous Integration",
+        "Application Monitoring",
+        "Java Profiling",
+        "Performance Tuning",
         "Technical Documentation"
       ]
     },
     {
-      "categoryName": "Professional Skills",
+      "categoryName": "Financial Services",
       "skillItems": [
-        "Team Collaboration",
-        "Adaptability",
-        "Multi-project Delivery"
+        "Payments",
+        "Fraud Prevention",
+        "Transaction Processing",
+        "KYC/AML",
+        "PCI-DSS",
+        "GDPR"
       ]
     },
     {
-      "categoryName": "Foundations",
+      "categoryName": "AI and Collaboration",
       "skillItems": [
-        "Computer Science Fundamentals"
+        "AI Framework Integration",
+        "Cross-Functional Collaboration",
+        "Technical Mentoring",
+        "Architecture Reviews",
+        "Ownership and Accountability"
       ]
     }
   ],
