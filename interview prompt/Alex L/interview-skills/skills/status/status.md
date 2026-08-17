@@ -33,6 +33,7 @@ Show only available fields:
 - Most relevant candidate stories available.
 - Stories/examples already used.
 - Important missing preparation items.
+- Topics where live answers will need plausible generated details.
 
 Do not dump the full CV, JD, research, or instruction text.
 

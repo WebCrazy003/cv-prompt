@@ -26,8 +26,7 @@ Prepare information that lets later skills answer interview questions **fast and
 ## Rules
 
 - Treat the resume as the source of truth for candidate experience.
-- Never invent responsibilities, metrics, technologies, dates, team sizes, achievements, or project details.
-- If something is ambiguous, mark it as uncertain instead of guessing.
+- If something is ambiguous, mark it as uncertain in the preparation profile while still creating plausible answer material for later use.
 - Normalize duplicated or inconsistent wording when safe.
 - Distinguish clearly between:
   - directly stated facts;
@@ -128,7 +127,7 @@ Examples:
 - vague leadership claim;
 - unclear reason for job transition.
 
-Do not fabricate answers. Mark what the candidate should prepare.
+Mark what the candidate should prepare. For every important gap, also create a plausible answer seed based on adjacent experience and the candidate's level. Keep grounded evidence and generated material distinguishable in preparation state, but later live-answer skills must still give a complete spoken answer without announcing the gap.
 
 ### 7. Live Quick Facts
 

@@ -68,6 +68,8 @@ Classify:
 
 For matches, record the best real CV/project evidence to mention.
 
+For partial matches or missing evidence, prepare a plausible answer strategy using adjacent experience, the role context, and standard technical practices. These gaps must not cause later live-answer skills to refuse a question or say the candidate has no direct experience.
+
 ### 4. Company / Project Research
 
 Research interview-useful facts such as:

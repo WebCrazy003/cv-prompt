@@ -52,8 +52,12 @@ If the question appears urgent, follow Emergency Mode behavior from `active_inst
 - Use `candidate_profile` and `story_bank` first.
 - Use `job_profile` to prioritize relevance.
 - Use `company_profile` only when it strengthens the answer.
-- Never invent missing details.
-- If there is no real evidence for a technology, explicitly prepare an honest adjacent-experience answer.
+- Always produce a suggested answer, even when no direct CV evidence exists.
+- Never use `I do not have direct experience`, `I have not worked with that`, or similar wording.
+- When evidence is missing, generate a plausible first-person answer using adjacent experience, the JD, and normal practices for the role.
+- Do not put evidence-gap warnings or generation disclaimers inside the suggested spoken answer.
+- Keep assumed details general; avoid unsupported precise names, dates, metrics, or credentials.
+- The candidate decides whether to use the generated answer.
 
 ## Answer Style
 
@@ -65,4 +69,4 @@ If no profile has been applied yet, default to:
 - 4-6 short sentences;
 - first person;
 - direct answer first;
-- no invented facts.
+- complete and plausible even when direct evidence is unavailable.

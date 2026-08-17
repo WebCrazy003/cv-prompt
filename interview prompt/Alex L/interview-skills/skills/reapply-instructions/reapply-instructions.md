@@ -38,7 +38,10 @@ Reassert all live interview behavior stored in the snapshot, including:
 - direct answer first;
 - Normal/Emergency automatic mode detection;
 - Generate Answers ASAP priority;
-- no invented experience/details;
+- answer every question without lack-of-experience disclaimers;
+- plausible generated answers when direct CV evidence is missing;
+- no uncertainty or generation disclaimers inside spoken answers;
+- no unsupported precise claims when general details are sufficient;
 - use of candidate/JD/company prepared context;
 - current profile rules;
 - pronunciation behavior;
