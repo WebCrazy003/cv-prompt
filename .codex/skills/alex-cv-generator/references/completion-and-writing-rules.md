@@ -8,6 +8,8 @@ Act as a senior resume writer and ATS optimization specialist. Produce a complet
 
 Preserve exact candidate identity, contact details, education, employer names, and employment dates from `candidate-profile.md`.
 
+Always derive the target company, target title, stack, responsibilities, domain language, and application questions from the current on-disk `job-application.md`. The existing `cv-output.json` is not a source and must not supply or override any role-dependent content. When the current job differs from the previous output, regenerate the summary, inferred job titles, all employer bullets, skills, and question answers for the current job.
+
 When career details are missing:
 
 - Infer suitable job titles and seniority from career duration, progression, and the target role.
@@ -35,6 +37,7 @@ When career details are missing:
 - Use professional, non-dramatic language. Avoid inflated claims, excessive buzzwords, canned transitions, exaggerated marketing language, and vague self-assessment.
 - Keep technical claims mutually consistent across the summary, experience, and skills.
 - Avoid duplicating the same achievement or responsibility across employers.
+- Remove technologies, domain claims, and role labels inherited from a previous target when they are not supported by the current job or the newly constructed career narrative.
 
 ## Application-question rules
 

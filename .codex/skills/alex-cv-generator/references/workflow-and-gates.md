@@ -2,6 +2,20 @@
 
 Perform these stages in order. Keep intermediate reasoning out of the output file.
 
+## 0. Runtime Source Gate
+
+Read `candidate-profile.md` and `job-application.md` directly from disk for this invocation. Do this even if either file was read earlier in the conversation. Do not inspect or reuse `cv-output.json` as drafting input.
+
+Record internally a current-job anchor set containing:
+
+- explicitly supplied company and target title;
+- application-question count and question text;
+- mandatory language and framework stack;
+- highest-priority architecture, database, testing, leadership, and domain terms; and
+- conspicuous technologies or role labels that belong to a previous target and must not leak into this draft.
+
+Do not proceed if the current job description is empty or cannot be read.
+
 ## 1. Analyze the job
 
 Extract the company, target title, responsibilities, mandatory technologies, architecture expectations, domain context, preferred capabilities, and soft skills. Rank the terms a recruiter is most likely to search for in an ATS by hiring importance.
@@ -43,7 +57,10 @@ Pass only if:
 - the newest role demonstrates the strongest overlap with mandatory requirements;
 - priority ATS terms appear naturally across the CV;
 - lower-value or unrelated material is minimized; and
-- the CV is tailored rather than a lightly paraphrased job description.
+- the CV is tailored rather than a lightly paraphrased job description;
+- `companyNameApplyJob` and `jobTitleApplyJob` match the company and title explicitly supplied by the current job;
+- the summary, newest role, and skills reflect the current job's mandatory language and framework stack; and
+- no company, title, stack, or domain residue from a previous output remains unless the current job or coherent career mapping independently supports it.
 
 If the gate fails, revise the mapping and draft.
 
@@ -68,6 +85,16 @@ Pass only if:
 
 If the gate fails, revise and rerun all affected gates.
 
-## 8. Return the result
+## 8. Pre-write Freshness Gate
 
-Write only the validated final JSON object to `Alex L/cv-output.json`.
+Read `job-application.md` from disk again and rebuild the current-job anchor set. Compare it with the anchors used to create the draft.
+
+- If the company, title, questions, or mandatory stack changed, discard the draft and restart at stage 0.
+- Confirm every supplied application question appears exactly once and no unsupplied question appears.
+- Confirm the draft's target company, target title, dominant stack, and domain align with the refreshed anchors.
+
+This gate fails when the JSON is structurally valid but targets an earlier job.
+
+## 9. Return the result
+
+Write only the validated final JSON object to `Alex L/cv-output.json`. Parse the written file, validate it against the schema, and rerun the source-alignment checks on the written values before finishing.
