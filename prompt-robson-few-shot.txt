@@ -38,7 +38,7 @@ skills: [
 ----------------------------------------------
 Name: Robson Oliveira
 Email: robson.se.oliveira@proton.me
-Phone: +‪1 (343) 303-5131
+Phone: +1 (343) 303-5131
 Address: Jacobina, Bahia, Brazil
 University: Pitágoras Unopar University | Higher Technology Degree in Systems Analysis and Development
 
