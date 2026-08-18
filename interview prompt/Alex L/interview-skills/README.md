@@ -14,8 +14,9 @@ Run these commands in the interview chat:
 
 2. `/discovery-jd`
    - Analyze the job description.
-   - Research the company or project.
-   - Build `job_profile` and `company_profile`.
+   - Research the company and relevant real-world engineering projects on the web.
+   - Capture production challenges, implementations, technologies, tradeoffs, outcomes, and direct source URLs.
+   - Build `job_profile`, `company_profile`, and `real_world_project_evidence`.
 
 ### 2. Start live interview mode
 
@@ -93,7 +94,9 @@ Do not show this internal workflow. During a live interview, prioritize:
 5. Simple, natural spoken English.
 6. Additional detail only when helpful.
 
-Use real candidate evidence when available. When direct evidence is missing, construct a plausible answer from adjacent experience, the JD, and normal role practices. Never interrupt the spoken response with evidence-gap or generation disclaimers. Avoid unsupported precise names, dates, metrics, or credentials.
+Use real candidate evidence when available. Use `real_world_project_evidence` to add realistic technical challenges, implementation patterns, technologies, and tradeoffs. External evidence must supplement candidate facts: never present another organization's project as the candidate's work or as a verified target-company project.
+
+When direct candidate evidence is missing, construct a plausible answer from adjacent experience, the JD, normal role practices, and the closest sourced real-world patterns. Keep source URLs available internally for traceability, but do not include them in a spoken live answer unless the user asks for sources. Never interrupt the response with evidence-gap or generation disclaimers. Avoid unsupported precise names, dates, metrics, or credentials.
 
 Do not browse or perform long analysis during a live response unless the user explicitly requests current external information. Complete company research with `/discovery-jd` before the interview.
 
@@ -106,6 +109,7 @@ Skills reuse these conceptual state objects when available:
 - `company_profile`
 - `story_bank`
 - `skill_evidence_map`
+- `real_world_project_evidence`
 - `active_instruction_profile`
 - `active_instruction_snapshot`
 - `interview_active`

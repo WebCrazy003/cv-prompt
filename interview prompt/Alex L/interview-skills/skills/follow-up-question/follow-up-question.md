@@ -46,4 +46,4 @@ Return only:
 
 Do not include an answer, alternatives, probability, explanation, preparation notes, acknowledgements, or setup text. Do not ask for more context. Do not browse, run tools, or perform extra research.
 
-If recent interviewer context is limited, infer the safest plausible follow-up from the latest available interviewer statement or question. Use the JD, candidate profile, and earlier interview context only as secondary tie-breakers.
+If recent interviewer context is limited, infer the safest plausible follow-up from the latest available interviewer statement or question. Use the JD, candidate profile, `real_world_project_evidence`, and earlier interview context only as secondary tie-breakers.

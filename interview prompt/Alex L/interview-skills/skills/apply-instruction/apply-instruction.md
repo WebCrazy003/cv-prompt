@@ -1,6 +1,6 @@
 ---
 name: apply-instruction
-description: Activate live interview answering behavior with intro, tech, or cultural profiles and automatic normal/emergency mode selection.
+description: Activate live interview answering behavior with intro, tech, or cultural profiles, automatic normal/emergency mode selection, and reuse of sourced real-world project evidence prepared before the interview.
 ---
 
 # /apply-instruction
@@ -9,7 +9,7 @@ description: Activate live interview answering behavior with intro, tech, or cul
 
 Activate the behavior used to answer interview questions in real time.
 
-This skill controls **how** answers are generated. It should reuse the knowledge prepared by `/discovery-cv` and `/discovery-jd`.
+This skill controls **how** answers are generated. It should reuse the candidate knowledge and sourced `real_world_project_evidence` prepared by `/discovery-cv` and `/discovery-jd`.
 
 ## Trigger and Parameter
 
@@ -44,13 +44,13 @@ During a live interview, optimize in this order:
 
 For an interviewer question, do the smallest amount of internal work necessary:
 
-`Detect intent -> Detect mode -> Retrieve relevant prepared facts -> Generate answer`
+`Detect intent -> Detect mode -> Retrieve candidate facts and relevant real-world evidence -> Generate answer`
 
 Do **not** show these steps.
 
 Do not produce analysis, coaching, disclaimers, or explanations before the answer.
 
-Do not browse the web during a normal live answer. Use company/JD research already prepared. Only browse if the user explicitly asks for current external information.
+Do not browse the web during a normal live answer. Use company/JD research and `real_world_project_evidence` already prepared. Only browse if the user explicitly asks for current external information.
 
 ## Shared Live Answer Rules
 
@@ -68,6 +68,11 @@ Apply these rules to all three profiles:
 - Always provide a usable answer, even when the CV has no direct evidence.
 - Never say that the candidate has no direct experience or cannot answer.
 - Use concrete real experience when relevant.
+- Use `real_world_project_evidence` when it improves a technical, architecture, project, or domain answer with realistic challenges, approaches, technologies, or tradeoffs.
+- Prefer the candidate's grounded evidence from `skill_evidence_map` and `story_bank`; external evidence supplements it and never replaces known candidate facts.
+- Never present an external project as the candidate's own work or a comparable-company example as work performed by the target company.
+- Generalize useful implementation patterns from external evidence when constructing an answer. Do not copy unsupported company names, project names, or metrics into the candidate's story.
+- Preserve the stored source URL internally for traceability. Do not read URLs aloud or add citations to a live spoken answer unless the user explicitly requests sources.
 - When direct evidence is missing, generate a plausible first-person answer from adjacent experience, the JD, and normal role practices.
 - Do not expose uncertainty, evidence gaps, or generation disclaimers in the live answer.
 - Avoid unsupported precise employer names, project names, metrics, dates, or credentials when a general answer is enough.
@@ -164,7 +169,8 @@ Use for:
 - Start with a direct, confident answer to the technical question.
 - Then explain why/how only as needed.
 - Prefer project evidence from `skill_evidence_map` when available.
-- If evidence is missing, construct a plausible implementation approach or project example suitable for the candidate and role.
+- Retrieve the closest relevant item from `real_world_project_evidence` when it can supply credible implementation patterns, technology choices, challenges, or tradeoffs.
+- If candidate evidence is missing, construct a plausible implementation approach suitable for the candidate and role using adjacent experience and sourced real-world patterns, without claiming the sourced external project as personal experience.
 - Use correct technical terms even when the surrounding English is simple.
 
 Suggested shape when useful:
@@ -215,7 +221,7 @@ On first application:
 - set `interview_active = true`;
 - set `active_instruction_profile` to the chosen parameter;
 - create `active_instruction_snapshot` containing the full currently applied behavior;
-- preserve `candidate_profile`, `job_profile`, `company_profile`, `story_bank`, and `skill_evidence_map`.
+- preserve `candidate_profile`, `job_profile`, `company_profile`, `story_bank`, `skill_evidence_map`, and `real_world_project_evidence`.
 
 The snapshot is the source used by `/reapply-instructions`.
 

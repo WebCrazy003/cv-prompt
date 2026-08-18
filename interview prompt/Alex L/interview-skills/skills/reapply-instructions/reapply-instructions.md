@@ -43,6 +43,7 @@ Reassert all live interview behavior stored in the snapshot, including:
 - no uncertainty or generation disclaimers inside spoken answers;
 - no unsupported precise claims when general details are sufficient;
 - use of candidate/JD/company prepared context;
+- use of sourced `real_world_project_evidence` without misrepresenting external projects as candidate experience;
 - current profile rules;
 - pronunciation behavior;
 - no unnecessary web search during live answers;
@@ -60,6 +61,7 @@ Preserve:
 - `company_profile`;
 - `story_bank`;
 - `skill_evidence_map`;
+- `real_world_project_evidence`;
 - `current_topic`;
 - `interviewer_signals`;
 - `used_stories`.

@@ -1,13 +1,13 @@
 ---
 name: discovery-jd
-description: Analyze the job description, research the company or project, compare it with the candidate profile, and prepare interview context.
+description: Analyze the job description, research the company and comparable real-world engineering projects with source URLs, compare the role with the candidate profile, and prepare reusable evidence for interview answers.
 ---
 
 # /discovery-jd
 
 ## Purpose
 
-Read the job description deeply, research the company/project, compare the opportunity with the candidate profile, and prepare a reusable interview profile.
+Read the job description deeply, research the company/project and relevant real-world engineering examples, compare the opportunity with the candidate profile, and prepare a reusable interview profile.
 
 ## Trigger
 
@@ -26,7 +26,10 @@ Finish expensive research **before** the live interview so later answers can be 
 - Read the complete JD carefully.
 - Use the existing `candidate_profile` when available.
 - Use web search to research the company, product, project, and relevant recent information.
-- Prefer official company sources, product pages, engineering pages, documentation, and reliable sources.
+- Search for real production projects, technical challenges, implementations, technology choices, tradeoffs, and outcomes related to the role.
+- Prefer official company sources, engineering blogs, product documentation, public repositories, conference talks, vendor case studies, postmortems, and other reliable technical sources.
+- Open and inspect the actual source page; do not treat a search-result snippet as evidence.
+- Store a direct source URL for every retained external fact or real-world example.
 - Separate verified facts from inference.
 - Do not invent project details that are not public or supplied by the user.
 - Focus research on information that can improve interview answers.
@@ -86,7 +89,56 @@ Research interview-useful facts such as:
 
 Do not collect trivia that is unlikely to help the interview.
 
-### 5. Interviewer Intent Prediction
+### 5. Real-World Project Evidence
+
+Build `real_world_project_evidence` before generating likely questions or interview positioning.
+
+Derive 3-6 research themes from the JD's most important technologies, responsibilities, product domain, and likely engineering constraints. Search for concrete production examples related to those themes.
+
+Combine company, domain, and technology terms in targeted searches such as:
+
+- `[company] engineering architecture technology stack`;
+- `[company] scaling migration security reliability case study`;
+- `[company] AWS Azure GCP customer story`;
+- `[company] engineering conference talk GitHub`;
+- `[domain] production architecture [technology]`;
+- `[technology] migration postmortem performance incident`.
+
+Vary and narrow the queries based on discovered terminology. When company-specific results are weak, search the same problem and stack across comparable organizations.
+
+Use this source priority:
+
+1. Target-company engineering blogs, documentation, public repositories, talks, and technical job posts.
+2. Cloud, platform, or technology-vendor case studies that identify the target company.
+3. Conference presentations, postmortems, and detailed engineering case studies.
+4. Engineering publications from comparable companies in the same domain or stack.
+5. Credible open-source documentation, issues, and implementation reports.
+6. Community sources only for discovery or when stronger evidence is unavailable.
+
+For every retained example, record:
+
+- `evidence_type`: `target-company-verified` or `comparable-real-world`;
+- project/system and organization;
+- source title, publisher, publication/update date when available, and direct `source_url`;
+- problem or technical challenge;
+- what was implemented or changed;
+- technologies and architecture used;
+- constraints, decisions, and tradeoffs;
+- result or outcome, including metrics only when explicitly sourced;
+- relevance to the JD and likely interview questions;
+- confidence based on source quality and specificity.
+
+Apply these evidence rules:
+
+- Keep approximately 3-7 strong, JD-relevant examples instead of a large unfiltered list.
+- Do not retain an example without a working direct source URL.
+- Prefer sources that describe `problem -> action -> technology -> tradeoff -> outcome`.
+- Never present a comparable-company example as work performed by the target company.
+- Never combine details from several sources into a fictional single project. If synthesizing, preserve every supporting URL and label the result as synthesis.
+- If no reliable target-company technical evidence is public, state that clearly and use labeled comparable examples.
+- Exclude generic SEO summaries, unsourced claims, and AI-generated articles when primary or technically credible sources are available.
+
+### 6. Interviewer Intent Prediction
 
 Predict the most likely interview focus areas:
 
@@ -103,18 +155,19 @@ Predict the most likely interview focus areas:
 
 Rank them high/medium/low probability.
 
-### 6. Likely Questions
+### 7. Likely Questions
 
 Generate a targeted list of likely questions based on:
 
 - JD requirements;
 - candidate match/gaps;
 - company/project context;
+- `real_world_project_evidence` challenges, technology choices, and tradeoffs;
 - seniority.
 
 Prefer specific questions over generic interview lists.
 
-### 7. Candidate Positioning
+### 8. Candidate Positioning
 
 Prepare concise guidance for what the candidate should emphasize:
 
@@ -124,7 +177,7 @@ Prepare concise guidance for what the candidate should emphasize:
 - gaps to address carefully;
 - reasons this role is a logical fit.
 
-### 8. Questions for the Interviewer
+### 9. Questions for the Interviewer
 
 Prepare thoughtful questions likely to be useful to the interviewer and candidate.
 
@@ -146,6 +199,7 @@ After completion, treat these as available conversation state:
 
 - `job_profile`
 - `company_profile`
+- `real_world_project_evidence`
 
 Update `story_bank` relevance rankings against the current job.
 
@@ -157,8 +211,9 @@ Return a concise report:
 2. Your strongest matches.
 3. Gaps / points to prepare.
 4. Company/project interview facts.
-5. Most likely interview areas.
-6. Top likely questions.
-7. Good questions to ask them.
+5. Real-world project evidence, including the challenge, implementation, technologies, outcome, evidence type, and direct source URL for each example.
+6. Most likely interview areas.
+7. Top likely questions.
+8. Good questions to ask them.
 
-Keep detailed research available in context, but do not overwhelm the visible answer.
+Keep detailed research available in context, but do not overwhelm the visible answer. Make every displayed source URL clickable when the interface supports links.

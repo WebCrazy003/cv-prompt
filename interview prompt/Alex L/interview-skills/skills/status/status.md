@@ -28,6 +28,7 @@ Show only available fields:
 - Candidate profile: loaded/not loaded.
 - JD profile: loaded/not loaded.
 - Company research: loaded/not loaded.
+- Real-world project evidence: loaded/not loaded, with retained example and source counts.
 - Current topic.
 - Detected interviewer focus/signals.
 - Most relevant candidate stories available.
@@ -44,6 +45,7 @@ Interview: active
 Profile: tech
 CV: loaded
 JD/company: loaded
+Real-world evidence: 5 examples / 7 source URLs
 Current topic: backend architecture
 Interviewer focus: scalability, AWS, database design
 Strong unused stories: caching improvement, deployment migration
