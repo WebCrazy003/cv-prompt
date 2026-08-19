@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/alex-cv-output-djinni.schema.json",
+  "title": "Alex Djinni CV Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "personNameOnCV",
+    "personLocation",
+    "personEmail",
+    "personUniversity",
+    "personDegree",
+    "companyNameApplyJob",
+    "jobTitleApplyJob",
+    "summary",
+    "experience",
+    "skills",
+    "jobQuestionAnswers"
+  ],
+  "properties": {
+    "personNameOnCV": { "type": "string", "minLength": 1 },
+    "personLocation": { "type": "string", "minLength": 1 },
+    "personEmail": { "type": "string", "format": "email" },
+    "personUniversity": { "type": "string", "minLength": 1 },
+    "personDegree": { "type": "string", "minLength": 1 },
+    "companyNameApplyJob": { "type": "string", "minLength": 1 },
+    "jobTitleApplyJob": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string", "minLength": 1 },
+    "experience": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {
+          "allOf": [
+            { "$ref": "#/$defs/employer" },
+            {
+              "properties": {
+                "companyName": { "const": "XB Software" },
+                "startDate": { "const": "11/2023" },
+                "endDate": { "const": "07/2026" },
+                "content": { "minItems": 6, "maxItems": 8 }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            { "$ref": "#/$defs/employer" },
+            {
+              "properties": {
+                "companyName": { "const": "Selleo Labs" },
+                "startDate": { "const": "01/2020" },
+                "endDate": { "const": "10/2023" },
+                "content": { "minItems": 5, "maxItems": 7 }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            { "$ref": "#/$defs/employer" },
+            {
+              "properties": {
+                "companyName": { "const": "Gecko Dynamics" },
+                "startDate": { "const": "04/2016" },
+                "endDate": { "const": "12/2019" },
+                "content": { "minItems": 4, "maxItems": 5 }
+              }
+            }
+          ]
+        }
+      ],
+      "items": false
+    },
+    "skills": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/skillCategory" }
+    },
+    "jobQuestionAnswers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/questionAnswer" }
+    }
+  },
+  "$defs": {
+    "employer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["companyName", "jobTitle", "startDate", "endDate", "content"],
+      "properties": {
+        "companyName": { "type": "string", "minLength": 1 },
+        "jobTitle": { "type": "string", "minLength": 1 },
+        "startDate": { "type": "string", "pattern": "^(0[1-9]|1[0-2])/\\d{4}$" },
+        "endDate": { "type": "string", "pattern": "^(0[1-9]|1[0-2])/\\d{4}$" },
+        "content": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "skillCategory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["categoryName", "skillItems"],
+      "properties": {
+        "categoryName": { "type": "string", "minLength": 1 },
+        "skillItems": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "questionAnswer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question", "answer"],
+      "properties": {
+        "question": { "type": "string", "minLength": 1 },
+        "answer": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

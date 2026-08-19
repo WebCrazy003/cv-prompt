@@ -1,0 +1,4 @@
+interface:
+  display_name: "Alex CV Generator Djinni"
+  short_description: "Tailor ATS CV JSON from Alex’s Djinni profile"
+  default_prompt: "Use $alex-cv-generator-djinni to tailor Alex’s CV JSON to the current job using the Djinni profile as the stable source of truth."
