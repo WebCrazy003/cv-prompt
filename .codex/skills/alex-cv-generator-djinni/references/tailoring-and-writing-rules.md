@@ -51,5 +51,5 @@ Organize skills into ATS-readable categories represented by `categoryName` and `
 
 - Answer only questions listed in `job-application.md`.
 - Base answers on the Djinni profile, the generated CV, and the target job.
-- Use direct, conversational language and no more than 10 words per answer.
+- Use direct, conversational language and no more than 30 words per answer.
 - Do not add questions or answers when the questions section is empty.

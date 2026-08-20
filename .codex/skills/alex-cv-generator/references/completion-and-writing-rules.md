@@ -43,5 +43,5 @@ When career details are missing:
 
 - Answer only questions listed in `job-application.md`.
 - Base answers on the generated CV and the target job.
-- Use conversational, direct language and no more than 10 words per answer.
+- Use conversational, direct language and no more than 30 words per answer.
 - Do not add questions or answers when the questions section is empty.
