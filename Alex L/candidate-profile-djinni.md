@@ -13,7 +13,7 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 ## Summary
 
 Senior Software Engineer and Technical Lead with 10+ years of experience building production software across backend, full-stack, cloud, distributed systems, and modern AI-enabled applications.
-Strong hands-on background across C#/.NET, TypeScript, React, Node.js, Python, relational databases, APIs, microservices, and cloud infrastructure. Experienced in designing scalable systems, developing business-critical applications, integrating third-party services, improving existing platforms, and taking features from technical design through production delivery.
+Strong hands-on background across C#/.NET, TypeScript, React, Node.js, Python, Java, relational databases, APIs, microservices, and cloud infrastructure. Experienced in designing scalable systems, developing business-critical applications, integrating third-party services, improving existing platforms, and taking features from technical design through production delivery.
 Throughout my career, I have worked across the full software lifecycle: architecture, backend services, web applications, database design, integrations, testing, CI/CD, performance optimization, production support, and system modernization.
 I also have technical leadership experience, including architecture and design decisions, code reviews, mentoring engineers, technical planning, estimation, engineering standards, and collaboration with product and business stakeholders.
 More recently, I have worked with LLM-based applications, RAG, embeddings, vector search, AI agents, tool calling, MCP, workflow automation, and AI-assisted software development. I treat AI as an additional engineering capability rather than my primary specialization.
@@ -39,12 +39,15 @@ C#
 TypeScript
 React.js
 Python
+Django
 Node.js
 ASP.NET Core
 REST API
 PostgreSQL
 MS SQL Server
 JavaScript
+Java
+Spring boot
 AWS
 Azure
 Docker
@@ -53,6 +56,7 @@ LLM
 RAG
 AI Agents
 LangChain
+Kafka
 
 ## Employment history
 
