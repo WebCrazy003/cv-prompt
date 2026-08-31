@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sebastian CV Generator"
+  short_description: "Create complete, strongly tailored ATS CV JSON"
+  default_prompt: "Use $sebastian-cv-generator to reread the current on-disk runtime files and fully regenerate Sebastian’s tailored CV JSON, replacing any previous target-role content."

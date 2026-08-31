@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/sebastian-cv-output.schema.json",
+  "title": "Sebastian CV Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "personNameOnCV",
+    "personLocation",
+    "personEmail",
+    "personUniversity",
+    "personDegree",
+    "companyNameApplyJob",
+    "jobTitleApplyJob",
+    "summary",
+    "experience",
+    "skills",
+    "jobQuestionAnswers"
+  ],
+  "properties": {
+    "personNameOnCV": { "type": "string", "minLength": 1 },
+    "personLocation": { "type": "string", "minLength": 1 },
+    "personEmail": { "type": "string", "format": "email" },
+    "personUniversity": { "type": "string", "minLength": 1 },
+    "personDegree": { "type": "string", "minLength": 1 },
+    "companyNameApplyJob": { "type": "string", "minLength": 1 },
+    "jobTitleApplyJob": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string", "minLength": 1 },
+    "experience": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["companyName", "jobTitle", "startDate", "endDate", "content"],
+        "properties": {
+          "companyName": { "type": "string", "minLength": 1 },
+          "jobTitle": { "type": "string", "minLength": 1 },
+          "startDate": { "type": "string", "pattern": "^(0[1-9]|1[0-2])/\\d{4}$" },
+          "endDate": { "type": "string", "pattern": "^(0[1-9]|1[0-2])/\\d{4}$" },
+          "content": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "minItems": 6,
+            "maxItems": 10,
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["categoryName", "skillItems"],
+        "properties": {
+          "categoryName": { "type": "string", "minLength": 1 },
+          "skillItems": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "jobQuestionAnswers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["question", "answer"],
+        "properties": {
+          "question": { "type": "string", "minLength": 1 },
+          "answer": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}
