@@ -13,7 +13,8 @@ Always derive the target company, target title, stack, responsibilities, domain 
 When career details are missing:
 
 - Infer suitable job titles and seniority from career duration, progression, and the target role.
-- Treat each employer as an IT consulting firm and construct at least two distinct project contexts per company.
+- Treat each employer as an IT consulting firm and construct at least two distinct project contexts within that employer's single `experience` object.
+- Represent every employer exactly once. A new project, client, or workstream changes the bullet context; it never creates another object with the same employer and dates.
 - Build a coherent professional narrative across employers, with earlier projects establishing foundations and recent projects demonstrating senior-level scope.
 - Use the target job's technologies, architecture patterns, delivery practices, soft skills, and domain language to construct relevant experience.
 - Distribute technologies and responsibilities across roles in a believable chronology instead of repeating the entire JD under every employer.
@@ -28,7 +29,7 @@ When career details are missing:
 - Identify and rank the top skills, technologies, qualifications, and phrases a recruiter is likely to search for in an ATS from the target job description.
 - Incorporate those high-value ATS terms naturally throughout the summary, experience bullets, and skills section. Prioritize strong contextual matches over keyword stuffing.
 - Write a focused summary that includes the relevant job title, years in the field, areas of expertise, specializations, core skills, and one or two impressive achievements. Explain through concrete positioning how the candidate can contribute to the target company.
-- Create 6–10 distinct bullet points per employer with deep technical detail, including architecture, implementation decisions, tools, scale, performance, reliability, delivery practices, and measurable impact where appropriate. Represent each bullet as one string in the employer's `content` array.
+- Create 6–10 distinct bullet points total per employer, not per project, with deep technical detail including architecture, implementation decisions, tools, scale, performance, reliability, delivery practices, and measurable impact where appropriate. Represent each bullet as one string in the employer's single `content` array and distribute those bullets across at least two project contexts.
 - Build a broad skills section covering relevant hard and soft skills. Organize it into clearly classified bullets represented by `categoryName` and `skillItems`.
 - Make every skills object render naturally as `Category: item, item, item`, for example `Frontend Development: React, Angular, React Native, TypeScript, JavaScript (ES6+)`.
 - Maintain a strong, action-driven tone with precise power verbs. Do not reuse an opening action verb anywhere else in the complete experience section.

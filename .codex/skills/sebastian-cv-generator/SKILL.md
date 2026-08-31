@@ -36,10 +36,12 @@ Before generating or auditing a CV, read all of these files completely:
 ## Execution contract
 
 1. Follow the workflow and pass every gate before writing output.
-2. Fill missing titles, technologies, responsibilities, achievements, and domain details using a plausible JD-aligned career narrative; never leave standard CV sections empty.
-3. Keep analysis, mappings, and gate checks internal; write only schema-valid JSON.
-4. Preserve fixed candidate facts only from `candidate-profile-sebastian.md`; never preserve role-dependent content merely because it exists in the previous output.
-5. Overwrite `Alex L/cv-output.json` only after the draft passes all gates.
-6. Parse the written file as JSON and validate its keys, value types, required fields, and `additionalProperties: false` constraints against the bundled schema.
-7. After writing, run the source-alignment gate against the freshly read job file. A structurally valid but stale or mismatched CV is a failure.
-8. If validation fails, fix the output and validate again before finishing.
+2. Create exactly one `experience` object for each employer in the candidate profile, in profile order. Put all project contexts for that employer into its single `content` array; never create separate employer objects for projects, clients, or workstreams.
+3. Fill missing titles, technologies, responsibilities, achievements, and domain details using a plausible JD-aligned career narrative; never leave standard CV sections empty.
+4. Keep analysis, mappings, and gate checks internal; write only schema-valid JSON.
+5. Preserve fixed candidate facts only from `candidate-profile-sebastian.md`; never preserve role-dependent content merely because it exists in the previous output.
+6. Overwrite `Alex L/cv-output.json` only after the draft passes all gates.
+7. Parse the written file as JSON and validate its keys, value types, required fields, and `additionalProperties: false` constraints against the bundled schema.
+8. Run `python3 .codex/skills/sebastian-cv-generator/scripts/validate_employers.py "Alex L/candidate-profile-sebastian.md" "Alex L/cv-output.json"` and treat any missing, extra, or repeated employer as a validation failure.
+9. After writing, run the source-alignment gate against the freshly read job file. A structurally valid but stale or mismatched CV is a failure.
+10. If validation fails, fix the output and validate again before finishing.

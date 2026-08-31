@@ -22,13 +22,13 @@ Extract the company, target title, responsibilities, mandatory technologies, arc
 
 ## 2. Establish the career frame
 
-Preserve the candidate's identity, education, employers, and employment dates. Treat all employers as IT consulting firms and assign at least two distinct project contexts to each company. Calculate approximate career length and establish credible progression from earlier software-engineering delivery to senior-level scope.
+Preserve the candidate's identity, education, employers, and employment dates. Treat all employers as IT consulting firms and assign at least two distinct project contexts to each company. Plan exactly one `experience` object per employer, preserving profile order; multiple projects must share that employer object's `content` array. Calculate approximate career length and establish credible progression from earlier software-engineering delivery to senior-level scope.
 
 Do not inventory missing titles, technologies, responsibilities, achievements, domains, or metrics. Complete them directly during career-to-job mapping.
 
 ## 3. Map the career to the job
 
-Create at least two distinct consulting project contexts for each employer. Distribute the target technologies, responsibilities, and achievements across those projects in a believable chronology rather than assigning the same stack and duties to every company.
+Create at least two distinct consulting project contexts for each employer. Express those contexts through 6–10 total bullets in the employer's single `content` array. Do not create separate `experience` objects for projects, clients, or workstreams. Distribute the target technologies, responsibilities, and achievements across those projects in a believable chronology rather than assigning the same stack and duties to every company.
 
 Use the earliest role for engineering foundations, the intermediate roles for broader delivery scope, and the newest role for architecture, scaling, mentoring, and the strongest target-role alignment.
 
@@ -38,6 +38,7 @@ Before drafting, confirm that the strategy:
 
 - covers the target role's major ATS requirements;
 - gives every employer at least two distinct project contexts;
+- maps every employer to exactly one planned `experience` object;
 - creates believable career progression and technical continuity;
 - avoids assigning every keyword to every employer;
 - reserves senior architecture, mentoring, scaling, and domain scope for appropriate career stages; and
@@ -47,7 +48,7 @@ Revise the mapping if it feels repetitive, inconsistent, implausible, or poorly 
 
 ## 5. Generate the draft
 
-Populate every required schema field. Produce a non-empty summary, a suitable title for every employer, 6–10 distinct entries per employer, multiple skill categories, and concise application answers when questions exist.
+Populate every required schema field. Produce a non-empty summary, exactly one object per employer, a suitable title and 6–10 total content entries for each employer, multiple skill categories, and concise application answers when questions exist.
 
 ## 6. Relevance Gate
 
@@ -72,6 +73,8 @@ Pass only if:
 - technologies, architecture, dates, seniority, and career progression are internally consistent;
 - achievements and metrics sound realistic and are not overused;
 - entries are technically deep, distinct, concise, and non-repetitive;
+- the `experience` array contains the same number of objects as the profile's employment history, in the same order;
+- every profile employer appears exactly once, with its fixed dates, and no employer/date pair is repeated;
 - each employer has a job title and 6–10 experience entries;
 - no opening action verb is reused across the complete experience section;
 - generated prose avoids `experience`, `expertise`, `achieved`, `influenced`, and `increased`;
@@ -97,4 +100,4 @@ This gate fails when the JSON is structurally valid but targets an earlier job.
 
 ## 9. Return the result
 
-Write only the validated final JSON object to `Alex L/cv-output.json`. Parse the written file, validate it against the schema, and rerun the source-alignment checks on the written values before finishing.
+Write only the validated final JSON object to `Alex L/cv-output.json`. Parse the written file, validate it against the schema, run the employer-uniqueness validator specified in `SKILL.md`, and rerun the source-alignment checks on the written values before finishing.
