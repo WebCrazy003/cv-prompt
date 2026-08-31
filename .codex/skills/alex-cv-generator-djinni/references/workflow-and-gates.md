@@ -9,9 +9,10 @@ Read `Alex L/candidate-profile-djinni.md` and `Alex L/job-application.md` direct
 Record internally:
 
 - an immutable candidate-fact set containing every supplied identity, education, employer, date, technology, career, accomplishment, and leadership claim;
+- an authorized related-technology set derived from the supplied technology anchors and the rules in `tailoring-and-writing-rules.md`;
 - fields explicitly marked `Not supplied`;
 - a current-job anchor set containing the company, title, questions, mandatory skills, secondary skills, responsibilities, domain, seniority, and leadership expectations; and
-- unsupported JD terms that must not be attributed to the candidate.
+- unsupported JD terms remaining after related-technology inference that must not be attributed to the candidate.
 
 Stop without overwriting output if the job description is empty or unreadable.
 
@@ -21,7 +22,7 @@ Rank mandatory and secondary requirements by hiring importance. Determine the in
 
 ## 2. Map truth to the job
 
-Map only supported Djinni facts and conservative permitted completions to the ranked requirements. Build a coherent progression across the three consulting employers without inventing clients, named projects, technologies, achievements, or metrics.
+Map only supported Djinni facts, authorized related technologies, and conservative permitted completions to the ranked requirements. Build a coherent progression across the three consulting employers without inventing clients, named projects, unsupported technologies, achievements, or metrics.
 
 Plan 6–8 bullets for XB Software, 5–7 for Selleo Labs, and 4–5 for Gecko Dynamics. Give recent work the strongest relevance.
 
@@ -29,10 +30,11 @@ Plan 6–8 bullets for XB Software, 5–7 for Selleo Labs, and 4–5 for Gecko D
 
 Pass only if:
 
-- every factual claim is supplied by the Djinni profile or is a conservative completion of a field explicitly marked `Not supplied`;
+- every factual claim is supplied by the Djinni profile, authorized by the related-technology rules, or is a conservative completion of a field explicitly marked `Not supplied`;
 - no supplied employer, date, education item, technology, achievement, career-duration claim, or leadership claim was altered;
-- no JD requirement was converted into a candidate fact without support;
-- no invented client, product, certification, project name, metric, scale figure, or technology appears; and
+- no JD requirement was converted into a candidate fact unless the profile, related-technology rules, or a conservative completion supports it;
+- no invented client, product, certification, project name, metric, scale figure, or unsupported technology appears;
+- every inferred technology belongs to an authorized family, is relevant to the current JD, and carries no invented duration, version, proficiency, client, project, metric, or achievement; and
 - all completions are mutually consistent and plausible within the supplied career frame.
 
 ## 4. Generate the draft
@@ -69,4 +71,4 @@ Read `Alex L/job-application.md` again and rebuild the current-job anchor set. I
 
 ## 8. Write and final audit
 
-Write only the validated JSON object to `Alex L/cv-output.json`. Parse it, validate it against the schema, and compare every factual claim with the freshly read Djinni profile. Confirm the final CV and JD are consistent without treating the JD as evidence about the candidate.
+Write only the validated JSON object to `Alex L/cv-output.json`. Parse it, validate it against the schema, and compare every factual claim with the freshly read Djinni profile plus the authorized related-technology set. Confirm the final CV and JD are consistent without treating the JD by itself as evidence about the candidate.

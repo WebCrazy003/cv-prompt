@@ -21,10 +21,11 @@ Never modify either input file during generation. Treat the output as a replacea
 
 - At every invocation, read both input files directly from disk, even if their contents appeared earlier in the conversation.
 - The Djinni profile is authoritative for identity, education, employers, dates, career length, technologies, projects, achievements, and leadership history that it supplies.
+- Treat a supplied technology as an experience-family anchor, not an exhaustive inventory. Apply the related-technology inference rules in `references/tailoring-and-writing-rules.md` before classifying a JD technology as unsupported.
 - The job file is authoritative only for the target company, target title, hiring criteria, responsibilities, domain language, and application questions.
 - Never use the JD to rewrite, contradict, or fabricate a supplied candidate fact.
-- A field explicitly marked `Not supplied` is not a fact. Complete it only when the profile permits completion and the result is a plausible, internally consistent presentation of the supplied career frame. Do not present invented clients, project names, certifications, metrics, or technologies as fact.
-- Never infer a missing detail when doing so would conflict with the Djinni profile. Omit unsupported detail when the output schema allows it.
+- A field explicitly marked `Not supplied` is not a fact. Complete it only when the profile permits completion and the result is a plausible, internally consistent presentation of the supplied career frame. Do not present invented clients, project names, certifications, metrics, or unsupported technologies as fact.
+- Never infer a missing detail when doing so would conflict with the Djinni profile. Apart from permitted related-technology inference and conservative completion of `Not supplied` fields, omit unsupported detail when the output schema allows it.
 - Never use role-dependent content from an earlier `cv-output.json` in a new draft.
 
 ## Required references
