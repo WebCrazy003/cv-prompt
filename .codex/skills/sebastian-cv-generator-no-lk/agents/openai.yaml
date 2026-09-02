@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sebastian CV Generator No LK"
+  short_description: "Create complete, strongly tailored ATS CV JSON"
+  default_prompt: "Use $sebastian-cv-generator-no-lk to reread the current on-disk runtime files and fully regenerate Sebastian’s tailored CV JSON from the no-LK candidate profile, replacing any previous target-role content."
