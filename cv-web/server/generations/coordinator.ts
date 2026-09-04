@@ -27,6 +27,8 @@ const APPROVAL_METHODS = new Set([
   "mcpServerElicitation",
 ]);
 
+export const THREAD_SANDBOX_MODE = "workspace-write" as const;
+
 export class GenerationCoordinator {
   private readonly pendingResponders = new Map<string, ServerRequestEvent>();
 
@@ -90,7 +92,7 @@ export class GenerationCoordinator {
         model: record.submitted.model,
         cwd: record.paths.workspace,
         approvalPolicy: "never",
-        sandbox: "workspaceWrite",
+        sandbox: THREAD_SANDBOX_MODE,
         ephemeral: true,
       });
       record.threadId = thread.thread.id;

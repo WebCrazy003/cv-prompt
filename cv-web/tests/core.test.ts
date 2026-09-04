@@ -8,6 +8,7 @@ import { listModels } from "../server/codex/catalog.js";
 import { assertContained } from "../server/fs-utils.js";
 import { normalizeRequest } from "../server/generations/types.js";
 import { GenerationStore } from "../server/generations/store.js";
+import { THREAD_SANDBOX_MODE } from "../server/generations/coordinator.js";
 import { buildWorkspace } from "../server/generations/workspace.js";
 import { redactSecrets } from "../server/security.js";
 import { discoverSkills, type DiscoveredSkill } from "../server/skills/discovery.js";
@@ -39,6 +40,10 @@ function request(tab: "application-1" | "application-2" = "application-1"): Crea
 }
 
 describe("Codex catalog", () => {
+  it("uses the SandboxMode spelling required by thread/start", () => {
+    expect(THREAD_SANDBOX_MODE).toBe("workspace-write");
+  });
+
   it("compares supported semantic versions", () => {
     expect(versionAtLeast("0.153.0", "0.153.0")).toBe(true);
     expect(versionAtLeast("0.154.0", "0.153.0")).toBe(true);
