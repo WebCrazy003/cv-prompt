@@ -3,6 +3,7 @@ import type { CreateGenerationRequest } from "../../shared/types.js";
 import type { CodexAppServerClient, ServerRequestEvent } from "../codex/client.js";
 import type { JsonRpcNotification, ThreadStartResponse, TurnStartResponse } from "../codex/protocol.js";
 import { AppError, messageOf } from "../errors.js";
+import { redactSecrets } from "../security.js";
 import type { DiscoveredSkill } from "../skills/discovery.js";
 import { validateAndPreserveOutput } from "./output.js";
 import type { GenerationRecord } from "./types.js";
@@ -29,8 +30,25 @@ const APPROVAL_METHODS = new Set([
 
 export const THREAD_SANDBOX_MODE = "workspace-write" as const;
 
+type SafeItem = { type?: string; text?: string };
+
+export function safeItemActivity(method: string, item: SafeItem | undefined): string | undefined {
+  if (!item || item.type === "reasoning") return undefined;
+  const phase = method === "item/started" ? "started" : "finished";
+  switch (item.type) {
+    case "agentMessage": return `Codex ${phase} an update.`;
+    case "commandExecution": return `Codex ${phase} a workspace command.`;
+    case "fileChange": return `Codex ${phase} writing the generated output.`;
+    case "mcpToolCall": return `Codex ${phase} a tool task.`;
+    case "webSearch": return `Codex ${phase} a web search task.`;
+    case "contextCompaction": return "Codex compacted its working context.";
+    default: return method === "item/started" ? "Codex started a new task." : "Codex finished a task.";
+  }
+}
+
 export class GenerationCoordinator {
   private readonly pendingResponders = new Map<string, ServerRequestEvent>();
+  private readonly agentDeltaBuffers = new Map<string, { record: GenerationRecord; text: string; timer: NodeJS.Timeout }>();
 
   constructor(
     readonly store: GenerationStore,
@@ -83,9 +101,11 @@ export class GenerationCoordinator {
 
   private async run(record: GenerationRecord, skill: DiscoveredSkill): Promise<void> {
     try {
+      await this.store.emit(record, "progress", { kind: "application", message: "Creating an isolated generation workspace." });
       await buildWorkspace(this.repositoryRoot, record, skill);
       await assertWorkspaceIntegrity(record);
       if (record.cancelRequested) return;
+      await this.store.emit(record, "progress", { kind: "application", message: "Workspace snapshot and runtime inputs are ready." });
       await this.store.transition(record, "starting_codex");
 
       const thread = await this.client.request<ThreadStartResponse>("thread/start", {
@@ -98,6 +118,7 @@ export class GenerationCoordinator {
       record.threadId = thread.thread.id;
       record.startedAt = new Date().toISOString();
       await this.store.persist(record);
+      await this.store.emit(record, "progress", { kind: "codex", message: "Codex thread started. Sending the selected CV skill." });
       if (record.cancelRequested) {
         await this.store.finish(record, "cancelled", "Cancelled before Codex started.");
         return;
@@ -131,6 +152,7 @@ export class GenerationCoordinator {
       record.turnId = turn.turn.id;
       record.codexStatus = "inProgress";
       if (this.store.isActive(record)) await this.store.transition(record, "running", { codexStatus: "inProgress" });
+      if (this.store.isActive(record)) await this.store.emit(record, "progress", { kind: "codex", message: "Codex is actively generating this application." });
     } catch (error) {
       if (this.store.isActive(record)) await this.store.finish(record, record.cancelRequested ? "cancelled" : "failed", messageOf(error));
     }
@@ -142,7 +164,13 @@ export class GenerationCoordinator {
   }
 
   private async onNotification(notification: JsonRpcNotification): Promise<void> {
-    const params = notification.params as { threadId?: string; turn?: { id: string; status: "completed" | "failed" | "interrupted" | "inProgress"; error?: { message?: string } } };
+    const params = notification.params as {
+      threadId?: string;
+      itemId?: string;
+      delta?: string;
+      item?: SafeItem;
+      turn?: { id: string; status: "completed" | "failed" | "interrupted" | "inProgress"; error?: { message?: string } };
+    };
     const record = this.findByThread(params.threadId);
     if (!record) return;
     if (notification.method === "turn/started" && params.turn) {
@@ -152,6 +180,7 @@ export class GenerationCoordinator {
       return;
     }
     if (notification.method === "turn/completed" && params.turn) {
+      await this.flushAgentDeltas(record);
       record.codexStatus = params.turn.status;
       await this.store.persist(record);
       if (params.turn.status === "completed") {
@@ -169,9 +198,40 @@ export class GenerationCoordinator {
       }
       return;
     }
-    if (notification.method.startsWith("item/")) {
-      await this.store.emit(record, "progress", { method: notification.method });
+    if (notification.method === "item/agentMessage/delta" && typeof params.delta === "string") {
+      this.queueAgentDelta(record, params.itemId ?? "agent", params.delta);
+      return;
     }
+    if (notification.method === "item/started" || notification.method === "item/completed") {
+      const message = safeItemActivity(notification.method, params.item);
+      if (message) await this.store.emit(record, "progress", { kind: "codex", message });
+    }
+  }
+
+  private queueAgentDelta(record: GenerationRecord, itemId: string, delta: string): void {
+    const key = `${record.id}:${itemId}`;
+    const current = this.agentDeltaBuffers.get(key);
+    if (current) {
+      current.text += delta;
+      return;
+    }
+    const timer = setTimeout(() => void this.flushAgentDelta(key), 300);
+    timer.unref();
+    this.agentDeltaBuffers.set(key, { record, text: delta, timer });
+  }
+
+  private async flushAgentDelta(key: string): Promise<void> {
+    const buffered = this.agentDeltaBuffers.get(key);
+    if (!buffered) return;
+    clearTimeout(buffered.timer);
+    this.agentDeltaBuffers.delete(key);
+    const message = redactSecrets(buffered.text).trim().slice(0, 4_000);
+    if (message) await this.store.emit(buffered.record, "progress", { kind: "agent_message", message });
+  }
+
+  private async flushAgentDeltas(record: GenerationRecord): Promise<void> {
+    const keys = [...this.agentDeltaBuffers.keys()].filter((key) => key.startsWith(`${record.id}:`));
+    for (const key of keys) await this.flushAgentDelta(key);
   }
 
   private async onServerRequest(event: ServerRequestEvent): Promise<void> {

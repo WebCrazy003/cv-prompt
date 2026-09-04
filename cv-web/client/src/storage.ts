@@ -24,20 +24,22 @@ export function emptyDraft(): Draft {
   return { jobDescription: "", questions: Array(5).fill(""), skillName: "", skillParameters: {}, model: "", effort: "medium" };
 }
 
+export function preferredDraft(): Draft {
+  const preferences = loadPreferences();
+  return {
+    ...emptyDraft(),
+    skillName: preferences.skillName,
+    skillParameters: preferences.skillParametersByName[preferences.skillName] ?? {},
+    model: preferences.model,
+    effort: preferences.effort,
+  };
+}
+
 export function loadDraft(tab: ApplicationTabId): Draft {
   try {
     const stored = sessionStorage.getItem(`cv-web:draft:${tab}:v1`);
     const parsed = JSON.parse(stored ?? "null") as Partial<Draft> | null;
-    if (!parsed) {
-      const preferences = loadPreferences();
-      return {
-        ...emptyDraft(),
-        skillName: preferences.skillName,
-        skillParameters: preferences.skillParametersByName[preferences.skillName] ?? {},
-        model: preferences.model,
-        effort: preferences.effort,
-      };
-    }
+    if (!parsed) return preferredDraft();
     return { ...emptyDraft(), ...parsed, questions: Array.isArray(parsed.questions) && parsed.questions.length >= 5 ? parsed.questions : Array(5).fill("") };
   } catch {
     return emptyDraft();

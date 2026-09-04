@@ -8,7 +8,7 @@ import { listModels } from "../server/codex/catalog.js";
 import { assertContained } from "../server/fs-utils.js";
 import { normalizeRequest } from "../server/generations/types.js";
 import { GenerationStore } from "../server/generations/store.js";
-import { THREAD_SANDBOX_MODE } from "../server/generations/coordinator.js";
+import { safeItemActivity, THREAD_SANDBOX_MODE } from "../server/generations/coordinator.js";
 import { buildWorkspace } from "../server/generations/workspace.js";
 import { redactSecrets } from "../server/security.js";
 import { discoverSkills, type DiscoveredSkill } from "../server/skills/discovery.js";
@@ -42,6 +42,12 @@ function request(tab: "application-1" | "application-2" = "application-1"): Crea
 describe("Codex catalog", () => {
   it("uses the SandboxMode spelling required by thread/start", () => {
     expect(THREAD_SANDBOX_MODE).toBe("workspace-write");
+  });
+
+  it("normalizes safe activity without exposing reasoning or raw commands", () => {
+    expect(safeItemActivity("item/started", { type: "commandExecution", text: "cat ~/.codex/auth.json" })).toBe("Codex started a workspace command.");
+    expect(safeItemActivity("item/completed", { type: "fileChange" })).toBe("Codex finished writing the generated output.");
+    expect(safeItemActivity("item/started", { type: "reasoning", text: "hidden" })).toBeUndefined();
   });
 
   it("compares supported semantic versions", () => {

@@ -1,17 +1,20 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
 import React from "react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { App } from "../client/src/App";
+import { App, ResultPanel } from "../client/src/App";
 
 const bootstrap = {
   codexVersion: "codex-cli 0.153.0",
   capacity: { active: 0, limit: 2 },
   auth: { authenticated: true, eligible: true, authMode: "chatgpt", planType: "plus" },
   limits: { jobDescription: 100_000, question: 10_000, questions: 50 },
-  models: [{ model: "model-1", displayName: "Model One", isDefault: true, supportedEfforts: ["low", "medium", "high"], defaultEffort: "medium" }],
+  models: [
+    { model: "model-1", displayName: "Model One", isDefault: true, supportedEfforts: ["low", "medium", "high"], defaultEffort: "medium" },
+    { model: "model-2", displayName: "Model Two", isDefault: false, supportedEfforts: ["medium", "high"], defaultEffort: "high" },
+  ],
   skills: [{
     name: "steven-cv-generator", displayName: "Steven CV Generator", description: "Tailor Steven's CV", runnable: true,
     parameterSchema: {
@@ -62,4 +65,50 @@ it("renders the discovered Steven parameter controls", async () => {
   await user.selectOptions(skill, "steven-cv-generator");
   expect(screen.getByLabelText(/Country/)).toBeInTheDocument();
   expect(screen.getByLabelText(/LinkedIn match/)).toBeInTheDocument();
+});
+
+it("persists a selected model and effort as defaults for a new session", async () => {
+  const user = userEvent.setup();
+  const first = render(<App />);
+  const model = await screen.findByLabelText(/Model/);
+  await user.selectOptions(model, "model-2");
+  await user.click(screen.getByLabelText("High"));
+  expect(JSON.parse(localStorage.getItem("cv-web:preferences:v1")!)).toMatchObject({ model: "model-2", effort: "high" });
+
+  first.unmount();
+  sessionStorage.clear();
+  render(<App />);
+  await waitFor(() => expect(screen.getByLabelText(/Model/)).toHaveValue("model-2"));
+  expect(screen.getByLabelText("High")).toBeChecked();
+});
+
+it("resets a terminal tab to five blank questions while preserving defaults", async () => {
+  sessionStorage.setItem("cv-web:draft:application-1:v1", JSON.stringify({
+    jobDescription: "Old job", questions: ["One", "Two", "", "", ""], skillName: "steven-cv-generator",
+    skillParameters: { country: "UK", "LK-match": "none" }, model: "model-1", effort: "high", generationId: "generation-1",
+  }));
+  vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+    if (String(input).includes("/api/generations/generation-1")) return new Response(JSON.stringify({
+      generation: { id: "generation-1", applicationTabId: "application-1", skillName: "steven-cv-generator", model: "model-1", effort: "high", status: "failed", createdAt: new Date().toISOString(), error: "test", resultAvailable: false, kept: false },
+      events: [],
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify(bootstrap), { status: 200, headers: { "Content-Type": "application/json", "x-cv-session-token": "test-token" } });
+  }));
+  const user = userEvent.setup();
+  render(<App />);
+  await user.click(await screen.findByRole("button", { name: "Reset application" }));
+  expect(screen.getByLabelText(/Job description/)).toHaveValue("");
+  expect(screen.getAllByLabelText(/^Question \d+$/)).toHaveLength(5);
+  expect(screen.getByText(/Application reset\. Your saved defaults were preserved\./)).toBeInTheDocument();
+});
+
+it("notifies after copying a result action", async () => {
+  const writeText = vi.fn(async () => undefined);
+  const onNotify = vi.fn();
+  const user = userEvent.setup();
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+  render(<ResultPanel result={{ personNameOnCV: "Alex", summary: "Summary", jobQuestionAnswers: [{ question: "Why?", answer: "Because." }] }} generationId="generation-1" onNotify={onNotify} />);
+  await user.click(screen.getByRole("button", { name: "Copy CV JSON" }));
+  await waitFor(() => expect(writeText).toHaveBeenCalledOnce());
+  expect(onNotify).toHaveBeenCalledWith("CV JSON copied to clipboard.");
 });

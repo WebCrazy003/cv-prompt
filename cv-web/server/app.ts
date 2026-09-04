@@ -88,6 +88,7 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
         questions: record.pendingInput.questions,
         deadline: record.pendingInput.deadline,
       } : undefined,
+      events: record.events,
       result: record.status === "completed" ? record.result : undefined,
     };
   });

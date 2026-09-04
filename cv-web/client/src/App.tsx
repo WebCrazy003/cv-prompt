@@ -2,15 +2,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type {
   ApplicationTabId,
   BootstrapResponse,
+  GenerationEvent,
   GenerationSummary,
   ModelOption,
   ParameterSchema,
   ReasoningEffort,
   SkillOption,
 } from "../../shared/types";
-import { emptyDraft, loadDraft, loadPreferences, saveDraft, savePreferences, type Draft } from "./storage";
+import { loadDraft, loadPreferences, preferredDraft, saveDraft, savePreferences, type Draft } from "./storage";
 
-type GenerationPayload = { generation: GenerationSummary; pendingInput?: { requestId: string; questions: Array<{ id: string; header: string; question: string; options?: Array<{ label: string }> }> ; deadline: string }; result?: Record<string, unknown> };
+type GenerationPayload = { generation: GenerationSummary; events: GenerationEvent[]; pendingInput?: { requestId: string; questions: Array<{ id: string; header: string; question: string; options?: Array<{ label: string }> }> ; deadline: string }; result?: Record<string, unknown> };
 type BootstrapPayload = BootstrapResponse & { diagnostics?: string[] };
 
 const tabs: Array<{ id: ApplicationTabId; label: string }> = [
@@ -73,6 +74,7 @@ export function App() {
   const [sessionToken, setSessionToken] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
 
   const updateDraft = useCallback((tab: ApplicationTabId, update: Partial<Draft> | ((draft: Draft) => Draft)) => {
@@ -120,6 +122,11 @@ export function App() {
 
   useEffect(() => { void loadBootstrap(); }, [loadBootstrap]);
   useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(""), 3_500);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+  useEffect(() => {
     for (const tab of tabs) if (drafts[tab.id].generationId) void loadGeneration(tab.id, drafts[tab.id].generationId!);
   }, []); // restore same-process generations once
 
@@ -152,6 +159,10 @@ export function App() {
     preferences.effort = nextDraft.effort;
     if (nextDraft.skillName) preferences.skillParametersByName[nextDraft.skillName] = nextDraft.skillParameters;
     savePreferences(preferences);
+  }
+
+  function notify(message: string) {
+    setToast(message);
   }
 
   async function refresh() {
@@ -207,6 +218,7 @@ export function App() {
     try {
       await api(`/api/generations/${run.generation.id}/keep`, sessionToken, { method: "POST", body: JSON.stringify({ kept }) });
       await loadGeneration(selectedTab, run.generation.id);
+      notify(kept ? "Generation will be kept on this machine." : "A new 30-day retention period has started.");
     } catch (keepError) { setError(keepError instanceof Error ? keepError.message : String(keepError)); }
   }
 
@@ -216,7 +228,17 @@ export function App() {
       await api(`/api/generations/${run.generation.id}`, sessionToken, { method: "DELETE" });
       updateDraft(selectedTab, { generationId: undefined });
       setRuns((current) => ({ ...current, [selectedTab]: undefined }));
+      notify("Generation deleted.");
     } catch (deleteError) { setError(deleteError instanceof Error ? deleteError.message : String(deleteError)); }
+  }
+
+  function resetApplication() {
+    const preferred = preferredDraft();
+    const nextDraft = bootstrap ? reconcile(preferred, bootstrap).draft : preferred;
+    updateDraft(selectedTab, nextDraft);
+    setRuns((current) => ({ ...current, [selectedTab]: undefined }));
+    setError("");
+    notify("Application reset. Your saved defaults were preserved.");
   }
 
   const authLabel = bootstrap?.auth.eligible ? `ChatGPT${bootstrap.auth.planType ? ` · ${bootstrap.auth.planType}` : ""}` : bootstrap?.auth.authMode === "apiKey" ? "API key unsupported" : "Not signed in";
@@ -238,6 +260,7 @@ export function App() {
     </nav>
 
     {notice && <div className="notice" role="status">{notice}<button onClick={() => setNotice("")} aria-label="Dismiss notice">×</button></div>}
+    {toast && <div className="toast" role="status" aria-live="polite">✓ {toast}</div>}
     {error && <div className="error-banner" role="alert">{error}</div>}
     {!bootstrap?.auth.eligible && !loading && <div className="auth-card"><strong>{bootstrap?.auth.authMode === "apiKey" ? "This application requires ChatGPT sign-in. API-key usage is not supported." : "Codex is not signed in."}</strong>{bootstrap?.auth.authMode === "apiKey" && <code>codex logout</code>}<code>codex login</code><button className="secondary" onClick={() => void refresh()}>Check again</button></div>}
 
@@ -280,23 +303,24 @@ export function App() {
           const model = bootstrap?.models.find((item) => item.model === event.target.value);
           if (!model) return;
           const next = { ...draft, model: model.model, effort: fallbackEffort(model, draft.effort) };
-          updateDraft(selectedTab, next); persistSelection(next);
+          updateDraft(selectedTab, next); persistSelection(next); notify("Model and reasoning effort saved as defaults.");
         }}>{bootstrap?.models.map((model) => <option key={model.model} value={model.model}>{model.displayName}</option>)}</select>
 
-        <fieldset><legend>Reasoning effort</legend><div className="efforts">{(["low", "medium", "high"] as ReasoningEffort[]).map((effort) => <label key={effort} className={draft.effort === effort ? "effort selected" : "effort"}><input type="radio" name={`${selectedTab}-effort`} checked={draft.effort === effort} disabled={!selectedModel?.supportedEfforts.includes(effort)} onChange={() => { const next = { ...draft, effort }; updateDraft(selectedTab, next); persistSelection(next); }} /><span>{effort === "low" ? "Light" : effort[0]!.toUpperCase() + effort.slice(1)}</span></label>)}</div></fieldset>
+        <fieldset><legend>Reasoning effort</legend><div className="efforts">{(["low", "medium", "high"] as ReasoningEffort[]).map((effort) => <label key={effort} className={draft.effort === effort ? "effort selected" : "effort"}><input type="radio" name={`${selectedTab}-effort`} checked={draft.effort === effort} disabled={!selectedModel?.supportedEfforts.includes(effort)} onChange={() => { const next = { ...draft, effort }; updateDraft(selectedTab, next); persistSelection(next); notify("Reasoning effort saved as the default."); }} /><span>{effort === "low" ? "Light" : effort[0]!.toUpperCase() + effort.slice(1)}</span></label>)}</div></fieldset>
         <button className="refresh-link" onClick={() => void refresh()}>Refresh skills & models</button>
 
         <div className="run-card">
-          <div><span className="run-label">Application status</span><strong>{run ? statusLabels[run.generation.status] : "Ready to begin"}</strong>{run?.generation.codexStatus && <small>Codex: {run.generation.codexStatus}</small>}</div>
+          <div><span className="run-label">Application status</span><strong>{run ? statusLabels[run.generation.status] : "Ready to begin"}</strong>{isRunning && <small className="backend-running"><span />Backend processing is active</small>}{run?.generation.codexStatus && <small>Codex: {run.generation.codexStatus}</small>}</div>
           {isRunning ? <button className="danger" onClick={() => void cancel()}>Cancel generation</button> : <button className="primary" disabled={!canGenerate} onClick={() => void generate()}>Generate CV</button>}
         </div>
+        {run && <ActivityPanel events={run.events ?? []} active={isRunning} />}
         {run?.generation.error && <div className="inline-error">{run.generation.error}</div>}
         {run?.pendingInput && <InteractiveInput run={run} token={sessionToken} onDone={() => void loadGeneration(selectedTab, run.generation.id)} />}
       </section>
     </main>
 
-    {run?.generation.status === "completed" && run.result && <ResultPanel result={run.result} generationId={run.generation.id} />}
-    {run && ["completed", "failed", "cancelled"].includes(run.generation.status) && <section className="retention panel"><div><strong>{run.generation.kept ? "Kept on this machine" : `Automatic deletion ${run.generation.expiresAt ? new Date(run.generation.expiresAt).toLocaleString() : "scheduled"}`}</strong><p>Each generation retains its own input snapshot, diagnostics, and validated result.</p></div><div className="retention-actions"><button className="secondary" onClick={() => void updateKeep(!run.generation.kept)}>{run.generation.kept ? "Remove keep" : "Keep"}</button><button className="danger" onClick={() => void deleteRun()}>Delete now</button></div></section>}
+    {run?.generation.status === "completed" && run.result && <ResultPanel result={run.result} generationId={run.generation.id} onNotify={notify} />}
+    {run && ["completed", "failed", "cancelled"].includes(run.generation.status) && <section className="retention panel"><div><strong>{run.generation.kept ? "Kept on this machine" : `Automatic deletion ${run.generation.expiresAt ? new Date(run.generation.expiresAt).toLocaleString() : "scheduled"}`}</strong><p>Each generation retains its own input snapshot, diagnostics, and validated result.</p></div><div className="retention-actions"><button className="primary" onClick={resetApplication}>Reset application</button><button className="secondary" onClick={() => void updateKeep(!run.generation.kept)}>{run.generation.kept ? "Remove keep" : "Keep"}</button><button className="danger" onClick={() => void deleteRun()}>Delete now</button></div></section>}
     <footer><span>Codex {bootstrap?.codexVersion ?? "—"}</span><span>Active workspaces {bootstrap?.capacity.active ?? 0} / 2</span><span>Runs stay on this machine</span></footer>
   </div>;
 }
@@ -339,8 +363,32 @@ function InteractiveInput({ run, token, onDone }: { run: GenerationPayload; toke
   return <div className="input-request"><strong>Codex needs input</strong>{pending.questions.map((question) => <div key={question.id}><label htmlFor={`input-${question.id}`}>{question.question}</label>{question.options?.length ? <select id={`input-${question.id}`} value={answers[question.id] ?? ""} onChange={(event) => setAnswers({ ...answers, [question.id]: event.target.value })}><option value="">Select…</option>{question.options.map((option) => <option key={option.label}>{option.label}</option>)}</select> : <input id={`input-${question.id}`} value={answers[question.id] ?? ""} onChange={(event) => setAnswers({ ...answers, [question.id]: event.target.value })} />}</div>)}<div className="actions"><button className="primary" onClick={() => void submit("accept")}>Continue</button><button className="danger" onClick={() => void submit("cancel")}>Cancel generation</button></div></div>;
 }
 
-function ResultPanel({ result, generationId }: { result: Record<string, unknown>; generationId: string }) {
+function ActivityPanel({ events, active }: { events: GenerationEvent[]; active: boolean }) {
+  const activity = events.filter((event) => event.type === "status" || event.type === "progress").slice(-18);
+  return <section className={`activity-panel ${active ? "active" : ""}`} aria-label="Codex activity" aria-live="polite">
+    <div className="activity-heading"><div>{active && <span className="spinner" />}<strong>{active ? "Live backend activity" : "Generation activity"}</strong></div><span>{activity.length} updates</span></div>
+    {active && <div className="activity-track"><span /></div>}
+    <ol>{activity.map((event) => <li key={event.id} className={event.data.kind === "agent_message" ? "agent-log" : ""}><time>{new Date(event.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</time><span>{activityMessage(event)}</span></li>)}</ol>
+  </section>;
+}
+
+function activityMessage(event: GenerationEvent): string {
+  if (typeof event.data.message === "string") return event.data.message;
+  if (typeof event.data.status === "string") return statusLabels[event.data.status] ?? event.data.status;
+  return "Generation updated.";
+}
+
+export function ResultPanel({ result, generationId, onNotify }: { result: Record<string, unknown>; generationId: string; onNotify(message: string): void }) {
   const answers = Array.isArray(result.jobQuestionAnswers) ? result.jobQuestionAnswers as Array<{ question: string; answer: string }> : [];
   const json = JSON.stringify(result, null, 2);
-  return <section className="results panel"><div className="section-heading"><span>03</span><div><h2>Generated result</h2><p>Validated and preserved outside the model-writable workspace.</p></div></div><div className="result-actions"><button className="secondary" onClick={() => void navigator.clipboard.writeText(json)}>Copy CV JSON</button><a className="button-link" href={`/api/generations/${generationId}/download`}>Download cv-output.json</a></div><h3>{String(result.personNameOnCV ?? "Tailored CV")}</h3><p className="summary">{String(result.summary ?? "")}</p>{answers.length > 0 && <div className="answers"><h3>Application answers</h3>{answers.map((answer, index) => <article key={index}><span>Question {index + 1}</span><strong>{answer.question}</strong><p>{answer.answer}</p><button className="refresh-link" onClick={() => void navigator.clipboard.writeText(answer.answer)}>Copy answer</button></article>)}</div>}<details><summary>Raw JSON</summary><pre>{json}</pre></details></section>;
+  async function copy(text: string, label: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      onNotify(`${label} copied to clipboard.`);
+    } catch {
+      onNotify(`Could not copy ${label.toLowerCase()}.`);
+    }
+  }
+  const allAnswers = answers.map((answer, index) => `${index + 1}. ${answer.question}\n${answer.answer}`).join("\n\n");
+  return <section className="results panel"><div className="section-heading"><span>03</span><div><h2>Generated result</h2><p>Validated and preserved outside the model-writable workspace.</p></div></div><div className="result-actions"><button className="secondary" onClick={() => void copy(json, "CV JSON")}>Copy CV JSON</button>{answers.length > 0 && <button className="secondary" onClick={() => void copy(allAnswers, "All answers")}>Copy all answers</button>}<a className="button-link" href={`/api/generations/${generationId}/download`} onClick={() => onNotify("CV JSON download started.")}>Download cv-output.json</a></div><h3>{String(result.personNameOnCV ?? "Tailored CV")}</h3><p className="summary">{String(result.summary ?? "")}</p>{answers.length > 0 && <div className="answers"><h3>Application answers</h3>{answers.map((answer, index) => <article key={index}><span>Question {index + 1}</span><strong>{answer.question}</strong><p>{answer.answer}</p><button className="refresh-link" onClick={() => void copy(answer.answer, `Answer ${index + 1}`)}>Copy answer</button></article>)}</div>}<details><summary>Raw JSON</summary><pre>{json}</pre></details></section>;
 }
