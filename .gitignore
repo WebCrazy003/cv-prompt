@@ -1,0 +1,10 @@
+.cv-web-runtime/
+cv-web/node_modules/
+cv-web/dist/
+cv-web/coverage/
+cv-web/playwright-report/
+cv-web/test-results/
+cv-web/server/generated/
+.env
+__pycache__/
+*.py[cod]
