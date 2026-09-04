@@ -4,7 +4,7 @@ Keep intermediate reasoning out of the output file.
 
 ## 0. Runtime source gate
 
-Read `base-profile/candidate-profile-djinni.md` and `base-profile/job-application.md` directly from disk. Do not inspect or reuse `base-profile/cv-output.json` as drafting input.
+Read `base-profile/alex/candidate-profile-djinni.md` and `base-profile/job-application.md` directly from disk. Do not inspect or reuse `base-profile/cv-output.json` as drafting input.
 
 Record internally:
 

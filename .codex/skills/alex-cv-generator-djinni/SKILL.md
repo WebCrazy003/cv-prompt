@@ -1,6 +1,6 @@
 ---
 name: alex-cv-generator-djinni
-description: Generate Alex Latoszek's job-tailored, ATS-friendly CV JSON using his Djinni profile as the stable base truth. Use when tailoring Alex's CV to a job description, answering application questions, auditing profile-to-CV consistency, or writing base-profile/cv-output.json from base-profile/candidate-profile-djinni.md.
+description: Generate Alex Latoszek's job-tailored, ATS-friendly CV JSON using his Djinni profile as the stable base truth. Use when tailoring Alex's CV to a job description, answering application questions, auditing profile-to-CV consistency, or writing base-profile/cv-output.json from base-profile/alex/candidate-profile-djinni.md.
 ---
 
 # Alex CV Generator — Djinni
@@ -11,7 +11,7 @@ Create a job-specific presentation of the candidate's Djinni profile. Tailor emp
 
 Resolve paths from the repository root:
 
-- Read stable candidate facts from `base-profile/candidate-profile-djinni.md`.
+- Read stable candidate facts from `base-profile/alex/candidate-profile-djinni.md`.
 - Read the target job and application questions from `base-profile/job-application.md`.
 - Write the final result to `base-profile/cv-output.json`.
 

@@ -11,7 +11,7 @@ Generate a complete CV aligned closely with the target job.
 
 Resolve paths from the repository root:
 
-- Read candidate facts from `base-profile/candidate-profile.md`.
+- Read candidate facts from `base-profile/alex/candidate-profile.md`.
 - Read the target job and application questions from `base-profile/job-application.md`.
 - Write the final result to `base-profile/cv-output.json`.
 
@@ -19,7 +19,7 @@ Treat identity, education, employer names, and employment dates in the candidate
 
 ## Runtime source-of-truth contract
 
-- At the start of every invocation, read `base-profile/candidate-profile.md` and `base-profile/job-application.md` from disk, even when their contents appeared earlier in the conversation or a previous invocation.
+- At the start of every invocation, read `base-profile/alex/candidate-profile.md` and `base-profile/job-application.md` from disk, even when their contents appeared earlier in the conversation or a previous invocation.
 - Treat `base-profile/job-application.md` as authoritative for the target company, target title, application questions, technology stack, responsibilities, and domain.
 - Treat `base-profile/cv-output.json` strictly as a replaceable build artifact. Never use its target role, company, summary, job titles, bullets, skills, or answers as input to a new draft.
 - Do not rely on conversational memory, earlier tool output, or a prior CV to determine the current target role.
