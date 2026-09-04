@@ -23,7 +23,7 @@ npm run dev
 
 Open <http://127.0.0.1:5173> in development. The API binds only to `127.0.0.1:4317`; Vite proxies `/api` to it. For a production-style local build, run `npm run build`, then start `node dist/server/server/index.js` from `cv-web` and open <http://127.0.0.1:4317>.
 
-On macOS, double-click **CV Studio - Start Stop.command** on the Desktop to toggle the production-style app. Starting rebuilds the current source, launches the server in the background, and opens the browser. Running the same shortcut again stops only a local server that identifies itself as this project, including one started manually. Shortcut-managed PID and log files are kept under `.cv-web-runtime/`. The equivalent terminal commands are `npm run studio:start`, `npm run studio:stop`, and `npm run studio:status`.
+On macOS, use the two Desktop shortcuts: double-click **CV Studio - Start.command** to start the production-style app and **CV Studio - Stop.command** to stop it. Starting rebuilds the current source, launches the server in the background, and opens the browser. The Stop shortcut stops only a local server that identifies itself as this project, including one started manually. Shortcut-managed PID and log files are kept under `.cv-web-runtime/`. The equivalent terminal commands are `npm run studio:start`, `npm run studio:stop`, and `npm run studio:status`.
 
 Do not expose either port publicly. This is a trusted single-user local application that reuses the local Codex login; it is not a multi-user hosting design.
 
