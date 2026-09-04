@@ -15,6 +15,7 @@ import { PdfGenerator } from "./pdf/generator.js";
 import { authorizeMutation, redactSecrets, SESSION_HEADER } from "./security.js";
 import { SettingsService } from "./settings.js";
 import { createGenerationSchema, inputResponseSchema } from "./validation.js";
+import { readAccountUsage } from "./codex/catalog.js";
 
 export interface AppServices {
   app: FastifyInstance;
@@ -71,6 +72,16 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
   });
 
   app.get("/api/settings", async () => settings.get());
+
+  app.get("/api/runtime", async (_request, reply) => {
+    reply.header("Cache-Control", "no-store");
+    return { application: "cv-job-application-generator", projectRoot: config.appRoot, pid: process.pid };
+  });
+
+  app.get("/api/account/usage", async (_request, reply) => {
+    reply.header("Cache-Control", "no-store");
+    return readAccountUsage(client);
+  });
 
   app.post("/api/settings", async (request) => {
     const body = request.body as { outputDirectory?: unknown };

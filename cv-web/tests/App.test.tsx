@@ -9,7 +9,7 @@ import { App, ResultPanel } from "../client/src/App";
 const bootstrap = {
   codexVersion: "codex-cli 0.153.0",
   capacity: { active: 0, limit: 3 },
-  auth: { authenticated: true, eligible: true, authMode: "chatgpt", planType: "plus" },
+  auth: { authenticated: true, eligible: true, authMode: "chatgpt", email: "person@example.com", planType: "plus" },
   limits: { jobDescription: 100_000, question: 10_000, questions: 50 },
   models: [
     { model: "model-1", displayName: "Model One", isDefault: true, supportedEfforts: ["low", "medium", "high"], defaultEffort: "medium" },
@@ -133,6 +133,16 @@ it("loads and persists the default PDF output directory from Settings", async ()
     if (path === "/api/settings") {
       return new Response(JSON.stringify({ outputDirectory: "/existing/CVs" }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
+    if (path === "/api/account/usage") {
+      return new Response(JSON.stringify({
+        account: { email: "person@example.com", planType: "plus" },
+        windows: [
+          { label: "5-hour limit", usedPercent: 33, remainingPercent: 67 },
+          { label: "Weekly limit", usedPercent: 5, remainingPercent: 95 },
+        ],
+        fetchedAt: "2026-09-04T08:00:00.000Z",
+      }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
     return new Response(JSON.stringify(bootstrap), { status: 200, headers: { "Content-Type": "application/json", "x-cv-session-token": "test-token" } });
   });
   vi.stubGlobal("fetch", fetchMock);
@@ -145,4 +155,37 @@ it("loads and persists the default PDF output directory from Settings", async ()
   await user.click(screen.getByRole("button", { name: "Save output directory" }));
   await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/settings", expect.objectContaining({ method: "POST", body: JSON.stringify({ outputDirectory: "/new/CVs" }) })));
   expect(await screen.findByRole("status")).toHaveTextContent("Default CV output directory saved.");
+});
+
+it("shows fresh used and remaining allowance percentages from the signed-in Codex account", async () => {
+  const user = userEvent.setup();
+  const usage = {
+    account: { email: "person@example.com", planType: "plus" },
+    windows: [
+      { label: "5-hour limit", usedPercent: 33, remainingPercent: 67, resetsAt: "2026-09-04T12:00:00.000Z" },
+      { label: "Weekly limit", usedPercent: 5, remainingPercent: 95, resetsAt: "2026-09-11T12:00:00.000Z" },
+    ],
+    fetchedAt: "2026-09-04T08:00:00.000Z",
+  };
+  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+    const path = String(input);
+    if (path === "/api/settings") return new Response(JSON.stringify({ outputDirectory: "/existing/CVs" }), { status: 200, headers: { "Content-Type": "application/json" } });
+    if (path === "/api/account/usage") return new Response(JSON.stringify(usage), { status: 200, headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify(bootstrap), { status: 200, headers: { "Content-Type": "application/json", "x-cv-session-token": "test-token" } });
+  });
+  vi.stubGlobal("fetch", fetchMock);
+
+  render(<App />);
+  await user.click(await screen.findByRole("button", { name: "Settings" }));
+  expect(await screen.findByText("33%")).toBeInTheDocument();
+  expect(screen.getByText("67% remaining")).toBeInTheDocument();
+  expect(screen.getByText("5%")).toBeInTheDocument();
+  expect(screen.getByText("95% remaining")).toBeInTheDocument();
+  expect(screen.getByText("person@example.com")).toBeInTheDocument();
+  expect(screen.getByText("5-hour limit")).toBeInTheDocument();
+  expect(screen.getByText("Weekly limit")).toBeInTheDocument();
+  expect(fetchMock).toHaveBeenCalledWith("/api/account/usage", expect.objectContaining({ cache: "no-store" }));
+
+  await user.click(screen.getByRole("button", { name: "Refresh usage" }));
+  await waitFor(() => expect(fetchMock.mock.calls.filter(([input]) => String(input) === "/api/account/usage")).toHaveLength(2));
 });

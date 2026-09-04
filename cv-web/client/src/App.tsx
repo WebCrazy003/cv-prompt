@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { APPLICATION_TAB_IDS, GENERATION_CAPACITY } from "../../shared/types";
 import type {
+  AccountUsageResponse,
   ApplicationTabId,
   BootstrapResponse,
   GenerationEvent,
@@ -86,6 +87,9 @@ export function App() {
   const [settings, setSettings] = useState<PdfSettings>({ outputDirectory: "" });
   const [settingsInput, setSettingsInput] = useState("");
   const [savingSettings, setSavingSettings] = useState(false);
+  const [accountUsage, setAccountUsage] = useState<AccountUsageResponse>();
+  const [usageLoading, setUsageLoading] = useState(false);
+  const [usageError, setUsageError] = useState("");
 
   const updateDraft = useCallback((tab: ApplicationTabId, update: Partial<Draft> | ((draft: Draft) => Draft)) => {
     setDrafts((current) => {
@@ -138,6 +142,23 @@ export function App() {
       setSettingsInput(outputDirectory);
     }).catch((settingsError) => setError(settingsError instanceof Error ? settingsError.message : String(settingsError)));
   }, []);
+
+  const loadAccountUsage = useCallback(async () => {
+    setUsageLoading(true);
+    setUsageError("");
+    try {
+      const { data } = await api<AccountUsageResponse>("/api/account/usage", undefined, { cache: "no-store" });
+      setAccountUsage(data);
+    } catch (usageLoadError) {
+      setUsageError(usageLoadError instanceof Error ? usageLoadError.message : String(usageLoadError));
+    } finally {
+      setUsageLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (page === "settings" && bootstrap?.auth.eligible) void loadAccountUsage();
+  }, [page, bootstrap?.auth.eligible, loadAccountUsage]);
   useEffect(() => {
     if (!toast) return;
     const timer = window.setTimeout(() => setToast(""), 3_500);
@@ -298,7 +319,18 @@ export function App() {
     {page === "applications" && !bootstrap?.auth.eligible && !loading && <div className="auth-card"><strong>{bootstrap?.auth.authMode === "apiKey" ? "This application requires ChatGPT sign-in. API-key usage is not supported." : "Codex is not signed in."}</strong>{bootstrap?.auth.authMode === "apiKey" && <code>codex logout</code>}<code>codex login</code><button className="secondary" onClick={() => void refresh()}>Check again</button></div>}
     {page === "applications" && !settings.outputDirectory && <div className="auth-card"><strong>Choose where generated CV PDFs should be saved.</strong><span>Generation remains disabled until an absolute output directory is configured.</span><button className="secondary" onClick={() => setPage("settings")}>Open Settings</button></div>}
 
-    {page === "settings" && <SettingsPage value={settingsInput} savedValue={settings.outputDirectory} saving={savingSettings} onChange={setSettingsInput} onSave={() => void savePdfSettings()} />}
+    {page === "settings" && <SettingsPage
+      value={settingsInput}
+      savedValue={settings.outputDirectory}
+      saving={savingSettings}
+      auth={bootstrap?.auth}
+      usage={accountUsage}
+      usageLoading={usageLoading}
+      usageError={usageError}
+      onChange={setSettingsInput}
+      onSave={() => void savePdfSettings()}
+      onRefreshUsage={() => void loadAccountUsage()}
+    />}
 
     {page === "applications" && <main className="workspace">
       <section className="panel inputs" aria-labelledby="job-heading">
@@ -399,10 +431,42 @@ function InteractiveInput({ run, token, onDone }: { run: GenerationPayload; toke
   return <div className="input-request"><strong>Codex needs input</strong>{pending.questions.map((question) => <div key={question.id}><label htmlFor={`input-${question.id}`}>{question.question}</label>{question.options?.length ? <select id={`input-${question.id}`} value={answers[question.id] ?? ""} onChange={(event) => setAnswers({ ...answers, [question.id]: event.target.value })}><option value="">Select…</option>{question.options.map((option) => <option key={option.label}>{option.label}</option>)}</select> : <input id={`input-${question.id}`} value={answers[question.id] ?? ""} onChange={(event) => setAnswers({ ...answers, [question.id]: event.target.value })} />}</div>)}<div className="actions"><button className="primary" onClick={() => void submit("accept")}>Continue</button><button className="danger" onClick={() => void submit("cancel")}>Cancel generation</button></div></div>;
 }
 
-function SettingsPage({ value, savedValue, saving, onChange, onSave }: { value: string; savedValue: string; saving: boolean; onChange(value: string): void; onSave(): void }) {
+function SettingsPage({ value, savedValue, saving, auth, usage, usageLoading, usageError, onChange, onSave, onRefreshUsage }: {
+  value: string;
+  savedValue: string;
+  saving: boolean;
+  auth?: BootstrapResponse["auth"];
+  usage?: AccountUsageResponse;
+  usageLoading: boolean;
+  usageError: string;
+  onChange(value: string): void;
+  onSave(): void;
+  onRefreshUsage(): void;
+}) {
   const valid = value.trim().startsWith("/") || /^[A-Za-z]:[\\\\/]/.test(value.trim());
+  const account = usage?.account ?? auth;
   return <main className="settings-page panel">
-    <div className="section-heading"><span>SET</span><div><h2>PDF output settings</h2><p>Configure the default disk location used by every completed generation.</p></div></div>
+    <section className="usage-settings" aria-labelledby="usage-heading">
+      <div className="section-heading"><span>USE</span><div><h2 id="usage-heading">Codex account & usage limits</h2><p>Live allowance percentages from the Codex account signed in on this machine.</p></div></div>
+      <div className="account-details">
+        <div><span>Signed in as</span><strong>{account?.email || (auth?.eligible ? "ChatGPT account" : "Not signed in")}</strong></div>
+        <div><span>Plan</span><strong>{account?.planType || "—"}</strong></div>
+        <button className="secondary" disabled={!auth?.eligible || usageLoading} onClick={onRefreshUsage}>{usageLoading ? "Refreshing…" : "Refresh usage"}</button>
+      </div>
+      {usageError && <div className="usage-error" role="alert">{usageError}</div>}
+      <div className="usage-cards" aria-busy={usageLoading && !usage}>
+        {usage?.windows.map((window) => <UsageCard key={window.label} window={window} />)}
+        {!usage && <><UsageCard loading /><UsageCard loading /></>}
+      </div>
+      <div className="usage-meta">
+        {usage ? <>
+          <span>Fetched {formatTimestamp(usage.fetchedAt)}</span>
+          <span>Percentages come directly from the current Codex allowance windows.</span>
+        </> : <span>{usageLoading ? "Reading fresh limits from Codex…" : "Usage limits are available after ChatGPT sign-in."}</span>}
+      </div>
+    </section>
+    <section className="pdf-settings" aria-labelledby="pdf-settings-heading">
+    <div className="section-heading"><span>PDF</span><div><h2 id="pdf-settings-heading">PDF output settings</h2><p>Configure the default disk location used by every completed generation.</p></div></div>
     <div className="settings-grid">
       <div>
         <label htmlFor="pdf-output-directory">Default CV output directory <em>Required</em></label>
@@ -413,7 +477,21 @@ function SettingsPage({ value, savedValue, saving, onChange, onSave }: { value: 
       </div>
       <aside className="path-preview"><span>Generated PDF layout</span><code>{value || "/your/output/directory"}/yy_mm_dd/Person_Company.pdf</code><p>JSON remains preserved in the isolated generation record. The styled PDF is also copied to this directory.</p></aside>
     </div>
+    </section>
   </main>;
+}
+
+function UsageCard({ window, loading = false }: { window?: AccountUsageResponse["windows"][number]; loading?: boolean }) {
+  return <article className="usage-card">
+    <span>{window?.label ?? "Usage limit"}</span>
+    <div className="usage-percentages"><strong>{window ? `${window.usedPercent}%` : loading ? "Loading…" : "—"}</strong>{window && <b>{window.remainingPercent}% remaining</b>}</div>
+    <div className="usage-bar" role="progressbar" aria-label={window?.label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={window?.usedPercent}><span style={{ width: `${window?.usedPercent ?? 0}%` }} /></div>
+    <small>{window?.resetsAt ? `Resets ${formatTimestamp(window.resetsAt)}` : window ? "Reset time unavailable" : "Used allowance"}</small>
+  </article>;
+}
+
+function formatTimestamp(value: string): string {
+  return new Date(value).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
 function ActivityPanel({ events, active }: { events: GenerationEvent[]; active: boolean }) {

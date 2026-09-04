@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
 import type { ApplicationTabId, CreateGenerationRequest } from "../shared/types.js";
 import { versionAtLeast } from "../server/codex/version.js";
-import { listModels } from "../server/codex/catalog.js";
+import { listModels, summarizeAccountRateLimits } from "../server/codex/catalog.js";
 import { assertContained } from "../server/fs-utils.js";
 import { normalizeRequest } from "../server/generations/types.js";
 import { GenerationStore } from "../server/generations/store.js";
@@ -84,6 +84,24 @@ describe("Codex catalog", () => {
     const models = await listModels(client as never);
     expect(page).toBe(2);
     expect(models).toEqual([{ model: "visible", displayName: "Visible", isDefault: true, defaultEffort: "medium", supportedEfforts: ["low", "medium"] }]);
+  });
+
+  it("summarizes used and remaining percentages for Codex allowance windows", () => {
+    const usage = summarizeAccountRateLimits({
+      rateLimits: {
+        planType: "plus",
+        primary: { usedPercent: 33, windowDurationMins: 300, resetsAt: 1_800_000_000 },
+        secondary: { usedPercent: 5, windowDurationMins: 10_080, resetsAt: 1_800_604_800 },
+      },
+    }, { email: "person@example.com" }, new Date("2026-09-04T10:30:00+02:00"));
+
+    expect(usage).toMatchObject({
+      account: { email: "person@example.com", planType: "plus" },
+      windows: [
+        { label: "5-hour limit", usedPercent: 33, remainingPercent: 67 },
+        { label: "Weekly limit", usedPercent: 5, remainingPercent: 95 },
+      ],
+    });
   });
 });
 

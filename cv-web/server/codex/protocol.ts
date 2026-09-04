@@ -28,6 +28,25 @@ export interface AccountReadResponse {
   requiresOpenaiAuth: boolean;
 }
 
+export interface RateLimitWindow {
+  usedPercent: number;
+  windowDurationMins?: number | null;
+  resetsAt?: number | null;
+}
+
+export interface RateLimitSnapshot {
+  limitId?: string | null;
+  limitName?: string | null;
+  primary?: RateLimitWindow | null;
+  secondary?: RateLimitWindow | null;
+  planType?: string | null;
+}
+
+export interface AccountRateLimitsResponse {
+  rateLimits: RateLimitSnapshot;
+  rateLimitsByLimitId?: Record<string, RateLimitSnapshot>;
+}
+
 export interface AppServerModel {
   model: string;
   displayName: string;

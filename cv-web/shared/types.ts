@@ -54,6 +54,7 @@ export interface BootstrapResponse {
     authenticated: boolean;
     eligible: boolean;
     authMode?: "chatgpt" | "apiKey" | "amazonBedrock" | "unknown";
+    email?: string;
     planType?: string;
   };
   models: ModelOption[];
@@ -110,6 +111,22 @@ export interface GenerationSummary {
 
 export interface PdfSettings {
   outputDirectory: string;
+}
+
+export interface AccountUsageWindow {
+  label: string;
+  usedPercent: number;
+  remainingPercent: number;
+  resetsAt?: string;
+}
+
+export interface AccountUsageResponse {
+  account: {
+    email?: string;
+    planType?: string;
+  };
+  windows: AccountUsageWindow[];
+  fetchedAt: string;
 }
 
 export interface GenerationResult {
