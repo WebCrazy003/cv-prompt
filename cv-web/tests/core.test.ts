@@ -74,7 +74,7 @@ describe("Codex catalog", () => {
 
   it("finds the newest VS Code Codex CLI when shortcut PATH does not include it", async () => {
     const fakeHome = await temporary();
-    const binDirectory = process.platform === "darwin" ? `macos-${process.arch}` : process.platform === "linux" ? `linux-${process.arch}` : `windows-${process.arch}`;
+    const binDirectory = process.platform === "darwin" ? "macos-aarch64" : process.platform === "linux" ? "linux-aarch64" : "windows-aarch64";
     const older = join(fakeHome, ".vscode", "extensions", "openai.chatgpt-26.825.51511-test", "bin", binDirectory, process.platform === "win32" ? "codex.exe" : "codex");
     const newer = join(fakeHome, ".vscode", "extensions", "openai.chatgpt-26.901.22334-test", "bin", binDirectory, process.platform === "win32" ? "codex.exe" : "codex");
     await Promise.all([mkdir(resolve(older, ".."), { recursive: true }), mkdir(resolve(newer, ".."), { recursive: true })]);

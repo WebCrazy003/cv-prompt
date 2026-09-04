@@ -40,10 +40,10 @@ async function isExecutable(path: string): Promise<boolean> {
   }
 }
 
-function vscodeCodexBinDirectory(): string | undefined {
-  if (process.platform === "darwin") return `macos-${process.arch}`;
-  if (process.platform === "linux") return `linux-${process.arch}`;
-  if (process.platform === "win32") return `windows-${process.arch}`;
+function vscodeCodexBinPrefix(): string | undefined {
+  if (process.platform === "darwin") return "macos-";
+  if (process.platform === "linux") return "linux-";
+  if (process.platform === "win32") return "windows-";
   return undefined;
 }
 
@@ -65,16 +65,22 @@ export async function resolveCodexCommand(env: NodeJS.ProcessEnv = process.env, 
   }
 
   const extensionRoot = join(homeDirectory, ".vscode", "extensions");
-  const binDirectory = vscodeCodexBinDirectory();
-  if (binDirectory) {
+  const binPrefix = vscodeCodexBinPrefix();
+  if (binPrefix) {
     try {
       const extensions = (await readdir(extensionRoot, { withFileTypes: true }))
         .filter((entry) => entry.isDirectory() && entry.name.startsWith("openai.chatgpt-"))
         .map((entry) => entry.name)
         .sort((left, right) => right.localeCompare(left, undefined, { numeric: true }));
       for (const extension of extensions) {
-        const candidate = join(extensionRoot, extension, "bin", binDirectory, executableName);
-        if (await isExecutable(candidate)) return candidate;
+        const extensionBinRoot = join(extensionRoot, extension, "bin");
+        const binDirectories = (await readdir(extensionBinRoot, { withFileTypes: true }))
+          .filter((entry) => entry.isDirectory() && entry.name.startsWith(binPrefix))
+          .map((entry) => entry.name);
+        for (const binDirectory of binDirectories) {
+          const candidate = join(extensionBinRoot, binDirectory, executableName);
+          if (await isExecutable(candidate)) return candidate;
+        }
       }
     } catch {
       // The VS Code extension is an optional fallback.
