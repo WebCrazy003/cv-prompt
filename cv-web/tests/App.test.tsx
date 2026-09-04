@@ -107,8 +107,34 @@ it("notifies after copying a result action", async () => {
   const onNotify = vi.fn();
   const user = userEvent.setup();
   Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
-  render(<ResultPanel result={{ personNameOnCV: "Alex", summary: "Summary", jobQuestionAnswers: [{ question: "Why?", answer: "Because." }] }} generationId="generation-1" onNotify={onNotify} />);
+  render(<ResultPanel result={{ personNameOnCV: "Alex", summary: "Summary", jobQuestionAnswers: [{ question: "Why?", answer: "Because." }] }} generationId="generation-1" pdfPath="/CVs/26_09_04/Alex_Company.pdf" onNotify={onNotify} />);
+  expect(screen.getByText("/CVs/26_09_04/Alex_Company.pdf")).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Download CV PDF" })).toHaveAttribute("href", "/api/generations/generation-1/pdf");
   await user.click(screen.getByRole("button", { name: "Copy CV JSON" }));
   await waitFor(() => expect(writeText).toHaveBeenCalledOnce());
   expect(onNotify).toHaveBeenCalledWith("CV JSON copied to clipboard.");
+});
+
+it("loads and persists the default PDF output directory from Settings", async () => {
+  const user = userEvent.setup();
+  const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const path = String(input);
+    if (path === "/api/settings" && init?.method === "POST") {
+      return new Response(init.body as string, { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    if (path === "/api/settings") {
+      return new Response(JSON.stringify({ outputDirectory: "/existing/CVs" }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    return new Response(JSON.stringify(bootstrap), { status: 200, headers: { "Content-Type": "application/json", "x-cv-session-token": "test-token" } });
+  });
+  vi.stubGlobal("fetch", fetchMock);
+  render(<App />);
+  await user.click(await screen.findByRole("button", { name: "Settings" }));
+  const directory = screen.getByLabelText(/Default CV output directory/);
+  expect(directory).toHaveValue("/existing/CVs");
+  await user.clear(directory);
+  await user.type(directory, "/new/CVs");
+  await user.click(screen.getByRole("button", { name: "Save output directory" }));
+  await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/settings", expect.objectContaining({ method: "POST", body: JSON.stringify({ outputDirectory: "/new/CVs" }) })));
+  expect(await screen.findByRole("status")).toHaveTextContent("Default CV output directory saved.");
 });

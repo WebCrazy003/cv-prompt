@@ -18,6 +18,7 @@ export function generationPaths(runtimeRoot: string, id: string, skillName: stri
     cvOutput: join(workspace, "runtime-output", "cv-output.json"),
     resultDirectory: join(root, "result"),
     result: join(root, "result", "cv-output.json"),
+    pdfResult: join(root, "result", "cv-output.pdf"),
     skillMarkdown: join(workspace, ".codex", "skills", skillName, "SKILL.md"),
     outputSchema: join(workspace, ".codex", "skills", skillName, "references", "cv-output.schema.json"),
   };

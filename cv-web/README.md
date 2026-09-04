@@ -7,6 +7,8 @@ A local-only React and Fastify application that runs repository CV skills throug
 - Node.js 22 or newer.
 - Codex CLI 0.153.0 or newer available as `codex`.
 - A ChatGPT-authenticated Codex session. Run `codex login` before starting the app.
+- Python 3 with `python-docx` installed. On macOS the app defaults to `/usr/bin/python3`; override it with `CV_PDF_PYTHON` when needed.
+- LibreOffice is recommended for high-fidelity PDF conversion. When it is unavailable, the imported generator produces a simpler fallback PDF and reports a warning in the result.
 
 This design uses the Codex allowance and eligible credits attached to a ChatGPT plan such as Plus. API-key authentication is a separately billed OpenAI Platform path and is intentionally rejected by this application. When possible, configure `cli_auth_credentials_store = "keyring"` in Codex configuration.
 
@@ -15,6 +17,7 @@ This design uses the Codex allowance and eligible credits attached to a ChatGPT 
 ```bash
 cd cv-web
 npm install
+/usr/bin/python3 -m pip install -r pdf-generator/requirements.txt
 npm run dev
 ```
 
@@ -27,6 +30,7 @@ Useful commands:
 ```bash
 npm run typecheck
 npm test
+npm run test:pdf
 npm run build
 npm run protocol:generate
 ```
@@ -43,7 +47,9 @@ Each generation is stored under:
 ../.cv-web-runtime/generations/<generation-id>/
 ```
 
-Its `workspace/` contains only the selected skill and files declared by that skill's `snapshotIncludes`. Submitted inputs are atomically written beneath `runtime-input/`; Codex writes `runtime-output/cv-output.json`; a schema-validated result is atomically preserved beneath `result/`. Source candidate profiles and shared repository output files are never modified. Snapshots consume disk space independently because files are copied, never hard-linked.
+Its `workspace/` contains only the selected skill and files declared by that skill's `snapshotIncludes`. Submitted inputs are atomically written beneath `runtime-input/`; Codex writes `runtime-output/cv-output.json`; a schema-validated result is atomically preserved beneath `result/`. The vendored generator in `pdf-generator/` renders that JSON through `cv_template.docx`, preserves an internal PDF with the generation, and publishes a collision-safe copy to the default directory selected in **Settings**. Source candidate profiles and shared repository output files are never modified. Snapshots consume disk space independently because files are copied, never hard-linked.
+
+The output directory is persisted in `.cv-web-runtime/settings.json` and is reused after the app restarts. PDFs are organized as `<output>/yy_mm_dd/Person_Company_generation.pdf`. A run is marked complete only after both JSON validation and PDF publication succeed. The result screen shows the exact saved path and also offers a local PDF download.
 
 Two application tabs can run at once. There is one active slot per tab and two total; excess requests receive an error and are never queued. During generation, each tab displays an animated backend indicator and a sanitized live Codex activity timeline. Agent-message progress is shown, while hidden reasoning, raw commands, command output, environment data, and credentials are not exposed. Cancelling or answering an interactive request affects only its owning thread. Ordinary input requests time out after 15 minutes, or an earlier positive App Server deadline. Filesystem, network, command, file-change, MCP, and other permission-expansion requests are declined and the affected generation is stopped.
 
@@ -71,4 +77,6 @@ An optional `ui.schema.json` may declare an object of string, string-enum, boole
 - **Usage or rate limit:** wait for the account limit to reset, then submit a new generation. A failed run is never treated as successful.
 - **Skill disabled:** inspect its runtime contract, snapshot matches, candidate boundary, output schema, and optional UI schema.
 - **Invalid output:** inspect the retained generation workspace and diagnostic. Success requires a fresh JSON file matching the selected skill schema and exactly one ordered answer per submitted non-empty question.
+- **PDF dependency missing:** install `pdf-generator/requirements.txt` for the Python selected by `CV_PDF_PYTHON`. On macOS, `/usr/bin/python3 -m pip install -r pdf-generator/requirements.txt` matches the default.
+- **PDF conversion failed:** confirm the Settings directory is writable. Install LibreOffice for styled conversion; any fallback warning is shown beside the saved PDF path.
 - **App Server disconnected:** active generations fail independently. The backend makes one restart attempt; retry the affected generation after bootstrap recovers.

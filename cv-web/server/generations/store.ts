@@ -49,7 +49,7 @@ export class GenerationStore {
     return TERMINAL.has(record.status);
   }
 
-  async create(request: CreateGenerationRequest, skill: DiscoveredSkill): Promise<GenerationRecord> {
+  async create(request: CreateGenerationRequest, skill: DiscoveredSkill, pdfOutputDirectory: string): Promise<GenerationRecord> {
     if (this.activeCount() >= 2) {
       throw new AppError(409, "generation_capacity_reached", "Both generation slots are active. No generation was queued.");
     }
@@ -65,6 +65,7 @@ export class GenerationStore {
       cancelRequested: false,
       kept: false,
       submitted: normalizeRequest(request),
+      pdfOutputDirectory,
       paths: generationPaths(this.runtimeRoot, id, skill.name),
       events: [],
       nextEventId: 1,
@@ -139,6 +140,9 @@ export class GenerationStore {
       completedAt: record.completedAt,
       error: record.error,
       resultAvailable: record.status === "completed" && record.result !== undefined,
+      pdfAvailable: record.status === "completed" && record.pdf !== undefined,
+      pdfPath: record.status === "completed" ? record.pdf?.path : undefined,
+      pdfWarning: record.status === "completed" ? record.pdf?.warning : undefined,
       kept: record.kept,
       retentionStartedAt: record.retentionStartedAt,
       expiresAt: record.expiresAt,

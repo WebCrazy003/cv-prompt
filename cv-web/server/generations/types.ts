@@ -25,6 +25,7 @@ export interface GenerationPaths {
   cvOutput: string;
   resultDirectory: string;
   result: string;
+  pdfResult: string;
   skillMarkdown: string;
   outputSchema: string;
 }
@@ -59,9 +60,14 @@ export interface GenerationRecord {
     model: string;
     effort: ReasoningEffort;
   };
+  pdfOutputDirectory: string;
   paths: GenerationPaths;
   pendingInput?: PendingInput;
   result?: unknown;
+  pdf?: {
+    path: string;
+    warning?: string;
+  };
   events: GenerationEvent[];
   nextEventId: number;
   runtime: {

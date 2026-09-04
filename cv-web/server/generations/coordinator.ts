@@ -5,6 +5,7 @@ import type { JsonRpcNotification, ThreadStartResponse, TurnStartResponse } from
 import { AppError, messageOf } from "../errors.js";
 import { redactSecrets } from "../security.js";
 import type { DiscoveredSkill } from "../skills/discovery.js";
+import type { PdfGenerator } from "../pdf/generator.js";
 import { validateAndPreserveOutput } from "./output.js";
 import type { GenerationRecord } from "./types.js";
 import { GenerationStore } from "./store.js";
@@ -54,14 +55,15 @@ export class GenerationCoordinator {
     readonly store: GenerationStore,
     private readonly client: CodexAppServerClient,
     private readonly repositoryRoot: string,
+    private readonly pdfGenerator: PdfGenerator,
   ) {
     client.on("notification", (notification: JsonRpcNotification) => void this.onNotification(notification));
     client.on("request", (event: ServerRequestEvent) => void this.onServerRequest(event));
     client.on("unexpectedExit", () => void this.failActive("Codex app-server lost connection. Please retry."));
   }
 
-  async create(request: CreateGenerationRequest, skill: DiscoveredSkill): Promise<GenerationRecord> {
-    const record = await this.store.create(request, skill);
+  async create(request: CreateGenerationRequest, skill: DiscoveredSkill, pdfOutputDirectory: string): Promise<GenerationRecord> {
+    const record = await this.store.create(request, skill, pdfOutputDirectory);
     void this.run(record, skill);
     return record;
   }
@@ -187,6 +189,9 @@ export class GenerationCoordinator {
         await this.store.transition(record, "validating", { codexStatus: params.turn.status });
         try {
           record.result = await validateAndPreserveOutput(record);
+          await this.store.emit(record, "progress", { kind: "application", message: "CV JSON validated. Rendering the styled PDF." });
+          record.pdf = await this.pdfGenerator.generate(record);
+          await this.store.emit(record, "progress", { kind: "application", message: `PDF saved to ${record.pdf.path}` });
           await this.store.finish(record, "completed");
         } catch (error) {
           await this.store.finish(record, "failed", messageOf(error));

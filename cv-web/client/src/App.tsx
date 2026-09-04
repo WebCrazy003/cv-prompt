@@ -6,6 +6,7 @@ import type {
   GenerationSummary,
   ModelOption,
   ParameterSchema,
+  PdfSettings,
   ReasoningEffort,
   SkillOption,
 } from "../../shared/types";
@@ -67,6 +68,7 @@ async function api<T>(path: string, token?: string, init: RequestInit = {}): Pro
 }
 
 export function App() {
+  const [page, setPage] = useState<"applications" | "settings">("applications");
   const [selectedTab, setSelectedTab] = useState<ApplicationTabId>("application-1");
   const [drafts, setDrafts] = useState<Record<ApplicationTabId, Draft>>({ "application-1": loadDraft("application-1"), "application-2": loadDraft("application-2") });
   const [runs, setRuns] = useState<Partial<Record<ApplicationTabId, GenerationPayload>>>({});
@@ -76,6 +78,9 @@ export function App() {
   const [notice, setNotice] = useState("");
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<PdfSettings>({ outputDirectory: "" });
+  const [settingsInput, setSettingsInput] = useState("");
+  const [savingSettings, setSavingSettings] = useState(false);
 
   const updateDraft = useCallback((tab: ApplicationTabId, update: Partial<Draft> | ((draft: Draft) => Draft)) => {
     setDrafts((current) => {
@@ -122,6 +127,13 @@ export function App() {
 
   useEffect(() => { void loadBootstrap(); }, [loadBootstrap]);
   useEffect(() => {
+    void api<PdfSettings>("/api/settings").then(({ data }) => {
+      const outputDirectory = typeof data.outputDirectory === "string" ? data.outputDirectory : "";
+      setSettings({ outputDirectory });
+      setSettingsInput(outputDirectory);
+    }).catch((settingsError) => setError(settingsError instanceof Error ? settingsError.message : String(settingsError)));
+  }, []);
+  useEffect(() => {
     if (!toast) return;
     const timer = window.setTimeout(() => setToast(""), 3_500);
     return () => window.clearTimeout(timer);
@@ -150,7 +162,7 @@ export function App() {
   const selectedModel = bootstrap?.models.find((model) => model.model === draft.model);
   const isRunning = Boolean(run && activeStatuses.has(run.generation.status));
   const parametersValid = useMemo(() => validateParameters(selectedSkill?.parameterSchema, draft.skillParameters), [selectedSkill, draft.skillParameters]);
-  const canGenerate = Boolean(bootstrap?.auth.eligible && selectedSkill?.runnable && selectedModel?.supportedEfforts.includes(draft.effort) && draft.jobDescription.trim() && draft.jobDescription.length <= 100_000 && parametersValid && !isRunning);
+  const canGenerate = Boolean(settings.outputDirectory && bootstrap?.auth.eligible && selectedSkill?.runnable && selectedModel?.supportedEfforts.includes(draft.effort) && draft.jobDescription.trim() && draft.jobDescription.length <= 100_000 && parametersValid && !isRunning);
 
   function persistSelection(nextDraft: Draft) {
     const preferences = loadPreferences();
@@ -241,6 +253,22 @@ export function App() {
     notify("Application reset. Your saved defaults were preserved.");
   }
 
+  async function savePdfSettings() {
+    setSavingSettings(true);
+    setError("");
+    try {
+      const { data } = await api<PdfSettings>("/api/settings", sessionToken, { method: "POST", body: JSON.stringify({ outputDirectory: settingsInput }) });
+      setSettings(data);
+      setSettingsInput(data.outputDirectory);
+      notify("Default CV output directory saved.");
+      setPage("applications");
+    } catch (settingsError) {
+      setError(settingsError instanceof Error ? settingsError.message : String(settingsError));
+    } finally {
+      setSavingSettings(false);
+    }
+  }
+
   const authLabel = bootstrap?.auth.eligible ? `ChatGPT${bootstrap.auth.planType ? ` · ${bootstrap.auth.planType}` : ""}` : bootstrap?.auth.authMode === "apiKey" ? "API key unsupported" : "Not signed in";
 
   return <div className="app-shell">
@@ -250,21 +278,24 @@ export function App() {
         <h1>Job application studio</h1>
         <p className="lede">Two independent workspaces for tailored CVs and application answers.</p>
       </div>
-      <div className={`account ${bootstrap?.auth.eligible ? "good" : "warn"}`}><span className="pulse" />{loading ? "Connecting…" : authLabel}</div>
+      <div className="masthead-actions"><div className={`account ${bootstrap?.auth.eligible ? "good" : "warn"}`}><span className="pulse" />{loading ? "Connecting…" : authLabel}</div><div className="page-switch"><button className={page === "applications" ? "selected" : ""} onClick={() => setPage("applications")}>Applications</button><button className={page === "settings" ? "selected" : ""} onClick={() => setPage("settings")}>Settings</button></div></div>
     </header>
 
-    <nav className="tabs" aria-label="Applications">
+    {page === "applications" && <nav className="tabs" aria-label="Applications">
       {tabs.map((tab) => <button key={tab.id} className={selectedTab === tab.id ? "tab selected" : "tab"} onClick={() => setSelectedTab(tab.id)}>
         <span>{tab.label}</span><span className={`status-dot ${runs[tab.id]?.generation.status ?? "idle"}`}>{statusLabels[runs[tab.id]?.generation.status ?? ""] ?? "Idle"}</span>
       </button>)}
-    </nav>
+    </nav>}
 
     {notice && <div className="notice" role="status">{notice}<button onClick={() => setNotice("")} aria-label="Dismiss notice">×</button></div>}
     {toast && <div className="toast" role="status" aria-live="polite">✓ {toast}</div>}
     {error && <div className="error-banner" role="alert">{error}</div>}
-    {!bootstrap?.auth.eligible && !loading && <div className="auth-card"><strong>{bootstrap?.auth.authMode === "apiKey" ? "This application requires ChatGPT sign-in. API-key usage is not supported." : "Codex is not signed in."}</strong>{bootstrap?.auth.authMode === "apiKey" && <code>codex logout</code>}<code>codex login</code><button className="secondary" onClick={() => void refresh()}>Check again</button></div>}
+    {page === "applications" && !bootstrap?.auth.eligible && !loading && <div className="auth-card"><strong>{bootstrap?.auth.authMode === "apiKey" ? "This application requires ChatGPT sign-in. API-key usage is not supported." : "Codex is not signed in."}</strong>{bootstrap?.auth.authMode === "apiKey" && <code>codex logout</code>}<code>codex login</code><button className="secondary" onClick={() => void refresh()}>Check again</button></div>}
+    {page === "applications" && !settings.outputDirectory && <div className="auth-card"><strong>Choose where generated CV PDFs should be saved.</strong><span>Generation remains disabled until an absolute output directory is configured.</span><button className="secondary" onClick={() => setPage("settings")}>Open Settings</button></div>}
 
-    <main className="workspace">
+    {page === "settings" && <SettingsPage value={settingsInput} savedValue={settings.outputDirectory} saving={savingSettings} onChange={setSettingsInput} onSave={() => void savePdfSettings()} />}
+
+    {page === "applications" && <main className="workspace">
       <section className="panel inputs" aria-labelledby="job-heading">
         <div className="section-heading"><span>01</span><div><h2 id="job-heading">Job input</h2><p>Source material is copied into this run only.</p></div></div>
         <label htmlFor={`${selectedTab}-description`}>Job description <em>Required</em></label>
@@ -317,10 +348,10 @@ export function App() {
         {run?.generation.error && <div className="inline-error">{run.generation.error}</div>}
         {run?.pendingInput && <InteractiveInput run={run} token={sessionToken} onDone={() => void loadGeneration(selectedTab, run.generation.id)} />}
       </section>
-    </main>
+    </main>}
 
-    {run?.generation.status === "completed" && run.result && <ResultPanel result={run.result} generationId={run.generation.id} onNotify={notify} />}
-    {run && ["completed", "failed", "cancelled"].includes(run.generation.status) && <section className="retention panel"><div><strong>{run.generation.kept ? "Kept on this machine" : `Automatic deletion ${run.generation.expiresAt ? new Date(run.generation.expiresAt).toLocaleString() : "scheduled"}`}</strong><p>Each generation retains its own input snapshot, diagnostics, and validated result.</p></div><div className="retention-actions"><button className="primary" onClick={resetApplication}>Reset application</button><button className="secondary" onClick={() => void updateKeep(!run.generation.kept)}>{run.generation.kept ? "Remove keep" : "Keep"}</button><button className="danger" onClick={() => void deleteRun()}>Delete now</button></div></section>}
+    {page === "applications" && run?.generation.status === "completed" && run.result && <ResultPanel result={run.result} generationId={run.generation.id} pdfPath={run.generation.pdfPath} pdfWarning={run.generation.pdfWarning} onNotify={notify} />}
+    {page === "applications" && run && ["completed", "failed", "cancelled"].includes(run.generation.status) && <section className="retention panel"><div><strong>{run.generation.kept ? "Kept on this machine" : `Automatic deletion ${run.generation.expiresAt ? new Date(run.generation.expiresAt).toLocaleString() : "scheduled"}`}</strong><p>Each generation retains its own input snapshot, diagnostics, and validated result.</p></div><div className="retention-actions"><button className="primary" onClick={resetApplication}>Reset application</button><button className="secondary" onClick={() => void updateKeep(!run.generation.kept)}>{run.generation.kept ? "Remove keep" : "Keep"}</button><button className="danger" onClick={() => void deleteRun()}>Delete now</button></div></section>}
     <footer><span>Codex {bootstrap?.codexVersion ?? "—"}</span><span>Active workspaces {bootstrap?.capacity.active ?? 0} / 2</span><span>Runs stay on this machine</span></footer>
   </div>;
 }
@@ -363,6 +394,23 @@ function InteractiveInput({ run, token, onDone }: { run: GenerationPayload; toke
   return <div className="input-request"><strong>Codex needs input</strong>{pending.questions.map((question) => <div key={question.id}><label htmlFor={`input-${question.id}`}>{question.question}</label>{question.options?.length ? <select id={`input-${question.id}`} value={answers[question.id] ?? ""} onChange={(event) => setAnswers({ ...answers, [question.id]: event.target.value })}><option value="">Select…</option>{question.options.map((option) => <option key={option.label}>{option.label}</option>)}</select> : <input id={`input-${question.id}`} value={answers[question.id] ?? ""} onChange={(event) => setAnswers({ ...answers, [question.id]: event.target.value })} />}</div>)}<div className="actions"><button className="primary" onClick={() => void submit("accept")}>Continue</button><button className="danger" onClick={() => void submit("cancel")}>Cancel generation</button></div></div>;
 }
 
+function SettingsPage({ value, savedValue, saving, onChange, onSave }: { value: string; savedValue: string; saving: boolean; onChange(value: string): void; onSave(): void }) {
+  const valid = value.trim().startsWith("/") || /^[A-Za-z]:[\\\\/]/.test(value.trim());
+  return <main className="settings-page panel">
+    <div className="section-heading"><span>SET</span><div><h2>PDF output settings</h2><p>Configure the default disk location used by every completed generation.</p></div></div>
+    <div className="settings-grid">
+      <div>
+        <label htmlFor="pdf-output-directory">Default CV output directory <em>Required</em></label>
+        <input id="pdf-output-directory" value={value} maxLength={4_096} onChange={(event) => onChange(event.target.value)} placeholder="/Users/you/Documents/CVs" autoComplete="off" />
+        <p className="description">Use an absolute directory path. The backend creates it if needed and verifies that it is writable.</p>
+        {value && !valid && <p className="settings-error" role="alert">Enter an absolute path, such as <code>/Users/you/Documents/CVs</code>.</p>}
+        <button className="primary" disabled={!valid || saving || value === savedValue} onClick={onSave}>{saving ? "Saving…" : "Save output directory"}</button>
+      </div>
+      <aside className="path-preview"><span>Generated PDF layout</span><code>{value || "/your/output/directory"}/yy_mm_dd/Person_Company_generation.pdf</code><p>JSON remains preserved in the isolated generation record. The styled PDF is also copied to this directory.</p></aside>
+    </div>
+  </main>;
+}
+
 function ActivityPanel({ events, active }: { events: GenerationEvent[]; active: boolean }) {
   const activity = events.filter((event) => event.type === "status" || event.type === "progress").slice(-18);
   return <section className={`activity-panel ${active ? "active" : ""}`} aria-label="Codex activity" aria-live="polite">
@@ -378,7 +426,7 @@ function activityMessage(event: GenerationEvent): string {
   return "Generation updated.";
 }
 
-export function ResultPanel({ result, generationId, onNotify }: { result: Record<string, unknown>; generationId: string; onNotify(message: string): void }) {
+export function ResultPanel({ result, generationId, pdfPath, pdfWarning, onNotify }: { result: Record<string, unknown>; generationId: string; pdfPath?: string; pdfWarning?: string; onNotify(message: string): void }) {
   const answers = Array.isArray(result.jobQuestionAnswers) ? result.jobQuestionAnswers as Array<{ question: string; answer: string }> : [];
   const json = JSON.stringify(result, null, 2);
   async function copy(text: string, label: string) {
@@ -390,5 +438,5 @@ export function ResultPanel({ result, generationId, onNotify }: { result: Record
     }
   }
   const allAnswers = answers.map((answer, index) => `${index + 1}. ${answer.question}\n${answer.answer}`).join("\n\n");
-  return <section className="results panel"><div className="section-heading"><span>03</span><div><h2>Generated result</h2><p>Validated and preserved outside the model-writable workspace.</p></div></div><div className="result-actions"><button className="secondary" onClick={() => void copy(json, "CV JSON")}>Copy CV JSON</button>{answers.length > 0 && <button className="secondary" onClick={() => void copy(allAnswers, "All answers")}>Copy all answers</button>}<a className="button-link" href={`/api/generations/${generationId}/download`} onClick={() => onNotify("CV JSON download started.")}>Download cv-output.json</a></div><h3>{String(result.personNameOnCV ?? "Tailored CV")}</h3><p className="summary">{String(result.summary ?? "")}</p>{answers.length > 0 && <div className="answers"><h3>Application answers</h3>{answers.map((answer, index) => <article key={index}><span>Question {index + 1}</span><strong>{answer.question}</strong><p>{answer.answer}</p><button className="refresh-link" onClick={() => void copy(answer.answer, `Answer ${index + 1}`)}>Copy answer</button></article>)}</div>}<details><summary>Raw JSON</summary><pre>{json}</pre></details></section>;
+  return <section className="results panel"><div className="section-heading"><span>03</span><div><h2>Generated CV and answers</h2><p>The JSON was validated, rendered through the CV template, and saved as PDF.</p></div></div>{pdfPath && <div className="pdf-success"><span>PDF saved</span><strong>{pdfPath}</strong>{pdfWarning && <p>{pdfWarning}</p>}</div>}<div className="result-actions"><a className="button-link primary" href={`/api/generations/${generationId}/pdf`} onClick={() => onNotify("CV PDF download started.")}>Download CV PDF</a><button className="secondary" onClick={() => void copy(json, "CV JSON")}>Copy CV JSON</button>{answers.length > 0 && <button className="secondary" onClick={() => void copy(allAnswers, "All answers")}>Copy all answers</button>}<a className="button-link" href={`/api/generations/${generationId}/download`} onClick={() => onNotify("CV JSON download started.")}>Download JSON</a></div><h3>{String(result.personNameOnCV ?? "Tailored CV")}</h3><p className="summary">{String(result.summary ?? "")}</p>{answers.length > 0 && <div className="answers"><h3>Application answers</h3>{answers.map((answer, index) => <article key={index}><span>Question {index + 1}</span><strong>{answer.question}</strong><p>{answer.answer}</p><button className="refresh-link" onClick={() => void copy(answer.answer, `Answer ${index + 1}`)}>Copy answer</button></article>)}</div>}<details><summary>Raw JSON</summary><pre>{json}</pre></details></section>;
 }

@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { access, readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import fastify, { type FastifyInstance } from "fastify";
 import fastifyStatic from "@fastify/static";
 import { ZodError } from "zod";
@@ -11,7 +11,9 @@ import type { AppConfig } from "./config.js";
 import { AppError, messageOf } from "./errors.js";
 import { GenerationCoordinator } from "./generations/coordinator.js";
 import { GenerationStore } from "./generations/store.js";
+import { PdfGenerator } from "./pdf/generator.js";
 import { authorizeMutation, redactSecrets, SESSION_HEADER } from "./security.js";
+import { SettingsService } from "./settings.js";
 import { createGenerationSchema, inputResponseSchema } from "./validation.js";
 
 export interface AppServices {
@@ -19,6 +21,7 @@ export interface AppServices {
   bootstrap: BootstrapService;
   store: GenerationStore;
   coordinator: GenerationCoordinator;
+  settings: SettingsService;
   sessionToken: string;
 }
 
@@ -27,11 +30,14 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
   const sessionToken = randomBytes(32).toString("base64url");
   const store = new GenerationStore(config.runtimeRoot);
   await store.initialize();
+  const settings = new SettingsService(join(config.runtimeRoot, "settings.json"));
+  await settings.initialize();
+  const pdfGenerator = new PdfGenerator(config.pdfGeneratorRoot, config.pdfPythonCommand);
   await store.cleanupExpired();
   const cleanupInterval = setInterval(() => void store.cleanupExpired(), 24 * 60 * 60 * 1_000);
   cleanupInterval.unref();
   app.addHook("onClose", async () => clearInterval(cleanupInterval));
-  const coordinator = new GenerationCoordinator(store, client, config.repositoryRoot);
+  const coordinator = new GenerationCoordinator(store, client, config.repositoryRoot, pdfGenerator);
   const bootstrap = new BootstrapService(config, client);
   const allowedOrigins = [...new Set([config.origin, `http://127.0.0.1:${config.port}`, "http://127.0.0.1:5173"] )];
 
@@ -64,8 +70,19 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
     return bootstrap.response(store.activeCount());
   });
 
+  app.get("/api/settings", async () => settings.get());
+
+  app.post("/api/settings", async (request) => {
+    const body = request.body as { outputDirectory?: unknown };
+    if (typeof body?.outputDirectory !== "string" || body.outputDirectory.length > 4_096) {
+      throw new AppError(400, "invalid_request", "outputDirectory must be a string of at most 4,096 characters.");
+    }
+    return settings.save(body.outputDirectory);
+  });
+
   app.post("/api/generations", async (request, reply) => {
     const body = createGenerationSchema.parse(request.body) as CreateGenerationRequest;
+    const pdfOutputDirectory = settings.requireOutputDirectory();
     if (!bootstrap.auth.eligible) throw new AppError(409, "chatgpt_auth_required", "ChatGPT sign-in is required. Run `codex logout`, then `codex login`.");
     const model = bootstrap.models.find((item) => item.model === body.model);
     if (!model) throw new AppError(400, "model_unavailable", "The selected model is no longer available. Refresh models.");
@@ -75,7 +92,7 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
     if (!skill.validateParameters(body.skillParameters)) {
       throw new AppError(400, "invalid_skill_parameters", "Skill parameters are invalid.", skill.validateParameters.errors);
     }
-    const record = await coordinator.create(body, skill);
+    const record = await coordinator.create(body, skill, pdfOutputDirectory);
     return reply.status(202).send({ generationId: record.id, status: "preparing" });
   });
 
@@ -157,6 +174,14 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
     return readFile(record.paths.result);
   });
 
+  app.get<{ Params: { id: string } }>("/api/generations/:id/pdf", async (request, reply) => {
+    const record = store.get(request.params.id);
+    if (record.status !== "completed" || !record.pdf) throw new AppError(404, "pdf_not_found", "A generated PDF is not available.");
+    reply.header("Content-Type", "application/pdf");
+    reply.header("Content-Disposition", `attachment; filename=\"${basename(record.pdf.path)}\"`);
+    return readFile(record.paths.pdfResult);
+  });
+
   const clientDirectory = join(config.appRoot, "dist", "client");
   try {
     await access(clientDirectory);
@@ -166,5 +191,5 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
     app.get("/", async () => ({ name: "CV Job Application Generator", developmentClient: "http://127.0.0.1:5173" }));
   }
 
-  return { app, bootstrap, store, coordinator, sessionToken };
+  return { app, bootstrap, store, coordinator, settings, sessionToken };
 }

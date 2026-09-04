@@ -26,6 +26,8 @@ export interface AppConfig {
   origin: string;
   codexCommand: string;
   minimumCodexVersion: string;
+  pdfGeneratorRoot: string;
+  pdfPythonCommand: string;
 }
 
 export async function loadConfig(env: NodeJS.ProcessEnv = process.env): Promise<AppConfig> {
@@ -57,5 +59,7 @@ export async function loadConfig(env: NodeJS.ProcessEnv = process.env): Promise<
     origin: env.CV_WEB_ORIGIN ?? `http://127.0.0.1:${port}`,
     codexCommand: env.CODEX_COMMAND ?? "codex",
     minimumCodexVersion: "0.153.0",
+    pdfGeneratorRoot: join(APP_ROOT, "pdf-generator"),
+    pdfPythonCommand: env.CV_PDF_PYTHON ?? (process.platform === "darwin" ? "/usr/bin/python3" : "python3"),
   };
 }

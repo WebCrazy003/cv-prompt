@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, realpath, rm } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
@@ -13,6 +13,7 @@ import { buildWorkspace } from "../server/generations/workspace.js";
 import { redactSecrets } from "../server/security.js";
 import { discoverSkills, type DiscoveredSkill } from "../server/skills/discovery.js";
 import { compileParameterSchema } from "../server/skills/schema.js";
+import { SettingsService } from "../server/settings.js";
 
 const repositoryRoot = resolve(import.meta.dirname, "..", "..");
 const temporaryDirectories: string[] = [];
@@ -91,7 +92,7 @@ describe("input serialization and isolation", () => {
     const runtime = await temporary();
     const store = new GenerationStore(runtime);
     await store.initialize();
-    const record = await store.create(request(), skill);
+    const record = await store.create(request(), skill, join(runtime, "pdf-output"));
     await buildWorkspace(repositoryRoot, record, skill);
     expect(await readFile(record.paths.jobDescription, "utf8")).toBe("A role\nwith details");
     expect(JSON.parse(await readFile(record.paths.jobQuestions, "utf8"))).toEqual({ version: 1, questions: [{ id: "q1", text: "First?" }, { id: "q2", text: "Second?\nMore" }] });
@@ -123,9 +124,9 @@ describe("skills and admission", () => {
     const validate = (() => true) as DiscoveredSkill["validateParameters"];
     validate.errors = null;
     const skill = { name: "alex-cv-generator", realSourcePath: "", sourcePath: "", displayName: "Alex", description: "Test", runnable: true, snapshotFiles: [], validateParameters: validate } as DiscoveredSkill;
-    await store.create(request("application-1"), skill);
-    await store.create(request("application-2"), skill);
-    await expect(store.create(request("application-1"), skill)).rejects.toMatchObject({ code: "generation_capacity_reached" });
+    await store.create(request("application-1"), skill, join(runtime, "pdf-output"));
+    await store.create(request("application-2"), skill, join(runtime, "pdf-output"));
+    await expect(store.create(request("application-1"), skill, join(runtime, "pdf-output"))).rejects.toMatchObject({ code: "generation_capacity_reached" });
     expect(store.activeCount()).toBe(2);
   });
 
@@ -135,13 +136,33 @@ describe("skills and admission", () => {
     await store.initialize();
     const validate = (() => true) as DiscoveredSkill["validateParameters"];
     const skill = { name: "alex-cv-generator", realSourcePath: "", sourcePath: "", displayName: "Alex", description: "Test", runnable: true, snapshotFiles: [], validateParameters: validate } as DiscoveredSkill;
-    const record = await store.create(request(), skill);
+    const record = await store.create(request(), skill, join(runtime, "pdf-output"));
     await store.finish(record, "failed", "test");
     expect(Date.parse(record.expiresAt!) - Date.parse(record.retentionStartedAt!)).toBe(30 * 24 * 60 * 60 * 1_000);
     await store.setKept(record, true);
     expect(record).toMatchObject({ kept: true, expiresAt: undefined });
     await store.setKept(record, false);
     expect(Date.parse(record.expiresAt!) - Date.parse(record.retentionStartedAt!)).toBe(30 * 24 * 60 * 60 * 1_000);
+  });
+});
+
+describe("PDF settings", () => {
+  it("persists a canonical writable output directory across service restarts", async () => {
+    const runtime = await temporary();
+    const output = join(runtime, "published-cvs");
+    const settingsPath = join(runtime, "settings.json");
+    const first = new SettingsService(settingsPath);
+    await first.initialize();
+    expect(first.get()).toEqual({ outputDirectory: "" });
+    await expect(first.save("relative/path")).rejects.toMatchObject({ code: "invalid_output_directory" });
+    await expect(first.save(resolve(output).slice(0, 1))).rejects.toMatchObject({ code: "invalid_output_directory" });
+    const saved = await first.save(output);
+    const canonicalOutput = await realpath(output);
+    expect(saved).toEqual({ outputDirectory: canonicalOutput });
+
+    const restored = new SettingsService(settingsPath);
+    await restored.initialize();
+    expect(restored.requireOutputDirectory()).toBe(canonicalOutput);
   });
 });
 

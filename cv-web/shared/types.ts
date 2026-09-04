@@ -98,9 +98,16 @@ export interface GenerationSummary {
   completedAt?: string;
   error?: string;
   resultAvailable: boolean;
+  pdfAvailable: boolean;
+  pdfPath?: string;
+  pdfWarning?: string;
   kept: boolean;
   retentionStartedAt?: string;
   expiresAt?: string;
+}
+
+export interface PdfSettings {
+  outputDirectory: string;
 }
 
 export interface GenerationResult {
