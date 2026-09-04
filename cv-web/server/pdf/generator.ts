@@ -1,9 +1,10 @@
 import { execFile } from "node:child_process";
-import { access, mkdir, readFile } from "node:fs/promises";
+import { constants } from "node:fs";
+import { access, copyFile, mkdir, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { promisify } from "node:util";
 import { AppError } from "../errors.js";
-import { assertContained, atomicWrite } from "../fs-utils.js";
+import { assertContained } from "../fs-utils.js";
 import type { GenerationRecord } from "../generations/types.js";
 
 const execFileAsync = promisify(execFile);
@@ -18,6 +19,23 @@ function dateFolder(now: Date): string {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
   return `${year}_${month}_${day}`;
+}
+
+export function publishedPdfFilename(result: { personNameOnCV?: unknown; companyNameApplyJob?: unknown }, copyNumber = 1): string {
+  const base = `${safeFilename(result.personNameOnCV)}_${safeFilename(result.companyNameApplyJob)}`;
+  return copyNumber === 1 ? `${base}.pdf` : `${base}_${copyNumber}.pdf`;
+}
+
+async function publishWithoutOverwrite(source: string, outputDirectory: string, folder: string, result: { personNameOnCV?: unknown; companyNameApplyJob?: unknown }): Promise<string> {
+  for (let copyNumber = 1; ; copyNumber += 1) {
+    const path = assertContained(outputDirectory, join(folder, publishedPdfFilename(result, copyNumber)), "PDF output");
+    try {
+      await copyFile(source, path, constants.COPYFILE_EXCL);
+      return path;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    }
+  }
 }
 
 export interface GeneratedPdf {
@@ -51,8 +69,6 @@ export class PdfGenerator {
     const result = record.result as { personNameOnCV?: unknown; companyNameApplyJob?: unknown };
     const folder = assertContained(outputDirectory, join(outputDirectory, dateFolder(new Date())), "PDF date folder");
     await mkdir(folder, { recursive: true });
-    const filename = `${safeFilename(result.personNameOnCV)}_${safeFilename(result.companyNameApplyJob)}_${record.id.slice(0, 8)}.pdf`;
-    const publishedPath = assertContained(outputDirectory, join(folder, filename), "PDF output");
 
     let stdout: string;
     try {
@@ -75,7 +91,7 @@ export class PdfGenerator {
     if (!pdf.subarray(0, 4).equals(Buffer.from("%PDF"))) {
       throw new AppError(500, "pdf_generation_failed", "The generated file is not a valid PDF.");
     }
-    await atomicWrite(publishedPath, pdf);
+    const publishedPath = await publishWithoutOverwrite(record.paths.pdfResult, outputDirectory, folder, result);
     return {
       path: publishedPath,
       warning: typeof response.warning === "string" && response.warning ? response.warning : undefined,

@@ -8,7 +8,7 @@ import { App, ResultPanel } from "../client/src/App";
 
 const bootstrap = {
   codexVersion: "codex-cli 0.153.0",
-  capacity: { active: 0, limit: 2 },
+  capacity: { active: 0, limit: 3 },
   auth: { authenticated: true, eligible: true, authMode: "chatgpt", planType: "plus" },
   limits: { jobDescription: 100_000, question: 10_000, questions: 50 },
   models: [
@@ -47,6 +47,14 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+});
+
+it("renders three independent application tabs", async () => {
+  render(<App />);
+  await screen.findByText("ChatGPT · plus");
+  expect(screen.getByText("Application 1")).toBeInTheDocument();
+  expect(screen.getByText("Application 2")).toBeInTheDocument();
+  expect(screen.getByText("Application 3")).toBeInTheDocument();
 });
 
 it("starts with exactly five questions and can add another", async () => {

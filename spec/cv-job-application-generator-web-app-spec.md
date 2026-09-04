@@ -38,7 +38,7 @@ As the repository owner, I want to paste a job description, enter zero or more a
 - ChatGPT-authenticated Codex execution using the user's existing local Codex session.
 - Live generation status, cancellation, structured output display, copy, and JSON download.
 - Validation of the generated file against the selected skill's bundled schema.
-- Exactly two tabs inside the application, each with an independent draft, progress stream, Codex thread, and simultaneous generation capability.
+- Exactly three tabs inside the application, each with an independent draft, progress stream, Codex thread, and simultaneous generation capability.
 
 ### Out of scope
 
@@ -48,7 +48,7 @@ As the repository owner, I want to paste a job description, enter zero or more a
 - Editing candidate profiles or skill instructions in the browser.
 - PDF, DOCX, cover-letter, or application-submission automation.
 - Combining multiple CV-generator skills in one generation.
-- Adding more than two application tabs or maintaining an application-managed generation queue in the MVP.
+- Adding more than three application tabs or maintaining an application-managed generation queue in the MVP.
 - Coordinating duplicate copies of the application opened in separate browser windows or browser tabs.
 
 ## Recommended Architecture
@@ -135,7 +135,7 @@ When signed out:
 
 When Codex is authenticated with an API key:
 
-- disable Generate in both application tabs;
+- disable Generate in all application tabs;
 - show `This application requires ChatGPT sign-in. API-key usage is not supported.`;
 - show `codex logout` followed by `codex login`, each with a copy button;
 - do not provide an override or API-key opt-in in the MVP.
@@ -161,14 +161,14 @@ Official references:
 
 ### Page layout
 
-Use one responsive page with a shared header followed by exactly two application tabs, initially labelled `Application 1` and `Application 2`. Each tab contains these sections in order:
+Use one responsive page with a shared header followed by exactly three application tabs, initially labelled `Application 1`, `Application 2`, and `Application 3`. Each tab contains these sections in order:
 
 1. Job input.
 2. Generator configuration.
 3. Generate/cancel controls and progress.
 4. Results.
 
-The header shows Codex account status and a compact status badge for each application tab, so the user can see both sessions while either tab is selected. The two application tabs are part of the web application's UI; they are not browser tabs. Desktop may use a two-column layout for input and configuration. Mobile must collapse to one column. Every control needs a visible label, keyboard focus state, and accessible validation message.
+The header shows Codex account status and a compact status badge for each application tab, so the user can see all three sessions while any tab is selected. The three application tabs are part of the web application's UI; they are not browser tabs. Desktop may use a two-column layout for input and configuration. Mobile must collapse to one column. Every control needs a visible label, keyboard focus state, and accessible validation message.
 
 Each application tab owns its own draft, selected configuration snapshot, generation ID, progress, errors, and result. Switching application tabs must not interrupt either Codex turn or replace either form.
 
@@ -240,25 +240,25 @@ Enable only efforts present in the selected model's `supportedReasoningEfforts`.
 ### Generate and cancel
 
 - `Generate` is enabled only when the app is authenticated through ChatGPT, a fresh model catalog exists, the job description is valid, a compatible skill and effort are selected, and all required skill parameters are valid.
-- Each application tab may own one active generation at a time. The other application tab remains able to submit and run its own generation immediately.
+- Each application tab may own one active generation at a time. The other application tabs remain able to submit and run their own generations immediately.
 - During a run in the selected application tab, replace Generate with `Cancel generation` and call `turn/interrupt` only for that generation.
 - Preserve the form after success, error, or cancellation.
 
-### Two application tabs and concurrency
+### Three application tabs and concurrency
 
-- Render exactly two application tabs in the MVP. Do not provide an `Add tab` control.
+- Render exactly three application tabs in the MVP. Do not provide an `Add tab` control.
 - Each submitted generation receives an unguessable generation ID, a dedicated Codex thread, a dedicated workspace, unique input files, and a unique output file.
-- Store both application tabs' draft state and active generation IDs under separate keys in `sessionStorage`. Shared defaults for a newly reset form remain in `localStorage`; changing a selection in one tab must not mutate the other tab's existing draft or submitted run.
+- Store all three application tabs' draft state and active generation IDs under separate keys in `sessionStorage`. Shared defaults for a newly reset form remain in `localStorage`; changing a selection in one tab must not mutate another tab's existing draft or submitted run.
 - Each application tab subscribes only to its generation's SSE endpoint and renders only that generation's events and result.
 - SSE reconnection must resume from the last event ID without duplicating terminal events.
-- Cancelling one application tab must not cancel the other. Reloading the page must reconnect both tabs to any active generations recorded in `sessionStorage`.
-- The backend must support exactly two application-owned active generations simultaneously for the MVP.
-- The application must not implement a FIFO queue. When both application tabs are running, neither tab can submit another generation because each already owns an active run.
-- As a defensive measure against duplicate browser clients or direct API calls, a third simultaneous `POST /api/generations` must be rejected with HTTP `409` and code `generation_capacity_reached`; it must never be queued.
+- Cancelling one application tab must not cancel the others. Reloading the page must reconnect all three tabs to any active generations recorded in `sessionStorage`.
+- The backend must support exactly three application-owned active generations simultaneously for the MVP.
+- The application must not implement a FIFO queue. When all three application tabs are running, no tab can submit another generation because each already owns an active run.
+- As a defensive measure against duplicate browser clients or direct API calls, a fourth simultaneous `POST /api/generations` must be rejected with HTTP `409` and code `generation_capacity_reached`; it must never be queued.
 
 ### Progress
 
-Show a concise status badge in both tab headers and a detailed timeline inside the selected tab. Application lifecycle values are:
+Show a concise status badge in all tab headers and a detailed timeline inside the selected tab. Application lifecycle values are:
 
 - `Idle`.
 - `Preparing input`.
@@ -279,7 +279,7 @@ When app-server sends an ordinary `item/tool/requestUserInput` request for a gen
 
 The backend owns a response timer beginning when it receives the request. Use 15 minutes or an earlier positive `autoResolutionMs` deadline supplied by app-server. Persist the pending request and deadline in `generation.json` so page reload does not lose it. If the user submits a valid response, send the matching app-server response and return the generation to `Running`. If the deadline expires, respond with `cancel` when the protocol requires a response, interrupt the turn, and finish the generation as `Cancelled` with `Input request timed out`.
 
-Only one unresolved ordinary input request may be shown for a generation at a time. Reject stale responses whose request ID no longer matches. A generation in `Waiting for input` continues to occupy its application tab and one of the two active-generation slots.
+Only one unresolved ordinary input request may be shown for a generation at a time. Reject stale responses whose request ID no longer matches. A generation in `Waiting for input` continues to occupy its application tab and one of the three active-generation slots.
 
 The MVP must never ask the user to expand filesystem, network, command, file-change, MCP, or other tool permissions. Automatically decline or cancel `item/commandExecution/requestApproval`, `item/fileChange/requestApproval`, `item/permissions/requestApproval`, MCP elicitation, and equivalent approval requests, then interrupt the affected turn. Fail that generation with a safe explanation identifying the denied capability, without exposing raw commands or sensitive arguments. The other generation must remain unaffected.
 
@@ -305,7 +305,7 @@ Show the automatic deletion date for every unkept terminal generation. Replace `
 
 For failed or cancelled generations that have no result view, show the same expiry, Keep, and Delete now controls in the tab's terminal-status panel.
 
-Each application tab must retain its own generation ID so two completed results can be switched between without overwriting each other. A generation-specific result URL may be provided for reload/reconnection, but opening multiple browser tabs is not required for the MVP.
+Each application tab must retain its own generation ID so three completed results can be switched between without overwriting each other. A generation-specific result URL may be provided for reload/reconnection, but opening multiple browser tabs is not required for the MVP.
 
 Do not display a prior `cv-output.json` as the result of a failed or cancelled run.
 
@@ -387,7 +387,7 @@ The backend must validate the request again, independently of browser validation
 
 Create a generation record before starting filesystem work. The record must capture the immutable submitted input, resolved skill path, skill parameters, model, effort, status, timestamps, Codex thread and turn IDs when available, and workspace/result paths.
 
-Do not use a process-wide generation mutex. A short critical section may allocate IDs and create workspace directories, but the two independent Codex turns must be allowed to overlap.
+Do not use a process-wide generation mutex. A short critical section may allocate IDs and create workspace directories, but the three independent Codex turns must be allowed to overlap.
 
 ### 2. Create an isolated generation workspace
 
@@ -448,6 +448,7 @@ The application must not read or modify the repository's source `base-profile/jo
 
 Start a new thread for every generation with:
 
+- `ephemeral: true`, so the generation never resumes or inherits another generation's conversation history;
 - `cwd` set to that generation's `workspace/` directory;
 - the selected model;
 - an approval policy that does not grant or interactively expand permissions beyond the predefined sandbox;
@@ -511,7 +512,7 @@ type BootstrapResponse = {
   codexVersion: string;
   capacity: {
     active: number;
-    limit: 2;
+    limit: 3;
   };
   auth: {
     authenticated: boolean;
@@ -547,7 +548,7 @@ Request:
 
 ```ts
 type CreateGenerationRequest = {
-  applicationTabId: "application-1" | "application-2";
+  applicationTabId: "application-1" | "application-2" | "application-3";
   jobDescription: string;
   questions: string[];
   skillName: string;
@@ -559,7 +560,7 @@ type CreateGenerationRequest = {
 
 Response: HTTP `202` with `{ generationId: string, status: "preparing" }`.
 
-Reject the request with HTTP `409` when the named application tab already owns an active generation or when two generations are already active. Use `application_tab_busy` or `generation_capacity_reached` respectively. Do not enqueue the request.
+Reject the request with HTTP `409` when the named application tab already owns an active generation or when three generations are already active. Use `application_tab_busy` or `generation_capacity_reached` respectively. Do not enqueue the request.
 
 ### `GET /api/generations/:id/events`
 
@@ -635,7 +636,7 @@ Provide distinct, actionable messages for:
 - Selected skill disappeared between bootstrap and generation.
 - Generation workspace snapshot failure.
 - Application tab already has an active generation.
-- A third generation request was rejected because both application slots are active.
+- A fourth generation request was rejected because all three application slots are active.
 - App-server exited or lost connection.
 - Usage limit or rate limit reached.
 - Interactive input request timed out.
@@ -685,10 +686,10 @@ Keep technical diagnostics in an expandable panel. Never include secrets, auth-f
 - Give every generation a unique directory, job-description file, questions file, output file, Codex thread, turn, event stream, metadata record, and result file.
 - Never use hard links, a shared writable overlay, or a common temporary output between generation workspaces.
 - Use a run start timestamp and workspace-local path checks to reject stale or cross-run output.
-- Permit at most one active generation per application tab and two active generations overall. Reject excess requests; do not queue them.
+- Permit at most one active generation per application tab and three active generations overall. Reject excess requests; do not queue them.
 - A run may change only files inside its own model-writable workspace.
 - On failure, do not restore or display an older output; report the failure in only the affected generation.
-- Persist terminal generation state and validated results atomically so both application tabs can reconnect after page reload.
+- Persist terminal generation state and validated results atomically so all three application tabs can reconnect after page reload.
 - Keep runtime directories out of version control and apply the 30-day retention, Keep, individual deletion, and unkept-terminal bulk cleanup contract above.
 - Do not commit generated runtime content automatically.
 
@@ -705,7 +706,7 @@ Keep technical diagnostics in an expandable panel. Never include secrets, auth-f
 - Model pagination, filtering, saved-selection restoration, unsupported-effort fallback, and retired-model fallback.
 - Output JSON parsing, schema validation, stale-file rejection, and exact question-answer reconciliation.
 - Generation workspace path containment, exclusion rules, and copy isolation.
-- Two-slot admission control, per-application-tab ownership, and per-generation event routing.
+- Three-slot admission control, per-application-tab ownership, and per-generation event routing.
 - Interactive-request routing, stale-response rejection, deadline calculation, timeout cancellation, and permission-request denial.
 - Retention-date calculation, Keep toggling, active-run protection, staged cleanup, and expired-generation behavior.
 - Secret redaction.
@@ -724,10 +725,10 @@ Use a fake app-server process to cover:
 - automatic rejection of command, file-change, filesystem, network, MCP, and tool permission requests;
 - app-server crash recovery;
 - rate-limit and usage-limit errors;
-- two active runs with independent threads, runtime paths, and workspaces;
-- rejection of a third simultaneous run without creating a queue;
+- three active runs with independent threads, runtime paths, and workspaces;
+- rejection of a fourth simultaneous run without creating a queue;
 - cancellation of one run without interrupting another;
-- distinct outputs when two runs finish in either order;
+- distinct outputs when concurrent runs finish in any order;
 - retention cleanup that skips active and kept generations.
 
 ### End-to-end tests
@@ -742,10 +743,10 @@ Use Playwright to verify:
 - Generate is disabled when signed out or invalid;
 - a successful run displays CV and answers and allows JSON download;
 - a failed run never displays stale output as new;
-- the two application tabs can submit different jobs simultaneously, receive isolated progress, and display the correct result in each tab;
+- the three application tabs can submit different jobs simultaneously, receive isolated progress, and display the correct result in each tab;
 - switching application tabs does not interrupt either run;
-- reloading the page reconnects both application tabs to their generations;
-- both tab-header status badges update while either application tab is selected;
+- reloading the page reconnects all three application tabs to their generations;
+- all tab-header status badges update while any application tab is selected;
 - an ordinary Codex question pauses only its owning tab, survives page reload, resumes after a valid answer, and times out safely;
 - permission-expansion requests are denied without affecting the other tab;
 - expiry dates, Keep, Remove keep, Delete now, and Clear unkept history follow the retention contract.
@@ -766,9 +767,9 @@ The feature is complete when all of the following are true:
 6. Missing or retired selections fall back deterministically and inform the user.
 7. Generate creates an isolated workspace, atomically writes unique job-description and question files, reserves a unique output path, and invokes exactly one selected skill with all three runtime paths.
 8. The selected model and mapped effort are sent to Codex.
-9. The two tabs inside the application can execute their generations concurrently with different inputs and without shared-file writes or cross-run events.
-10. The application permits exactly two active generations, one per application tab, and rejects a third request without queuing it.
-11. Cancelling one application tab does not cancel or corrupt the other tab's generation, and page reload reconnects both tabs.
+9. The three tabs inside the application can execute their generations concurrently with different inputs and without shared-file writes or cross-run events.
+10. The application permits exactly three active generations, one per application tab, and rejects a fourth request without queuing it.
+11. Cancelling one application tab does not cancel or corrupt the other tabs' generations, and page reload reconnects all three tabs.
 12. A successful result passes the selected skill's JSON Schema and has exactly one answer for every non-empty submitted question in order.
 13. The UI renders each generation's CV and answers on its own result route and supports copy and JSON download.
 14. Signed-out, failed, cancelled, stale-output, cross-run-output, and invalid-output states are clear and never masquerade as success.
@@ -782,8 +783,8 @@ The feature is complete when all of the following are true:
 1. Scaffold `cv-web` and local-only Fastify/React development flow.
 2. Add the app-server process manager, initialization, auth state, and current model discovery.
 3. Require the completed companion skill migration, then add skill discovery, runtime-contract validation, the restricted UI parameter-schema contract, and the Steven schema.
-4. Build the two-tab application UI, preference reconciliation, status badges, and accessibility behavior.
-5. Add isolated workspace snapshots, atomic runtime-input serialization, generation records, and two-slot admission control without a queue.
+4. Build the three-tab application UI, preference reconciliation, status badges, and accessibility behavior.
+5. Add isolated workspace snapshots, atomic runtime-input serialization, generation records, and three-slot admission control without a queue.
 6. Add per-generation thread/turn execution, explicit skill invocation, demultiplexed SSE progress, interactive input handling, approval denial, reconnection, and cancellation.
 7. Add workspace-local output freshness checks, schema validation, durable result rendering, copy, and download.
 8. Add 30-day cleanup, Keep, individual deletion, and unkept-history cleanup.
@@ -800,6 +801,6 @@ The implementation must add a `cv-web/README.md` containing:
 - the local URL and local-only security warning;
 - how to add a compatible CV skill and optional `ui.schema.json`;
 - the companion skill specification and required runtime contract;
-- the two concurrent application tabs, workspace locations, disk usage, 30-day retention, Keep, and cleanup controls;
+- the three concurrent application tabs, workspace locations, disk usage, 30-day retention, Keep, and cleanup controls;
 - the interactive-input timeout and permission-denial behavior;
 - troubleshooting for authentication, model discovery, usage limits, failed generation, and invalid output.

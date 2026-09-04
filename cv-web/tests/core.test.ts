@@ -2,13 +2,14 @@ import { mkdtemp, readFile, realpath, rm } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
-import type { CreateGenerationRequest } from "../shared/types.js";
+import type { ApplicationTabId, CreateGenerationRequest } from "../shared/types.js";
 import { versionAtLeast } from "../server/codex/version.js";
 import { listModels } from "../server/codex/catalog.js";
 import { assertContained } from "../server/fs-utils.js";
 import { normalizeRequest } from "../server/generations/types.js";
 import { GenerationStore } from "../server/generations/store.js";
-import { safeItemActivity, THREAD_SANDBOX_MODE } from "../server/generations/coordinator.js";
+import { freshThreadStartParams, safeItemActivity, THREAD_SANDBOX_MODE } from "../server/generations/coordinator.js";
+import { publishedPdfFilename } from "../server/pdf/generator.js";
 import { buildWorkspace } from "../server/generations/workspace.js";
 import { redactSecrets } from "../server/security.js";
 import { discoverSkills, type DiscoveredSkill } from "../server/skills/discovery.js";
@@ -28,7 +29,7 @@ afterEach(async () => {
   await Promise.all(temporaryDirectories.splice(0).map((path) => rm(path, { recursive: true, force: true })));
 });
 
-function request(tab: "application-1" | "application-2" = "application-1"): CreateGenerationRequest {
+function request(tab: ApplicationTabId = "application-1"): CreateGenerationRequest {
   return {
     applicationTabId: tab,
     jobDescription: "A role\r\nwith details",
@@ -43,6 +44,19 @@ function request(tab: "application-1" | "application-2" = "application-1"): Crea
 describe("Codex catalog", () => {
   it("uses the SandboxMode spelling required by thread/start", () => {
     expect(THREAD_SANDBOX_MODE).toBe("workspace-write");
+  });
+
+  it("starts every generation as a fresh ephemeral thread", () => {
+    expect(freshThreadStartParams({
+      submitted: { model: "test-model" },
+      paths: { workspace: "/isolated/generation" },
+    } as never)).toEqual({
+      model: "test-model",
+      cwd: "/isolated/generation",
+      approvalPolicy: "never",
+      sandbox: "workspace-write",
+      ephemeral: true,
+    });
   });
 
   it("normalizes safe activity without exposing reasoning or raw commands", () => {
@@ -117,7 +131,7 @@ describe("skills and admission", () => {
     expect(compiled.validate({ country: "UK", extra: true })).toBe(false);
   });
 
-  it("admits two independent tabs and rejects a third request without a queue", async () => {
+  it("admits three independent tabs and rejects a fourth request without a queue", async () => {
     const runtime = await temporary();
     const store = new GenerationStore(runtime);
     await store.initialize();
@@ -126,8 +140,9 @@ describe("skills and admission", () => {
     const skill = { name: "alex-cv-generator", realSourcePath: "", sourcePath: "", displayName: "Alex", description: "Test", runnable: true, snapshotFiles: [], validateParameters: validate } as DiscoveredSkill;
     await store.create(request("application-1"), skill, join(runtime, "pdf-output"));
     await store.create(request("application-2"), skill, join(runtime, "pdf-output"));
+    await store.create(request("application-3"), skill, join(runtime, "pdf-output"));
     await expect(store.create(request("application-1"), skill, join(runtime, "pdf-output"))).rejects.toMatchObject({ code: "generation_capacity_reached" });
-    expect(store.activeCount()).toBe(2);
+    expect(store.activeCount()).toBe(3);
   });
 
   it("starts a fresh 30-day retention window when Keep is removed", async () => {
@@ -147,6 +162,12 @@ describe("skills and admission", () => {
 });
 
 describe("PDF settings", () => {
+  it("uses a clean PDF name and only adds a numeric suffix for a collision", () => {
+    const result = { personNameOnCV: "Steve Onye", companyNameApplyJob: "Alpaca" };
+    expect(publishedPdfFilename(result)).toBe("Steve Onye_Alpaca.pdf");
+    expect(publishedPdfFilename(result, 2)).toBe("Steve Onye_Alpaca_2.pdf");
+  });
+
   it("persists a canonical writable output directory across service restarts", async () => {
     const runtime = await temporary();
     const output = join(runtime, "published-cvs");

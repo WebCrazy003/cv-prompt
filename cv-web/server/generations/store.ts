@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, opendir, readFile, rename, rm } from "node:fs/promises";
 import { join } from "node:path";
-import type { ApplicationGenerationStatus, CreateGenerationRequest, GenerationEvent, GenerationSummary } from "../../shared/types.js";
+import { GENERATION_CAPACITY, type ApplicationGenerationStatus, type CreateGenerationRequest, type GenerationEvent, type GenerationSummary } from "../../shared/types.js";
 import { AppError, messageOf } from "../errors.js";
 import { atomicWriteJson } from "../fs-utils.js";
 import type { DiscoveredSkill } from "../skills/discovery.js";
@@ -50,8 +50,8 @@ export class GenerationStore {
   }
 
   async create(request: CreateGenerationRequest, skill: DiscoveredSkill, pdfOutputDirectory: string): Promise<GenerationRecord> {
-    if (this.activeCount() >= 2) {
-      throw new AppError(409, "generation_capacity_reached", "Both generation slots are active. No generation was queued.");
+    if (this.activeCount() >= GENERATION_CAPACITY) {
+      throw new AppError(409, "generation_capacity_reached", `All ${GENERATION_CAPACITY} generation slots are active. No generation was queued.`);
     }
     if ([...this.records.values()].some((record) => record.applicationTabId === request.applicationTabId && ACTIVE.has(record.status))) {
       throw new AppError(409, "application_tab_busy", "This application tab already owns an active generation.");

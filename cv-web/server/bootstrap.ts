@@ -1,4 +1,4 @@
-import type { BootstrapResponse, ModelOption } from "../shared/types.js";
+import { GENERATION_CAPACITY, type BootstrapResponse, type ModelOption } from "../shared/types.js";
 import { listModels, readAccount } from "./codex/catalog.js";
 import type { CodexAppServerClient } from "./codex/client.js";
 import { readCodexVersion } from "./codex/version.js";
@@ -35,7 +35,7 @@ export class BootstrapService {
   response(active: number): BootstrapResponse & { diagnostics: string[] } {
     return {
       codexVersion: this.codexVersion,
-      capacity: { active, limit: 2 },
+      capacity: { active, limit: GENERATION_CAPACITY },
       auth: this.auth,
       models: this.models,
       skills: this.skillOptions,

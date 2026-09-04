@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { APPLICATION_TAB_IDS } from "../shared/types.js";
 
 export const createGenerationSchema = z.object({
-  applicationTabId: z.enum(["application-1", "application-2"]),
+  applicationTabId: z.enum(APPLICATION_TAB_IDS),
   jobDescription: z.string().max(100_000).refine((value) => value.trim().length > 0, "Job description is required."),
   questions: z.array(z.string().max(10_000)).max(50),
   skillName: z.string().min(1).max(200),

@@ -1,4 +1,6 @@
-export type ApplicationTabId = "application-1" | "application-2";
+export const APPLICATION_TAB_IDS = ["application-1", "application-2", "application-3"] as const;
+export type ApplicationTabId = typeof APPLICATION_TAB_IDS[number];
+export const GENERATION_CAPACITY = APPLICATION_TAB_IDS.length;
 export type ReasoningEffort = "low" | "medium" | "high";
 export type ApplicationGenerationStatus =
   | "idle"
@@ -47,7 +49,7 @@ export interface SkillOption {
 
 export interface BootstrapResponse {
   codexVersion: string;
-  capacity: { active: number; limit: 2 };
+  capacity: { active: number; limit: number };
   auth: {
     authenticated: boolean;
     eligible: boolean;

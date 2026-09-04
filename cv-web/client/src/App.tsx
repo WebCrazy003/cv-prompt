@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { APPLICATION_TAB_IDS, GENERATION_CAPACITY } from "../../shared/types";
 import type {
   ApplicationTabId,
   BootstrapResponse,
@@ -15,10 +16,10 @@ import { loadDraft, loadPreferences, preferredDraft, saveDraft, savePreferences,
 type GenerationPayload = { generation: GenerationSummary; events: GenerationEvent[]; pendingInput?: { requestId: string; questions: Array<{ id: string; header: string; question: string; options?: Array<{ label: string }> }> ; deadline: string }; result?: Record<string, unknown> };
 type BootstrapPayload = BootstrapResponse & { diagnostics?: string[] };
 
-const tabs: Array<{ id: ApplicationTabId; label: string }> = [
-  { id: "application-1", label: "Application 1" },
-  { id: "application-2", label: "Application 2" },
-];
+const tabs: Array<{ id: ApplicationTabId; label: string }> = APPLICATION_TAB_IDS.map((id, index) => ({
+  id,
+  label: `Application ${index + 1}`,
+}));
 const activeStatuses = new Set(["preparing", "starting_codex", "running", "waiting_for_input", "cancelling", "validating"]);
 const statusLabels: Record<string, string> = {
   preparing: "Preparing input", starting_codex: "Starting Codex", running: "Running", waiting_for_input: "Waiting for input",
@@ -70,7 +71,11 @@ async function api<T>(path: string, token?: string, init: RequestInit = {}): Pro
 export function App() {
   const [page, setPage] = useState<"applications" | "settings">("applications");
   const [selectedTab, setSelectedTab] = useState<ApplicationTabId>("application-1");
-  const [drafts, setDrafts] = useState<Record<ApplicationTabId, Draft>>({ "application-1": loadDraft("application-1"), "application-2": loadDraft("application-2") });
+  const [drafts, setDrafts] = useState<Record<ApplicationTabId, Draft>>({
+    "application-1": loadDraft("application-1"),
+    "application-2": loadDraft("application-2"),
+    "application-3": loadDraft("application-3"),
+  });
   const [runs, setRuns] = useState<Partial<Record<ApplicationTabId, GenerationPayload>>>({});
   const [bootstrap, setBootstrap] = useState<BootstrapPayload>();
   const [sessionToken, setSessionToken] = useState("");
@@ -154,7 +159,7 @@ export function App() {
       sources.push(source);
     }
     return () => sources.forEach((source) => source.close());
-  }, [drafts["application-1"].generationId, drafts["application-2"].generationId, loadGeneration]);
+  }, [drafts["application-1"].generationId, drafts["application-2"].generationId, drafts["application-3"].generationId, loadGeneration]);
 
   const draft = drafts[selectedTab];
   const run = runs[selectedTab];
@@ -276,7 +281,7 @@ export function App() {
       <div>
         <p className="eyebrow">Local Codex workspace</p>
         <h1>Job application studio</h1>
-        <p className="lede">Two independent workspaces for tailored CVs and application answers.</p>
+        <p className="lede">Three independent workspaces for tailored CVs and application answers.</p>
       </div>
       <div className="masthead-actions"><div className={`account ${bootstrap?.auth.eligible ? "good" : "warn"}`}><span className="pulse" />{loading ? "Connecting…" : authLabel}</div><div className="page-switch"><button className={page === "applications" ? "selected" : ""} onClick={() => setPage("applications")}>Applications</button><button className={page === "settings" ? "selected" : ""} onClick={() => setPage("settings")}>Settings</button></div></div>
     </header>
@@ -352,7 +357,7 @@ export function App() {
 
     {page === "applications" && run?.generation.status === "completed" && run.result && <ResultPanel result={run.result} generationId={run.generation.id} pdfPath={run.generation.pdfPath} pdfWarning={run.generation.pdfWarning} onNotify={notify} />}
     {page === "applications" && run && ["completed", "failed", "cancelled"].includes(run.generation.status) && <section className="retention panel"><div><strong>{run.generation.kept ? "Kept on this machine" : `Automatic deletion ${run.generation.expiresAt ? new Date(run.generation.expiresAt).toLocaleString() : "scheduled"}`}</strong><p>Each generation retains its own input snapshot, diagnostics, and validated result.</p></div><div className="retention-actions"><button className="primary" onClick={resetApplication}>Reset application</button><button className="secondary" onClick={() => void updateKeep(!run.generation.kept)}>{run.generation.kept ? "Remove keep" : "Keep"}</button><button className="danger" onClick={() => void deleteRun()}>Delete now</button></div></section>}
-    <footer><span>Codex {bootstrap?.codexVersion ?? "—"}</span><span>Active workspaces {bootstrap?.capacity.active ?? 0} / 2</span><span>Runs stay on this machine</span></footer>
+    <footer><span>Codex {bootstrap?.codexVersion ?? "—"}</span><span>Active workspaces {bootstrap?.capacity.active ?? 0} / {bootstrap?.capacity.limit ?? GENERATION_CAPACITY}</span><span>Runs stay on this machine</span></footer>
   </div>;
 }
 
@@ -406,7 +411,7 @@ function SettingsPage({ value, savedValue, saving, onChange, onSave }: { value: 
         {value && !valid && <p className="settings-error" role="alert">Enter an absolute path, such as <code>/Users/you/Documents/CVs</code>.</p>}
         <button className="primary" disabled={!valid || saving || value === savedValue} onClick={onSave}>{saving ? "Saving…" : "Save output directory"}</button>
       </div>
-      <aside className="path-preview"><span>Generated PDF layout</span><code>{value || "/your/output/directory"}/yy_mm_dd/Person_Company_generation.pdf</code><p>JSON remains preserved in the isolated generation record. The styled PDF is also copied to this directory.</p></aside>
+      <aside className="path-preview"><span>Generated PDF layout</span><code>{value || "/your/output/directory"}/yy_mm_dd/Person_Company.pdf</code><p>JSON remains preserved in the isolated generation record. The styled PDF is also copied to this directory.</p></aside>
     </div>
   </main>;
 }

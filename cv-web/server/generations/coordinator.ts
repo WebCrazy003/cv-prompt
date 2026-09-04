@@ -31,6 +31,16 @@ const APPROVAL_METHODS = new Set([
 
 export const THREAD_SANDBOX_MODE = "workspace-write" as const;
 
+export function freshThreadStartParams(record: Pick<GenerationRecord, "submitted" | "paths">) {
+  return {
+    model: record.submitted.model,
+    cwd: record.paths.workspace,
+    approvalPolicy: "never" as const,
+    sandbox: THREAD_SANDBOX_MODE,
+    ephemeral: true,
+  };
+}
+
 type SafeItem = { type?: string; text?: string };
 
 export function safeItemActivity(method: string, item: SafeItem | undefined): string | undefined {
@@ -110,17 +120,11 @@ export class GenerationCoordinator {
       await this.store.emit(record, "progress", { kind: "application", message: "Workspace snapshot and runtime inputs are ready." });
       await this.store.transition(record, "starting_codex");
 
-      const thread = await this.client.request<ThreadStartResponse>("thread/start", {
-        model: record.submitted.model,
-        cwd: record.paths.workspace,
-        approvalPolicy: "never",
-        sandbox: THREAD_SANDBOX_MODE,
-        ephemeral: true,
-      });
+      const thread = await this.client.request<ThreadStartResponse>("thread/start", freshThreadStartParams(record));
       record.threadId = thread.thread.id;
       record.startedAt = new Date().toISOString();
       await this.store.persist(record);
-      await this.store.emit(record, "progress", { kind: "codex", message: "Codex thread started. Sending the selected CV skill." });
+      await this.store.emit(record, "progress", { kind: "codex", message: "Fresh ephemeral Codex thread started. Sending the selected CV skill." });
       if (record.cancelRequested) {
         await this.store.finish(record, "cancelled", "Cancelled before Codex started.");
         return;
