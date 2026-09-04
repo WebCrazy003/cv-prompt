@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "country": {
+      "type": "string",
+      "title": "Country",
+      "enum": ["poland", "UK"]
+    },
+    "LK-match": {
+      "type": "string",
+      "title": "LinkedIn match",
+      "enum": ["none", "LK-match"]
+    }
+  },
+  "required": ["country", "LK-match"],
+  "additionalProperties": false
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.cv-prompt/spec/cv-skill-runtime-contract.schema.json",
+  "title": "CV skill runtime contract",
+  "type": "object",
+  "required": [
+    "version",
+    "runtimeParameters",
+    "outputSchema",
+    "candidateDataRoot",
+    "snapshotIncludes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "runtimeParameters": {
+      "type": "array",
+      "prefixItems": [
+        { "const": "jobDescriptionFile" },
+        { "const": "jobQuestionsFile" },
+        { "const": "cvOutputFile" }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true
+    },
+    "outputSchema": {
+      "const": "references/cv-output.schema.json"
+    },
+    "candidateDataRoot": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*[*?\\[\\]{}])(?:[^/]+/)*[^/]+$"
+    },
+    "snapshotIncludes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^(?!!)(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*(?:^|/)(?:\\.git|\\.cv-web-runtime|node_modules|build|dist|out|coverage|\\.next)(?:/|$))(?!\\.codex/skills(?:/|$))(?!(?:\\*|\\*\\*|\\*\\*/\\*|\\.)$).+$"
+      }
+    }
+  }
+}

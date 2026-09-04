@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "runtimeParameters": [
+    "jobDescriptionFile",
+    "jobQuestionsFile",
+    "cvOutputFile"
+  ],
+  "outputSchema": "references/cv-output.schema.json",
+  "candidateDataRoot": "base-profile/steven",
+  "snapshotIncludes": [
+    "base-profile/steven/candidate-profile-steven-no-LK.md",
+    "base-profile/steven/candidate-profile-steven.md",
+    "base-profile/steven/candidate-profile-steven-UK-no-LK.md",
+    "base-profile/steven/candidate-profile-steven-UK.md"
+  ]
+}

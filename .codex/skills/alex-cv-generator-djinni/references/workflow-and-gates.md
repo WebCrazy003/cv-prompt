@@ -4,7 +4,7 @@ Keep intermediate reasoning out of the output file.
 
 ## 0. Runtime source gate
 
-Read `base-profile/alex/candidate-profile-djinni.md` and `base-profile/job-application.md` directly from disk. Do not inspect or reuse `base-profile/cv-output.json` as drafting input.
+After validating every required runtime parameter, read `base-profile/alex/candidate-profile-djinni.md`, `jobDescriptionFile`, and `jobQuestionsFile` directly from disk. Do not inspect or reuse `cvOutputFile` as drafting input.
 
 Record internally:
 
@@ -51,7 +51,7 @@ Pass only if:
 - leadership and AI emphasis match the role;
 - irrelevant skills and bullets are omitted;
 - exact JD wording is used where truthful; and
-- target company and target title match the current job file.
+- target company and target title match `jobDescriptionFile`.
 
 ## 6. Quality and schema gate
 
@@ -67,8 +67,8 @@ Pass only if:
 
 ## 7. Pre-write freshness gate
 
-Read `base-profile/job-application.md` again and rebuild the current-job anchor set. If the company, title, questions, or mandatory stack changed, discard the draft and restart at stage 0.
+Re-read `jobDescriptionFile` and `jobQuestionsFile`, then rebuild the current-job anchor set. If either file's contents or the extracted company, title, question order, or mandatory stack changed, discard the draft and restart at stage 0.
 
 ## 8. Write and final audit
 
-Write only the validated JSON object to `base-profile/cv-output.json`. Parse it, validate it against the schema, and compare every factual claim with the freshly read Djinni profile plus the authorized related-technology set. Confirm the final CV and JD are consistent without treating the JD by itself as evidence about the candidate.
+After every generation and validation gate passes, atomically create or replace only `cvOutputFile`. Keep any temporary file beside that destination and remove it after replacement; write nowhere else. Parse the written file, validate it against the schema, confirm its `jobQuestionAnswers` text and order against `jobQuestionsFile`, and compare every factual claim with the freshly read Djinni profile plus the authorized related-technology set before reporting success. Confirm the final CV and JD are consistent without treating the JD by itself as evidence about the candidate.

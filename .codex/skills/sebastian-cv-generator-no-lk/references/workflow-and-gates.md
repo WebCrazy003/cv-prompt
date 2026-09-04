@@ -4,7 +4,7 @@ Perform these stages in order. Keep intermediate reasoning out of the output fil
 
 ## 0. Runtime Source Gate
 
-Read `candidate-profile-sebastian-no-LK.md` and `job-application.md` directly from disk for this invocation. Do this even if either file was read earlier in the conversation. Do not inspect or reuse `cv-output.json` as drafting input.
+After validating every required runtime parameter, read `base-profile/sebastian/candidate-profile-sebastian-no-LK.md`, `jobDescriptionFile`, and `jobQuestionsFile` directly from disk for this invocation. Do this even if any file was read earlier in the conversation. Do not inspect or reuse `cvOutputFile` as drafting input.
 
 Record internally a current-job anchor set containing:
 
@@ -90,7 +90,7 @@ If the gate fails, revise and rerun all affected gates.
 
 ## 8. Pre-write Freshness Gate
 
-Read `job-application.md` from disk again and rebuild the current-job anchor set. Compare it with the anchors used to create the draft.
+Re-read `jobDescriptionFile` and `jobQuestionsFile` from disk and rebuild the current-job anchor set. Compare both file contents and the resulting anchors with those used to create the draft.
 
 - If the company, title, questions, or mandatory stack changed, discard the draft and restart at stage 0.
 - Confirm every supplied application question appears exactly once and no unsupplied question appears.
@@ -100,4 +100,4 @@ This gate fails when the JSON is structurally valid but targets an earlier job.
 
 ## 9. Return the result
 
-Write only the validated final JSON object to `base-profile/cv-output.json`. Parse the written file, validate it against the schema, run the employer-uniqueness validator specified in `SKILL.md`, and rerun the source-alignment checks on the written values before finishing.
+After every generation and validation gate passes, atomically create or replace only `cvOutputFile`. Keep any temporary file beside that destination and remove it after replacement; write nowhere else. Parse the written file, validate it against the schema, confirm its `jobQuestionAnswers` text and order against `jobQuestionsFile`, run the employer-uniqueness validator specified in `SKILL.md`, and rerun the source-alignment checks before reporting success.
