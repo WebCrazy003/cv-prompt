@@ -1,0 +1,4 @@
+interface:
+  display_name: "Steven CV Generator"
+  short_description: "Create Steve Onye's tailored ATS CV JSON"
+  default_prompt: "Use $steven-cv-generator with the supplied country and LK-match values to select the correct on-disk profile and fully regenerate Steve Onye's tailored CV JSON."
