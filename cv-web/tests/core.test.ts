@@ -1,9 +1,10 @@
-import { mkdtemp, readFile, realpath, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
 import type { ApplicationTabId, CreateGenerationRequest } from "../shared/types.js";
 import { versionAtLeast } from "../server/codex/version.js";
+import { resolveCodexCommand } from "../server/config.js";
 import { listModels, summarizeAccountRateLimits } from "../server/codex/catalog.js";
 import { assertContained } from "../server/fs-utils.js";
 import { normalizeRequest } from "../server/generations/types.js";
@@ -69,6 +70,16 @@ describe("Codex catalog", () => {
     expect(versionAtLeast("0.153.0", "0.153.0")).toBe(true);
     expect(versionAtLeast("0.154.0", "0.153.0")).toBe(true);
     expect(versionAtLeast("0.152.9", "0.153.0")).toBe(false);
+  });
+
+  it("finds the newest VS Code Codex CLI when shortcut PATH does not include it", async () => {
+    const fakeHome = await temporary();
+    const binDirectory = process.platform === "darwin" ? `macos-${process.arch}` : process.platform === "linux" ? `linux-${process.arch}` : `windows-${process.arch}`;
+    const older = join(fakeHome, ".vscode", "extensions", "openai.chatgpt-26.825.51511-test", "bin", binDirectory, process.platform === "win32" ? "codex.exe" : "codex");
+    const newer = join(fakeHome, ".vscode", "extensions", "openai.chatgpt-26.901.22334-test", "bin", binDirectory, process.platform === "win32" ? "codex.exe" : "codex");
+    await Promise.all([mkdir(resolve(older, ".."), { recursive: true }), mkdir(resolve(newer, ".."), { recursive: true })]);
+    await Promise.all([writeFile(older, "", { mode: 0o755 }), writeFile(newer, "", { mode: 0o755 })]);
+    expect(await resolveCodexCommand({ PATH: "" }, fakeHome)).toBe(newer);
   });
 
   it("paginates models and filters hidden and unsupported entries", async () => {

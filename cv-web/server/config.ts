@@ -1,6 +1,7 @@
-import { access, realpath, stat } from "node:fs/promises";
+import { access, readdir, realpath, stat } from "node:fs/promises";
 import { constants, existsSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { homedir } from "node:os";
+import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 function locateAppRoot(start: string): string {
@@ -30,6 +31,59 @@ export interface AppConfig {
   pdfPythonCommand: string;
 }
 
+async function isExecutable(path: string): Promise<boolean> {
+  try {
+    await access(path, constants.X_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function vscodeCodexBinDirectory(): string | undefined {
+  if (process.platform === "darwin") return `macos-${process.arch}`;
+  if (process.platform === "linux") return `linux-${process.arch}`;
+  if (process.platform === "win32") return `windows-${process.arch}`;
+  return undefined;
+}
+
+export async function resolveCodexCommand(env: NodeJS.ProcessEnv = process.env, homeDirectory = homedir()): Promise<string> {
+  if (env.CODEX_COMMAND) return env.CODEX_COMMAND;
+
+  const executableName = process.platform === "win32" ? "codex.exe" : "codex";
+  for (const directory of (env.PATH ?? "").split(delimiter).filter(Boolean)) {
+    const candidate = join(directory, executableName);
+    if (await isExecutable(candidate)) return candidate;
+  }
+
+  for (const candidate of [
+    join(homeDirectory, ".local", "bin", executableName),
+    "/opt/homebrew/bin/codex",
+    "/usr/local/bin/codex",
+  ]) {
+    if (await isExecutable(candidate)) return candidate;
+  }
+
+  const extensionRoot = join(homeDirectory, ".vscode", "extensions");
+  const binDirectory = vscodeCodexBinDirectory();
+  if (binDirectory) {
+    try {
+      const extensions = (await readdir(extensionRoot, { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory() && entry.name.startsWith("openai.chatgpt-"))
+        .map((entry) => entry.name)
+        .sort((left, right) => right.localeCompare(left, undefined, { numeric: true }));
+      for (const extension of extensions) {
+        const candidate = join(extensionRoot, extension, "bin", binDirectory, executableName);
+        if (await isExecutable(candidate)) return candidate;
+      }
+    } catch {
+      // The VS Code extension is an optional fallback.
+    }
+  }
+
+  return executableName;
+}
+
 export async function loadConfig(env: NodeJS.ProcessEnv = process.env): Promise<AppConfig> {
   const configuredRoot = env.CV_REPOSITORY_ROOT ?? resolve(APP_ROOT, "..");
   const repositoryRoot = await realpath(configuredRoot);
@@ -57,7 +111,7 @@ export async function loadConfig(env: NodeJS.ProcessEnv = process.env): Promise<
     host: "127.0.0.1",
     port,
     origin: env.CV_WEB_ORIGIN ?? `http://127.0.0.1:${port}`,
-    codexCommand: env.CODEX_COMMAND ?? "codex",
+    codexCommand: await resolveCodexCommand(env),
     minimumCodexVersion: "0.153.0",
     pdfGeneratorRoot: join(APP_ROOT, "pdf-generator"),
     pdfPythonCommand: env.CV_PDF_PYTHON ?? (process.platform === "darwin" ? "/usr/bin/python3" : "python3"),
