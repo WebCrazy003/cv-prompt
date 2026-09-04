@@ -100,4 +100,4 @@ This gate fails when the JSON is structurally valid but targets an earlier job.
 
 ## 9. Return the result
 
-Write only the validated final JSON object to `Alex L/cv-output.json`. Parse the written file, validate it against the schema, run the employer-uniqueness validator specified in `SKILL.md`, and rerun the source-alignment checks on the written values before finishing.
+Write only the validated final JSON object to `base-profile/cv-output.json`. Parse the written file, validate it against the schema, run the employer-uniqueness validator specified in `SKILL.md`, and rerun the source-alignment checks on the written values before finishing.

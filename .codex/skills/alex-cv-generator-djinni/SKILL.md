@@ -1,6 +1,6 @@
 ---
 name: alex-cv-generator-djinni
-description: Generate Alex Latoszek's job-tailored, ATS-friendly CV JSON using his Djinni profile as the stable base truth. Use when tailoring Alex's CV to a job description, answering application questions, auditing profile-to-CV consistency, or writing Alex L/cv-output.json from Alex L/candidate-profile-djinni.md.
+description: Generate Alex Latoszek's job-tailored, ATS-friendly CV JSON using his Djinni profile as the stable base truth. Use when tailoring Alex's CV to a job description, answering application questions, auditing profile-to-CV consistency, or writing base-profile/cv-output.json from base-profile/candidate-profile-djinni.md.
 ---
 
 # Alex CV Generator — Djinni
@@ -11,9 +11,9 @@ Create a job-specific presentation of the candidate's Djinni profile. Tailor emp
 
 Resolve paths from the repository root:
 
-- Read stable candidate facts from `Alex L/candidate-profile-djinni.md`.
-- Read the target job and application questions from `Alex L/job-application.md`.
-- Write the final result to `Alex L/cv-output.json`.
+- Read stable candidate facts from `base-profile/candidate-profile-djinni.md`.
+- Read the target job and application questions from `base-profile/job-application.md`.
+- Write the final result to `base-profile/cv-output.json`.
 
 Never modify either input file during generation. Treat the output as a replaceable build artifact, not as a source.
 
@@ -42,6 +42,6 @@ Before generating or auditing a CV, read all of these files completely:
 2. Match the CV title and emphasis to the JD without changing the underlying career facts.
 3. Keep analysis, mappings, and gate checks internal; write only schema-valid JSON.
 4. Re-read the job file before writing. If its company, title, questions, or mandatory stack changed, discard the draft and restart.
-5. Overwrite `Alex L/cv-output.json` only after the draft passes all gates.
+5. Overwrite `base-profile/cv-output.json` only after the draft passes all gates.
 6. Parse the written JSON and validate its keys, types, required fields, bullet counts, and `additionalProperties: false` constraints against the bundled schema.
 7. Run the final Djinni-profile consistency and current-job alignment checks against the written file. Fix and revalidate any failure before finishing.

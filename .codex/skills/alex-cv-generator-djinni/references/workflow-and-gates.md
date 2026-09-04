@@ -4,7 +4,7 @@ Keep intermediate reasoning out of the output file.
 
 ## 0. Runtime source gate
 
-Read `Alex L/candidate-profile-djinni.md` and `Alex L/job-application.md` directly from disk. Do not inspect or reuse `Alex L/cv-output.json` as drafting input.
+Read `base-profile/candidate-profile-djinni.md` and `base-profile/job-application.md` directly from disk. Do not inspect or reuse `base-profile/cv-output.json` as drafting input.
 
 Record internally:
 
@@ -67,8 +67,8 @@ Pass only if:
 
 ## 7. Pre-write freshness gate
 
-Read `Alex L/job-application.md` again and rebuild the current-job anchor set. If the company, title, questions, or mandatory stack changed, discard the draft and restart at stage 0.
+Read `base-profile/job-application.md` again and rebuild the current-job anchor set. If the company, title, questions, or mandatory stack changed, discard the draft and restart at stage 0.
 
 ## 8. Write and final audit
 
-Write only the validated JSON object to `Alex L/cv-output.json`. Parse it, validate it against the schema, and compare every factual claim with the freshly read Djinni profile plus the authorized related-technology set. Confirm the final CV and JD are consistent without treating the JD by itself as evidence about the candidate.
+Write only the validated JSON object to `base-profile/cv-output.json`. Parse it, validate it against the schema, and compare every factual claim with the freshly read Djinni profile plus the authorized related-technology set. Confirm the final CV and JD are consistent without treating the JD by itself as evidence about the candidate.

@@ -1,6 +1,6 @@
 ---
 name: alex-cv-generator
-description: Generate Alex Latoszek's complete, strongly tailored ATS-friendly CV JSON from sparse repository runtime files. Use when tailoring Alex's CV to a job description, filling missing career details from target-role context, answering application questions, auditing CV quality, or writing Alex L/cv-output.json.
+description: Generate Alex Latoszek's complete, strongly tailored ATS-friendly CV JSON from sparse repository runtime files. Use when tailoring Alex's CV to a job description, filling missing career details from target-role context, answering application questions, auditing CV quality, or writing base-profile/cv-output.json.
 ---
 
 # Alex CV Generator
@@ -11,19 +11,19 @@ Generate a complete CV aligned closely with the target job.
 
 Resolve paths from the repository root:
 
-- Read candidate facts from `Alex L/candidate-profile.md`.
-- Read the target job and application questions from `Alex L/job-application.md`.
-- Write the final result to `Alex L/cv-output.json`.
+- Read candidate facts from `base-profile/candidate-profile.md`.
+- Read the target job and application questions from `base-profile/job-application.md`.
+- Write the final result to `base-profile/cv-output.json`.
 
 Treat identity, education, employer names, and employment dates in the candidate file as fixed facts. Use the target job and professional context to complete missing career details. Never modify either input file during generation.
 
 ## Runtime source-of-truth contract
 
-- At the start of every invocation, read `Alex L/candidate-profile.md` and `Alex L/job-application.md` from disk, even when their contents appeared earlier in the conversation or a previous invocation.
-- Treat `Alex L/job-application.md` as authoritative for the target company, target title, application questions, technology stack, responsibilities, and domain.
-- Treat `Alex L/cv-output.json` strictly as a replaceable build artifact. Never use its target role, company, summary, job titles, bullets, skills, or answers as input to a new draft.
+- At the start of every invocation, read `base-profile/candidate-profile.md` and `base-profile/job-application.md` from disk, even when their contents appeared earlier in the conversation or a previous invocation.
+- Treat `base-profile/job-application.md` as authoritative for the target company, target title, application questions, technology stack, responsibilities, and domain.
+- Treat `base-profile/cv-output.json` strictly as a replaceable build artifact. Never use its target role, company, summary, job titles, bullets, skills, or answers as input to a new draft.
 - Do not rely on conversational memory, earlier tool output, or a prior CV to determine the current target role.
-- Before writing, read `Alex L/job-application.md` again and confirm that the extracted company, title, questions, and highest-priority technologies still match the draft. If the file changed during generation, discard the draft and restart from the current file.
+- Before writing, read `base-profile/job-application.md` again and confirm that the extracted company, title, questions, and highest-priority technologies still match the draft. If the file changed during generation, discard the draft and restart from the current file.
 
 ## Required references
 
@@ -39,7 +39,7 @@ Before generating or auditing a CV, read all of these files completely:
 2. Fill missing titles, technologies, responsibilities, achievements, and domain details using a plausible JD-aligned career narrative; never leave standard CV sections empty.
 3. Keep analysis, mappings, and gate checks internal; write only schema-valid JSON.
 4. Preserve fixed candidate facts only from `candidate-profile.md`; never preserve role-dependent content merely because it exists in the previous output.
-5. Overwrite `Alex L/cv-output.json` only after the draft passes all gates.
+5. Overwrite `base-profile/cv-output.json` only after the draft passes all gates.
 6. Parse the written file as JSON and validate its keys, value types, required fields, and `additionalProperties: false` constraints against the bundled schema.
 7. After writing, run the source-alignment gate against the freshly read job file. A structurally valid but stale or mismatched CV is a failure.
 8. If validation fails, fix the output and validate again before finishing.
