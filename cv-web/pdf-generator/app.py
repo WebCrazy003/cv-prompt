@@ -5,6 +5,7 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -309,13 +310,21 @@ def convert_to_pdf(docx_path, pdf_path):
     soffice = find_soffice()
     if soffice:
         try:
-            subprocess.run(
-                [soffice, "--headless", "--convert-to", "pdf", "--outdir",
-                 str(pdf_path.parent), str(docx_path)],
-                check=True,
-                capture_output=True,
-                timeout=120,
-            )
+            # LibreOffice otherwise reuses the account's default user profile.
+            # Concurrent headless processes can attach to the same profile and
+            # cause one conversion to return without producing its PDF. Give
+            # every conversion an isolated profile so the three application
+            # tabs can render safely at the same time.
+            with tempfile.TemporaryDirectory(prefix="cv-libreoffice-") as profile:
+                profile_uri = Path(profile).resolve().as_uri()
+                subprocess.run(
+                    [soffice, f"-env:UserInstallation={profile_uri}", "--headless",
+                     "--convert-to", "pdf", "--outdir", str(pdf_path.parent),
+                     str(docx_path)],
+                    check=True,
+                    capture_output=True,
+                    timeout=120,
+                )
             produced = pdf_path.parent / (docx_path.stem + ".pdf")
             if produced != pdf_path and produced.exists():
                 shutil.move(str(produced), str(pdf_path))
