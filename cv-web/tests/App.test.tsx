@@ -8,7 +8,7 @@ import { App, ResultPanel } from "../client/src/App";
 
 const bootstrap = {
   codexVersion: "codex-cli 0.153.0",
-  capacity: { active: 0, limit: 3 },
+  capacity: { active: 0, limit: 5 },
   auth: { authenticated: true, eligible: true, authMode: "chatgpt", email: "person@example.com", planType: "plus" },
   limits: { jobDescription: 100_000, question: 10_000, questions: 50 },
   models: [
@@ -49,12 +49,14 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it("renders three independent application tabs", async () => {
+it("renders five independent application tabs", async () => {
   render(<App />);
   await screen.findByText("ChatGPT · plus");
   expect(screen.getByText("Application 1")).toBeInTheDocument();
   expect(screen.getByText("Application 2")).toBeInTheDocument();
   expect(screen.getByText("Application 3")).toBeInTheDocument();
+  expect(screen.getByText("Application 4")).toBeInTheDocument();
+  expect(screen.getByText("Application 5")).toBeInTheDocument();
 });
 
 it("starts with exactly five questions and can add another", async () => {
@@ -104,7 +106,9 @@ it("resets a terminal tab to five blank questions while preserving defaults", as
   }));
   const user = userEvent.setup();
   render(<App />);
-  await user.click(await screen.findByRole("button", { name: "Reset application" }));
+  const reset = await screen.findByRole("button", { name: "Reset application" });
+  expect(reset.closest(".application-actions")?.previousElementSibling).toBe(screen.getByRole("navigation", { name: "Applications" }));
+  await user.click(reset);
   expect(screen.getByLabelText(/Job description/)).toHaveValue("");
   expect(screen.getAllByLabelText(/^Question \d+$/)).toHaveLength(5);
   expect(screen.getByText(/Application reset\. Your saved defaults were preserved\./)).toBeInTheDocument();

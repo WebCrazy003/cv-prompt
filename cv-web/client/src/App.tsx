@@ -76,6 +76,8 @@ export function App() {
     "application-1": loadDraft("application-1"),
     "application-2": loadDraft("application-2"),
     "application-3": loadDraft("application-3"),
+    "application-4": loadDraft("application-4"),
+    "application-5": loadDraft("application-5"),
   });
   const [runs, setRuns] = useState<Partial<Record<ApplicationTabId, GenerationPayload>>>({});
   const [bootstrap, setBootstrap] = useState<BootstrapPayload>();
@@ -180,7 +182,7 @@ export function App() {
       sources.push(source);
     }
     return () => sources.forEach((source) => source.close());
-  }, [drafts["application-1"].generationId, drafts["application-2"].generationId, drafts["application-3"].generationId, loadGeneration]);
+  }, [drafts["application-1"].generationId, drafts["application-2"].generationId, drafts["application-3"].generationId, drafts["application-4"].generationId, drafts["application-5"].generationId, loadGeneration]);
 
   const draft = drafts[selectedTab];
   const run = runs[selectedTab];
@@ -302,7 +304,7 @@ export function App() {
       <div>
         <p className="eyebrow">Local Codex workspace</p>
         <h1>Job application studio</h1>
-        <p className="lede">Three independent workspaces for tailored CVs and application answers.</p>
+        <p className="lede">Five independent workspaces for tailored CVs and application answers.</p>
       </div>
       <div className="masthead-actions"><div className={`account ${bootstrap?.auth.eligible ? "good" : "warn"}`}><span className="pulse" />{loading ? "Connecting…" : authLabel}</div><div className="page-switch"><button className={page === "applications" ? "selected" : ""} onClick={() => setPage("applications")}>Applications</button><button className={page === "settings" ? "selected" : ""} onClick={() => setPage("settings")}>Settings</button></div></div>
     </header>
@@ -312,6 +314,7 @@ export function App() {
         <span>{tab.label}</span><span className={`status-dot ${runs[tab.id]?.generation.status ?? "idle"}`}>{statusLabels[runs[tab.id]?.generation.status ?? ""] ?? "Idle"}</span>
       </button>)}
     </nav>}
+    {page === "applications" && run && ["completed", "failed", "cancelled"].includes(run.generation.status) && <div className="application-actions"><button className="primary" onClick={resetApplication}>Reset application</button></div>}
 
     {notice && <div className="notice" role="status">{notice}<button onClick={() => setNotice("")} aria-label="Dismiss notice">×</button></div>}
     {toast && <div className="toast" role="status" aria-live="polite">✓ {toast}</div>}
@@ -388,7 +391,7 @@ export function App() {
     </main>}
 
     {page === "applications" && run?.generation.status === "completed" && run.result && <ResultPanel result={run.result} generationId={run.generation.id} pdfPath={run.generation.pdfPath} pdfWarning={run.generation.pdfWarning} onNotify={notify} />}
-    {page === "applications" && run && ["completed", "failed", "cancelled"].includes(run.generation.status) && <section className="retention panel"><div><strong>{run.generation.kept ? "Kept on this machine" : `Automatic deletion ${run.generation.expiresAt ? new Date(run.generation.expiresAt).toLocaleString() : "scheduled"}`}</strong><p>Each generation retains its own input snapshot, diagnostics, and validated result.</p></div><div className="retention-actions"><button className="primary" onClick={resetApplication}>Reset application</button><button className="secondary" onClick={() => void updateKeep(!run.generation.kept)}>{run.generation.kept ? "Remove keep" : "Keep"}</button><button className="danger" onClick={() => void deleteRun()}>Delete now</button></div></section>}
+    {page === "applications" && run && ["completed", "failed", "cancelled"].includes(run.generation.status) && <section className="retention panel"><div><strong>{run.generation.kept ? "Kept on this machine" : `Automatic deletion ${run.generation.expiresAt ? new Date(run.generation.expiresAt).toLocaleString() : "scheduled"}`}</strong><p>Each generation retains its own input snapshot, diagnostics, and validated result.</p></div><div className="retention-actions"><button className="secondary" onClick={() => void updateKeep(!run.generation.kept)}>{run.generation.kept ? "Remove keep" : "Keep"}</button><button className="danger" onClick={() => void deleteRun()}>Delete now</button></div></section>}
     <footer><span>Codex {bootstrap?.codexVersion ?? "—"}</span><span>Active workspaces {bootstrap?.capacity.active ?? 0} / {bootstrap?.capacity.limit ?? GENERATION_CAPACITY}</span><span>Runs stay on this machine</span></footer>
   </div>;
 }

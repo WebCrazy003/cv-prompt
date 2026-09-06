@@ -79,7 +79,7 @@ Pass only if:
 - the summary contains the relevant title, years in the field, specializations, core skills, one or two achievements, and a clear contribution angle;
 - the skills section broadly covers relevant hard and soft skills in classified categories;
 - every skills category can render as `Category: item, item, item`;
-- application answers contain no more than 10 words each;
+- application answers contain no more than 60 words each;
 - the file is valid JSON with no Markdown fences or commentary; and
 - the JSON conforms exactly to `cv-output.schema.json`.
 

@@ -160,7 +160,7 @@ describe("skills and admission", () => {
     expect(compiled.validate({ country: "UK", extra: true })).toBe(false);
   });
 
-  it("admits three independent tabs and rejects a fourth request without a queue", async () => {
+  it("admits five independent tabs and rejects a sixth request without a queue", async () => {
     const runtime = await temporary();
     const store = new GenerationStore(runtime);
     await store.initialize();
@@ -170,8 +170,10 @@ describe("skills and admission", () => {
     await store.create(request("application-1"), skill, join(runtime, "pdf-output"));
     await store.create(request("application-2"), skill, join(runtime, "pdf-output"));
     await store.create(request("application-3"), skill, join(runtime, "pdf-output"));
+    await store.create(request("application-4"), skill, join(runtime, "pdf-output"));
+    await store.create(request("application-5"), skill, join(runtime, "pdf-output"));
     await expect(store.create(request("application-1"), skill, join(runtime, "pdf-output"))).rejects.toMatchObject({ code: "generation_capacity_reached" });
-    expect(store.activeCount()).toBe(3);
+    expect(store.activeCount()).toBe(5);
   });
 
   it("starts a fresh 30-day retention window when Keep is removed", async () => {

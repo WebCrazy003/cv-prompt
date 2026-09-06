@@ -313,7 +313,7 @@ def convert_to_pdf(docx_path, pdf_path):
             # LibreOffice otherwise reuses the account's default user profile.
             # Concurrent headless processes can attach to the same profile and
             # cause one conversion to return without producing its PDF. Give
-            # every conversion an isolated profile so the three application
+            # every conversion an isolated profile so the five application
             # tabs can render safely at the same time.
             with tempfile.TemporaryDirectory(prefix="cv-libreoffice-") as profile:
                 profile_uri = Path(profile).resolve().as_uri()

@@ -32,13 +32,14 @@ h1 { font-size: clamp(32px, 5vw, 58px); line-height: 1; margin: 0; font-weight: 
 .page-switch button { color: var(--muted); background: transparent; padding: 7px 10px; }
 .page-switch button.selected { color: #fff; background: var(--green); }
 
-.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 7px; background: #e5e9e2; border-radius: 16px; margin-bottom: 18px; }
+.tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 7px; background: #e5e9e2; border-radius: 16px; margin-bottom: 10px; }
 .tab { border: 0; border-radius: 11px; background: transparent; padding: 14px 17px; display: flex; justify-content: space-between; align-items: center; color: #68726d; font-weight: 600; }
 .tab.selected { color: var(--ink); background: var(--paper); box-shadow: 0 2px 11px rgba(33,48,41,.08); }
 .status-dot { font-size: 11px; font-weight: 700; border-radius: 99px; padding: 5px 9px; color: #5e6964; background: #e8ebe6; }
 .status-dot.running, .status-dot.starting_codex, .status-dot.preparing, .status-dot.validating { color: #155c45; background: #dcece4; }
 .status-dot.failed, .status-dot.cancelled { color: #963f2d; background: #f3dfda; }
 .status-dot.completed { color: #fff; background: var(--green); }
+.application-actions { display: flex; justify-content: flex-end; margin-bottom: 18px; }
 
 .notice, .error-banner, .auth-card { border-radius: 12px; margin: 0 0 18px; padding: 13px 16px; font-size: 14px; }
 .notice { background: #fff3d4; display: flex; justify-content: space-between; }

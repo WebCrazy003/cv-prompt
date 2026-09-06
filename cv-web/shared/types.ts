@@ -1,4 +1,4 @@
-export const APPLICATION_TAB_IDS = ["application-1", "application-2", "application-3"] as const;
+export const APPLICATION_TAB_IDS = ["application-1", "application-2", "application-3", "application-4", "application-5"] as const;
 export type ApplicationTabId = typeof APPLICATION_TAB_IDS[number];
 export const GENERATION_CAPACITY = APPLICATION_TAB_IDS.length;
 export type ReasoningEffort = "low" | "medium" | "high";
