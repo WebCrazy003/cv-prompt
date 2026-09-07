@@ -71,7 +71,7 @@ Classify:
 
 For matches, record the best real CV/project evidence to mention.
 
-For partial matches or missing evidence, prepare a plausible answer strategy using adjacent experience, the role context, and standard technical practices. These gaps must not cause later live-answer skills to refuse a question or say the candidate has no direct experience.
+For partial matches or missing evidence, prepare a concrete answer strategy using adjacent experience, the role context, and researched examples. Distinguish supported personal experience from an external comparison or a proposed “I would…” approach. Prepare a usable answer without inventing candidate involvement.
 
 ### 4. Company / Project Research
 
@@ -95,6 +95,8 @@ Build `real_world_project_evidence` before generating likely questions or interv
 
 Derive 3-6 research themes from the JD's most important technologies, responsibilities, product domain, and likely engineering constraints. Search for concrete production examples related to those themes.
 
+Look for named projects, products, or websites in the same industry **or** using a similar relevant stack. A project does not need to match both. Research comparable organizations even when target-company material is available, so the interview has useful outside examples. Aim to include at least one same-industry example and one similar-stack example when reliable sources exist; one project may satisfy both.
+
 Combine company, domain, and technology terms in targeted searches such as:
 
 - `[company] engineering architecture technology stack`;
@@ -102,6 +104,8 @@ Combine company, domain, and technology terms in targeted searches such as:
 - `[company] AWS Azure GCP customer story`;
 - `[company] engineering conference talk GitHub`;
 - `[domain] production architecture [technology]`;
+- `[industry] [product or workflow] engineering case study`;
+- `[technology] production [project or website] architecture`;
 - `[technology] migration postmortem performance incident`.
 
 Vary and narrow the queries based on discovered terminology. When company-specific results are weak, search the same problem and stack across comparable organizations.
@@ -117,8 +121,11 @@ Use this source priority:
 
 For every retained example, record:
 
+- Stable `example_id` for fast lookup and follow-up reuse.
 - `evidence_type`: `target-company-verified` or `comparable-real-world`;
 - project/system and organization;
+- product/site URL when available, separate from the technical evidence's `source_url`;
+- `match_basis`: same industry, similar stack, similar engineering problem, or a combination; explain the specific overlap;
 - source title, publisher, publication/update date when available, and direct `source_url`;
 - problem or technical challenge;
 - what was implemented or changed;
@@ -127,6 +134,8 @@ For every retained example, record:
 - result or outcome, including metrics only when explicitly sourced;
 - relevance to the JD and likely interview questions;
 - confidence based on source quality and specificity.
+- A 1-2 sentence `spoken_example` naming the project, describing a sourced implementation detail, and connecting it to an interview topic with explicit external attribution.
+- `follow_up_facts`: supported details for likely “how?”, “why?”, and “what happened?” questions; mark what the source does not establish.
 
 Apply these evidence rules:
 
@@ -137,6 +146,22 @@ Apply these evidence rules:
 - Never combine details from several sources into a fictional single project. If synthesizing, preserve every supporting URL and label the result as synthesis.
 - If no reliable target-company technical evidence is public, state that clearly and use labeled comparable examples.
 - Exclude generic SEO summaries, unsourced claims, and AI-generated articles when primary or technically credible sources are available.
+- A website's industry can be clear from its product page, but its stack or architecture requires technical evidence. Do not infer private implementation details from the site's appearance.
+- If browsing or reliable sources are unavailable, record the research limitation in preparation and retain only available supported examples; do not manufacture entries to meet the target count.
+
+### 5a. Answer Example Lookup
+
+Build `job_profile.answer_example_map` from `skill_evidence_map`, `story_bank`, and `real_world_project_evidence`. For each high-priority JD topic and likely question, store:
+
+- Best candidate `example_id`, if supported.
+- Best external `example_id`, if relevant, and why it fits.
+- A concise general experience statement or technical principle supported by the candidate profile or framed as an approach.
+- An answer seed combining that statement with a concrete project context and implementation/decision, plus a supported result or tradeoff when known.
+- Attribution to use aloud: personal work, named public example, or proposed application.
+
+Prepare both the general explanation and the concrete example; a list of links or generic advice alone is not interview-ready. Preserve the researched project name and useful details in external answer seeds. Use wording such as “A relevant public example is [project]…” and “For your use case, I would…”, without claiming the candidate worked on it.
+
+If candidate discovery has not run yet, build the external mappings now and add personal examples when `/discovery-cv` runs. Keep missing coverage visible in preparation rather than silently filling it with invented projects.
 
 ### 6. Interviewer Intent Prediction
 
@@ -202,6 +227,7 @@ After completion, treat these as available conversation state:
 - `real_world_project_evidence`
 
 Update `story_bank` relevance rankings against the current job.
+Keep `answer_example_map` inside `job_profile`; refresh it when the target JD changes so live answers use the current role's examples.
 
 ## User-Facing Output
 
@@ -211,7 +237,7 @@ Return a concise report:
 2. Your strongest matches.
 3. Gaps / points to prepare.
 4. Company/project interview facts.
-5. Real-world project evidence, including the challenge, implementation, technologies, outcome, evidence type, and direct source URL for each example.
+5. Real-world project evidence, including named project/site, industry or stack match, challenge, implementation, technologies, supported outcome, evidence type, direct source URL, and a short example of how to mention it aloud.
 6. Most likely interview areas.
 7. Top likely questions.
 8. Good questions to ask them.

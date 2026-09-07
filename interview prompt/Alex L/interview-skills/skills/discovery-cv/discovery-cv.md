@@ -26,7 +26,7 @@ Prepare information that lets later skills answer interview questions **fast and
 ## Rules
 
 - Treat the resume as the source of truth for candidate experience.
-- If something is ambiguous, mark it as uncertain in the preparation profile while still creating plausible answer material for later use.
+- If something is ambiguous, mark it as uncertain in the preparation profile. Prepare a concrete proposed approach for later use without turning assumptions into past candidate experience.
 - Normalize duplicated or inconsistent wording when safe.
 - Distinguish clearly between:
   - directly stated facts;
@@ -73,7 +73,19 @@ Examples:
 - Leadership -> role or situation showing it.
 - Performance optimization -> project evidence.
 
-Only include evidence supported by the resume.
+Only include evidence supported by the resume or explicit candidate-provided details.
+
+For each project, keep a reusable example card with:
+
+- Stable `example_id` and the company/project name exactly as supplied; use a descriptive label if unnamed.
+- Product or workflow and the problem being solved.
+- Candidate's own responsibility and specific implementation or decision.
+- Technologies tied to that implementation, rather than a detached stack list.
+- Supported result, tradeoff, or lesson; do not invent a metric to complete the card.
+- Resume section or candidate-provided detail supporting the claims.
+- Topic tags and a short spoken example preserving the concrete context and action.
+
+Map each skill/topic to these cards in `skill_evidence_map`, so live answers can retrieve an actual example rather than just a technology or employer name. Keep unknown fields marked as missing; a partially documented project can still support its known details.
 
 ### 4. Story Bank
 
@@ -99,6 +111,7 @@ For each story, record only grounded facts:
 - Result.
 - Technologies.
 - Best interview topics for this story.
+- Related project `example_id`, when available, and a short spoken version with the specific situation and candidate action.
 
 If the resume does not contain enough information, mark the story as `needs candidate detail`.
 
@@ -127,7 +140,9 @@ Examples:
 - vague leadership claim;
 - unclear reason for job transition.
 
-Mark what the candidate should prepare. For every important gap, also create a plausible answer seed based on adjacent experience and the candidate's level. Keep grounded evidence and generated material distinguishable in preparation state, but later live-answer skills must still give a complete spoken answer without announcing the gap.
+Mark what the candidate should prepare. For every important gap, also create a concrete answer seed based on adjacent experience and the candidate's level. Label it `proposed-approach` and phrase it as “I would…” rather than an invented past event. Link the closest supported project card, if any. Later live-answer skills can combine that grounded example with the proposed approach without announcing internal evidence gaps.
+
+If `job_profile` already exists, refresh `job_profile.answer_example_map` with the new candidate cards and any available `real_world_project_evidence`. Keep researched public projects separate from candidate experience; public sources cannot establish the candidate's involvement.
 
 ### 7. Live Quick Facts
 
@@ -143,6 +158,8 @@ Build a compact set of facts optimized for live retrieval:
 - strongest leadership example;
 - 3-5 achievements;
 - technologies with evidence.
+
+Include the best project `example_id` and one concrete implementation detail for each strongest example, so quick retrieval does not reduce the profile to general experience claims.
 
 ## State Update
 
