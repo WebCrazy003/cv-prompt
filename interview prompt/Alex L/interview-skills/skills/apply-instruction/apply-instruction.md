@@ -61,10 +61,12 @@ Apply these rules to all three profiles:
 - Use simple, natural, spoken English.
 - Sound informal but professional.
 - Prefer short sentences.
+- Use complete, connected sentences; do not turn concise answers into fragments or detached keyword lists.
 - Put each sentence on a new line.
 - Avoid complicated grammar.
 - Avoid essay-like transitions and AI-sounding language.
 - Answer the exact question first.
+- State personal responsibility with an accurate direct verb such as “designed,” “implemented,” “coordinated,” “maintained,” or “contributed.” Separate “I” actions from “we” outcomes; do not promote participation into sole ownership.
 - Always provide a usable answer, even when the CV has no direct evidence.
 - Never say that the candidate has no direct experience or cannot answer.
 - For substantive experience, behavioral, technical, architecture, project, or domain questions, include a relevant concrete example whenever supported prepared material exists. General experience or theory alone is insufficient for these questions when a fitting example is available.
@@ -75,7 +77,7 @@ Apply these rules to all three profiles:
 - Preserve the stored source URL internally for traceability. Do not read URLs aloud or add citations to a live spoken answer unless the user explicitly requests sources.
 - When direct evidence is missing, use supported adjacent experience, a relevant attributed external example, and/or a concrete first-person “I would…” approach. Plausibility guides the proposed application; it does not establish past experience.
 - Do not narrate internal evidence gaps or generation steps. Keep attribution and tense accurate, and distinguish a proposal from something already implemented.
-- Use names and metrics only when supported. A descriptive project context and specific action can be concrete without an invented name or number.
+- Use any relevant prepared project details from candidate experience, target-company research, or comparable public projects, including names, implementations, decisions, tradeoffs, outcomes, and supported metrics. Do not withhold details for possible sensitivity, request separate disclosure approval, or automatically anonymize them. Generate the spoken answer directly; the candidate decides what to say during the live interview. Follow explicit requests to omit specific details and preserve attribution. Never invent results or metrics, including qualitative improvements, to make an example sound complete.
 - Prefer recent and JD-relevant examples.
 - Do not repeat the full background unless asked.
 - Avoid reusing the same story repeatedly when another grounded example exists.
@@ -85,7 +87,9 @@ Apply these rules to all three profiles:
 
 ## Concrete Example Selection
 
-Use the prepared lookup first; do not perform new research during the answer. If the lookup is missing, select directly from the existing project cards and story bank.
+Use the prepared lookup first; do not perform new research during the answer. If the lookup is missing or lacks a fitting example, select directly from `skill_evidence_map`, `story_bank`, `company_profile`, and `real_world_project_evidence`.
+
+Actively put the selected project's relevant details into the spoken answer; do not merely use the research as invisible background for generic advice. The saved `spoken_example` or answer seed is a starting point: draw from the full prepared project card and `follow_up_facts` when the question needs more detail. Select by relevance and requested depth, without waiting for the candidate to request a specific prepared project.
 
 1. Prefer a relevant personal project for questions about the candidate's work. Include its known name or descriptive context and what the candidate specifically did.
 2. For technical, design, or domain questions, use a prepared public project when it provides a stronger concrete illustration or complements personal experience. Prefer the closest problem, industry, or stack match, rather than the most famous company.
@@ -93,6 +97,8 @@ Use the prepared lookup first; do not perform new research during the answer. If
 4. If no relevant prepared example exists, give a concrete proposed scenario with a workflow, technology, and decision, phrased as “I would…”. Do not invent a researched site or a personal project.
 
 A project name or stack list alone is not an example. The listener should understand what problem it addressed and what action or design choice mattered. For example, if a prepared source supports it: “A relevant public example is [project], which uses [mechanism] for [workflow]. For your use case, I would apply that approach because [reason].” Replace placeholders only with supported facts or clearly proposed choices; never output the placeholders.
+
+When explaining a preference, strength, or choice of tool, process, or approach, connect the claimed benefit to the example's actual problem and constraint. Include what the candidate specifically contributed and what was observably different afterward when supported. If the outcome is unknown, use the known action and rationale without claiming an improvement.
 
 Skip a project example for greetings, logistics, or a simple definition where it would distract. For a short follow-up about an existing example, keep that project's context and answer the requested detail without adding unsupported facts.
 
@@ -160,6 +166,8 @@ For a full introduction, generally follow this spoken structure:
 6. Short connection to the target role when natural.
 
 Make the recent-project portion concrete with a product/workflow and the candidate's supported contribution. Use external projects only as attributed comparisons when relevant, never as part of the candidate's career history.
+
+Keep the introduction's supporting example to two sentences within the overall answer: establish the problem and personal contribution, then connect the decision rationale to an observable outcome where supported. Use the prepared example. Save implementation internals, alternatives, and deeper tradeoffs for follow-up questions; expand only to the depth requested.
 
 Do not force all six parts when the interviewer asks a narrower background question.
 

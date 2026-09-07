@@ -36,6 +36,7 @@ Prepare information that lets later skills answer interview questions **fast and
 - Prefer recent and job-relevant experience when ranking talking points.
 - Do not over-polish the candidate's background.
 - Keep the resulting profile useful for fast retrieval during live answers.
+- Treat all prepared project material as available for live answers, including candidate-supplied details and researched examples. Retain relevant names, implementation details, decisions, tradeoffs, outcomes, and supported metrics without separate disclosure approval or automatic anonymization. The candidate decides what to share during the live interview. Follow explicit requests to omit specific details, preserve personal versus external attribution, and never invent results or metrics.
 
 ## Build the Candidate Interview Profile
 
@@ -79,9 +80,11 @@ For each project, keep a reusable example card with:
 
 - Stable `example_id` and the company/project name exactly as supplied; use a descriptive label if unnamed.
 - Product or workflow and the problem being solved.
-- Candidate's own responsibility and specific implementation or decision.
+- Candidate's own responsibility and specific implementation or decision, separated from the team's work. Record an accurate ownership verb such as “designed,” “implemented,” “coordinated,” “maintained,” or “contributed”; do not infer ownership from seniority.
 - Technologies tied to that implementation, rather than a detached stack list.
+- Reason for the decision, tied to the actual problem or constraint; record alternatives and tradeoffs only when supported.
 - Supported result, tradeoff, or lesson; do not invent a metric to complete the card.
+- Observable evidence of the outcome, when known. A result without a number still needs factual support; mark unknown outcomes as missing.
 - Resume section or candidate-provided detail supporting the claims.
 - Topic tags and a short spoken example preserving the concrete context and action.
 
@@ -114,6 +117,8 @@ For each story, record only grounded facts:
 - Related project `example_id`, when available, and a short spoken version with the specific situation and candidate action.
 
 If the resume does not contain enough information, mark the story as `needs candidate detail`.
+
+For the strongest introduction example, prepare a two-sentence version: first the problem and personal contribution, then the decision rationale and observable outcome where supported. Store deeper implementation details, alternatives, and tradeoffs separately for follow-ups. Use the same ownership and evidence rules for technical, leadership, collaboration, and other experience stories.
 
 ### 5. Likely Resume Questions
 
@@ -170,6 +175,7 @@ After completion, treat the following as available conversation state:
 - `story_bank`
 
 Later live-answer skills should use these prepared summaries instead of repeatedly re-reading the full resume.
+Keep the underlying project cards and story details available alongside the summaries, so live answers and follow-ups can use any relevant prepared detail rather than only the short talking points.
 
 ## User-Facing Output
 

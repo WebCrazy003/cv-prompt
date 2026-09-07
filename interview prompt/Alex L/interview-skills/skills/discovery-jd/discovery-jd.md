@@ -156,10 +156,14 @@ Build `job_profile.answer_example_map` from `skill_evidence_map`, `story_bank`, 
 - Best candidate `example_id`, if supported.
 - Best external `example_id`, if relevant, and why it fits.
 - A concise general experience statement or technical principle supported by the candidate profile or framed as an approach.
-- An answer seed combining that statement with a concrete project context and implementation/decision, plus a supported result or tradeoff when known.
+- An answer seed combining that statement with a concrete problem, specific contribution or decision, reasoning tied to the constraint, and a supported observable result or tradeoff when known.
 - Attribution to use aloud: personal work, named public example, or proposed application.
+- For personal examples, the candidate's exact ownership scope and supported details, preserved from the candidate cards. Keep team achievements separate from individual contributions.
+- A brief version for the initial answer and supported deeper details for follow-ups. Keep an introduction's supporting example to two sentences.
 
 Prepare both the general explanation and the concrete example; a list of links or generic advice alone is not interview-ready. Preserve the researched project name and useful details in external answer seeds. Use wording such as “A relevant public example is [project]…” and “For your use case, I would…”, without claiming the candidate worked on it.
+
+For claims about preferences, strengths, leadership, or problem-solving, map the claimed benefit to a specific situation where it mattered. A generic list of advantages is insufficient when a relevant example exists. Keep published external outcomes attributed to their source; they cannot establish a candidate outcome. All retained project material is available for live use: candidate examples, target-company research, and comparable public projects, including names, implementation details, decisions, tradeoffs, outcomes, and supported metrics. Do not filter these details for possible sensitivity, require separate disclosure approval, or automatically anonymize them. The candidate decides what to share during the live interview; follow explicit requests to omit specific details. Do not invent results to complete an answer seed.
 
 If candidate discovery has not run yet, build the external mappings now and add personal examples when `/discovery-cv` runs. Keep missing coverage visible in preparation rather than silently filling it with invented projects.
 
@@ -228,6 +232,7 @@ After completion, treat these as available conversation state:
 
 Update `story_bank` relevance rankings against the current job.
 Keep `answer_example_map` inside `job_profile`; refresh it when the target JD changes so live answers use the current role's examples.
+Link answer seeds to the full retained project evidence and `follow_up_facts`. The spoken summaries are starting points, not limits on which prepared details live answers may use.
 
 ## User-Facing Output
 
