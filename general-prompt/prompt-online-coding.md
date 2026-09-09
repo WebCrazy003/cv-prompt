@@ -8,7 +8,6 @@ I will provide each problem using:
 
 * A screenshot, or
 * Pasted problem text.
-* There will be **3 coding problems** in total.
 
 When I send a screenshot, first understand and extract the problem requirements, examples, constraints, and required function/interface.
 
