@@ -33,6 +33,7 @@ Finish expensive research **before** the live interview so later answers can be 
 - Separate verified facts from inference.
 - Do not invent project details that are not public or supplied by the user.
 - Focus research on information that can improve interview answers.
+- Gather relevant human interview answers and first-person explanations as reusable speaking material, preserving their natural wording and thought order where permitted and compatible with candidate facts.
 
 ## Analyze the Job Description
 
@@ -149,17 +150,54 @@ Apply these evidence rules:
 - A website's industry can be clear from its product page, but its stack or architecture requires technical evidence. Do not infer private implementation details from the site's appearance.
 - If browsing or reliable sources are unavailable, record the research limitation in preparation and retain only available supported examples; do not manufacture entries to meet the target count.
 
-### 5a. Answer Example Lookup
+### 5a. Human Interview Answer Materials
+
+Build `job_profile.human_answer_materials` before composing answer seeds. Use the JD's highest-priority topics and likely interview intent to gather a small set of useful human answers, not generic advice about how to interview. Aim for 3-5 strong materials when available; do not fill the collection with weak examples to reach a count.
+
+Start with candidate-supplied past answers, interview transcripts, voice-note transcripts, or writing already available in the conversation. Then search for public interview transcripts, recorded interviews with accessible transcripts, engineer Q&A, and first-person explanations of relevant work. Prefer identifiable speakers or authors and original sources. Clearly distinguish an actual interview answer from a first-person project explanation or a published illustrative answer. Do not claim verified human authorship when the source does not establish it; exclude anonymous answer banks, generic SEO templates, and material identified as AI-generated.
+
+Search using the role's actual topics, for example:
+
+- `[role] interview transcript [topic]`;
+- `[technology] engineer interview [problem]`;
+- `[company or domain] engineer Q&A [responsibility]`.
+
+Open the original source and inspect the answer in context. For technical claims, rely on primary sources and cross-check against the prepared technical evidence when needed. These materials supplement project research; they do not establish candidate experience or target-company facts.
+
+For each retained material, record:
+
+- Stable `material_id`.
+- Source type: candidate-supplied answer, public interview, first-person explanation, or authored illustrative answer.
+- Speaker/author, source title, direct `source_url` and date when available; for candidate-supplied material, retain its file or conversation reference instead of inventing a URL.
+- Original question or topic, relevant JD skills, and matching interview intent (`intro`, `tech`, or `cultural`).
+- A permitted `original_excerpt`, kept verbatim, separate from any paraphrase. Record whether the material is user-supplied, licensed for reuse, public domain, or subject to limited quotation; keep excerpts within applicable source limits and track cumulative use across materials from the same source. Do not store a complete copyrighted answer merely because it is publicly accessible.
+- `structure_notes`: the original order of ideas, sentence rhythm, transitions, and where concrete details appear. Describe these in your own words.
+- `reusable_phrasing`: short permitted phrases worth retaining, counted with the original excerpt toward the same source's quotation limit.
+- `source_specific_facts`: the speaker's employers, projects, ownership, tools, results, and other claims that must not become candidate facts.
+- `candidate_evidence_refs`: matching supported candidate facts or example IDs, if any.
+- `adapted_answer_seed`: an answer to the matching question using supported candidate evidence or a clearly proposed approach, with external facts attributed when used.
+- `adaptation_notes`: what changed for factual fit, relevance, requested depth, or reuse limits; mark unsupported details as unusable for personal claims.
+
+Preserve the source's useful structure, ordinary wording, and transitions as much as factual fit and reuse permissions allow. Candidate-supplied answers may be retained closely; do not polish them into a uniform template. For external copyrighted material, use only permitted short excerpts and otherwise write original wording informed by high-level structure. Do not make a near-verbatim reconstruction by swapping synonyms or joining excerpts. Where no reusable wording is available, keep the structural observations and clearly label the seed as an original adaptation.
+
+Never convert another person's story into the candidate's own story by replacing names or tools. Candidate facts and accurate attribution take priority over matching the source. Preserve varied structures across materials rather than forcing all of them into STAR or problem/action/tools. Keep intro seeds direct and follow-up seeds brief; expand only when the question calls for a story.
+
+If suitable material or browsing is unavailable, record the limitation and use available candidate-supplied material or existing grounded answer seeds. Do not invent a human source, transcript, or quotation.
+
+### 5b. Answer Example Lookup
 
 Build `job_profile.answer_example_map` from `skill_evidence_map`, `story_bank`, and `real_world_project_evidence`. For each high-priority JD topic and likely question, store:
 
 - Best candidate `example_id`, if supported.
 - Best external `example_id`, if relevant, and why it fits.
+- Best `material_id` from `job_profile.human_answer_materials`, when relevant, and the permitted phrasing or thought order to retain in the answer seed. A human material is optional; do not force a weak match.
 - A concise general experience statement or technical principle supported by the candidate profile or framed as an approach.
 - An answer seed combining that statement with a concrete problem, specific contribution or decision, reasoning tied to the constraint, and a supported observable result or tradeoff when known.
 - Attribution to use aloud: personal work, named public example, or proposed application.
 - For personal examples, the candidate's exact ownership scope and supported details, preserved from the candidate cards. Keep team achievements separate from individual contributions.
-- A brief version for the initial answer and supported deeper details for follow-ups. Keep an introduction's supporting example to two sentences.
+- A brief version for the initial answer and supported deeper details for follow-ups. Keep introductions direct without a mandatory situation setup or two-sentence example.
+
+When a matching human material exists, use its `adapted_answer_seed` to shape the generated answer seed. Preserve useful permitted wording and structure instead of automatically rewriting it into polished CV language. Adjust only as needed for the exact question, candidate evidence, attribution, length, and reuse limits. Human material guides expression; candidate and project evidence establish facts.
 
 Prepare both the general explanation and the concrete example; a list of links or generic advice alone is not interview-ready. Preserve the researched project name and useful details in external answer seeds. Use wording such as “A relevant public example is [project]…” and “For your use case, I would…”, without claiming the candidate worked on it.
 
@@ -231,7 +269,7 @@ After completion, treat these as available conversation state:
 - `real_world_project_evidence`
 
 Update `story_bank` relevance rankings against the current job.
-Keep `answer_example_map` inside `job_profile`; refresh it when the target JD changes so live answers use the current role's examples.
+Keep `answer_example_map` and `human_answer_materials` inside `job_profile`; refresh their relevance and links when the target JD changes so live answers use the current role's examples. Retain source references, reuse limits, original excerpts, and adaptation notes with the materials.
 Link answer seeds to the full retained project evidence and `follow_up_facts`. The spoken summaries are starting points, not limits on which prepared details live answers may use.
 
 ## User-Facing Output
@@ -246,5 +284,6 @@ Return a concise report:
 6. Most likely interview areas.
 7. Top likely questions.
 8. Good questions to ask them.
+9. Human answer materials: a concise list of retained sources, matching questions, and one brief adapted answer demonstrating the wording or structure to reuse. Identify adaptations clearly and keep detailed excerpts and notes in preparation state.
 
 Keep detailed research available in context, but do not overwhelm the visible answer. Make every displayed source URL clickable when the interface supports links.

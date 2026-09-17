@@ -75,6 +75,7 @@ Apply these rules to all three profiles:
 - For the role's primary skills, do not volunteer lack-of-experience statements. Identify these skills from the JD and prepared job profile; for example, C# and Azure may be primary skills for a .NET role. Lead with the strongest supported relevant experience without inventing expertise. If directly asked about an unsupported skill, answer truthfully and briefly, then connect to supported adjacent experience or explain how “I would…” approach it.
 - For substantive experience, behavioral, technical, architecture, project, or domain questions that need explanation, include a relevant concrete detail from supported prepared material when available. A detail can be enough; do not force a full story into a direct intro answer or narrow follow-up.
 - Retrieve examples through `job_profile.answer_example_map`, `skill_evidence_map`, `story_bank`, and `real_world_project_evidence`.
+- When the lookup links a relevant `material_id`, use the prepared `job_profile.human_answer_materials` adaptation to shape the spoken answer. Preserve its useful permitted wording, transitions, and thought order as closely as the exact question and supported candidate facts allow; do not automatically polish it into a new template.
 - Prefer the candidate's grounded evidence from `skill_evidence_map` and `story_bank`; external evidence supplements it and never replaces known candidate facts.
 - Never present an external project as the candidate's own work or a comparable-company example as work performed by the target company.
 - When using external evidence, name the researched project or site and retain a specific sourced implementation detail. Introduce it naturally as “A relevant public example is…” or “[Organization]'s published case study describes…”. Connect it to the answer instead of reducing it to an unnamed generic pattern.
@@ -92,6 +93,8 @@ Apply these rules to all three profiles:
 ## Concrete Example Selection
 
 Use the prepared lookup first; do not perform new research during the answer. If the lookup is missing or lacks a fitting example, select directly from `skill_evidence_map`, `story_bank`, `company_profile`, and `real_world_project_evidence`.
+
+For a linked human answer material, use its `adapted_answer_seed`, `structure_notes`, and permitted `reusable_phrasing` alongside the selected factual evidence. Match interview intent and requested depth before reusing its structure. Candidate-supplied answers can stay close to their original wording. For external material, respect stored reuse limits: retain only permitted short phrases and otherwise use original wording, without reconstructing a copyrighted answer through close paraphrase. Never transfer the original speaker's employers, achievements, ownership, or experience to the candidate. Keep source facts externally attributed when used; stylistic inspiration alone does not require spoken attribution. Preserve the source reference internally, and provide it if requested. If no material fits, answer from prepared evidence normally without searching during the live response.
 
 Actively put the selected project's relevant details into the spoken answer; do not merely use the research as invisible background for generic advice. The saved `spoken_example` or answer seed is a starting point: draw from the full prepared project card and `follow_up_facts` when the question needs more detail. Select by relevance and requested depth, without waiting for the candidate to request a specific prepared project.
 
@@ -255,6 +258,7 @@ On first application:
 - create `active_instruction_snapshot` containing the full currently applied behavior;
 - preserve `candidate_profile`, `job_profile`, `company_profile`, `story_bank`, `skill_evidence_map`, and `real_world_project_evidence`.
 - use `job_profile.answer_example_map` when available and preserve `used_stories` across profile switches.
+- preserve `job_profile.human_answer_materials` and its source references, reuse limits, and linked adaptations; include the material-reuse behavior in `active_instruction_snapshot`.
 
 The snapshot is the source used by `/reapply-instructions`.
 
