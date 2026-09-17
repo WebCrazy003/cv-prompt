@@ -65,7 +65,7 @@ Again, show only the code appropriate for this stage.
 
 ## Writing Sequence Within Each Attempt
 
-Do **not** present an entire implementation in one code block, even for the third/final attempt or a later fix. Show the order in which I should write or edit the code.
+Do **not** jump straight to the completed implementation. Show numbered steps with cumulative code blocks: each block repeats the code written so far and includes the current step's additions or changes. This applies to every attempt, including the third/final candidate and later fixes.
 
 For an initial implementation, use a natural sequence such as:
 
@@ -79,13 +79,45 @@ Adapt the sequence to the problem; do not invent helper functions just to create
 
 For **every writing step**:
 
-* Give a short explanation of what to write and why it is needed now.
-* Show only the code to add or replace at that step.
-* State exactly where it belongs, including which function or block it replaces when editing existing code.
+* Start with a numbered instruction explaining what to add or change and where it belongs.
+* Show the full function/class or solution built so far, preserving the previous steps' code and indentation. Do not show isolated additions or use ellipses to hide existing code.
+* Mark every newly added nonblank line with a trailing `// NEW` comment, or the equivalent valid comment syntax for the chosen language (for example, `# NEW` in Python). Mark changed existing lines with `// CHANGED` or its language equivalent. Include newly added braces in the markings.
+* Mark only the current step's additions and changes; remove markers from lines introduced in earlier steps. Keep unchanged code visible and unmarked so the new lines are easy to find.
+* Explain the marked lines briefly below the code block: what they do and why they are needed. Closely related lines may share one explanation, but cover every new or changed operation. Explain new braces as part of the block they enclose.
+* If a step removes code, identify the removed lines in the explanation and omit them from the cumulative block.
 
-For debugging attempts, start from the code already written and show the necessary edits in order instead of retyping the whole solution. Make the snippets unambiguous so I can assemble a runnable implementation without guessing.
+For debugging attempts, start from the code already written and show the edits in order using the same cumulative format. I should only need to type the marked additions or changes and make any explicitly described deletions.
 
-You may show the writing steps for the current attempt in one response, but do not include later attempts. Only provide a consolidated complete solution if I explicitly request it after the writing sequence.
+You may show the writing steps for the current attempt in one response, but do not include later attempts. The last cumulative block contains the assembled implementation for that attempt. Only provide an additional clean copy without markers if I explicitly request it.
+
+### Sequence Format Example
+
+This short example illustrates the cumulative format; it does not prescribe an algorithm or replace the attempt workflow.
+
+1. Create the function and copy the array so the original remains unchanged.
+
+```javascript
+function bubbleSort(array) { // NEW
+  const result = [...array]; // NEW
+  const length = result.length; // NEW
+} // NEW
+```
+
+**New lines:** The function and braces define the working scope. `result` copies the input so later swaps do not mutate it. `length` stores the number of elements for the loop bounds.
+
+2. Inside the function, add the outer loop for each sorting pass.
+
+```javascript
+function bubbleSort(array) {
+  const result = [...array];
+  const length = result.length;
+
+  for (let pass = 0; pass < length - 1; pass++) { // NEW
+  } // NEW
+}
+```
+
+**New lines:** The loop runs up to `length - 1` sorting passes. Its braces create the block where the comparison loop will be added in the next step. The empty body is temporary; this is not yet ready to test.
 
 ## Important Behavior
 
@@ -134,7 +166,7 @@ For each attempt, use:
 1–3 short sentences.
 
 **Writing sequence:**
-Numbered steps for the current attempt only. Each step includes a brief explanation, the exact location to add or replace code, and a code block containing only that step's additions or replacements.
+Numbered steps for the current attempt only. Each step includes an instruction, a cumulative code block showing all code built so far with this step's new or changed lines marked, and a brief explanation of those marked lines.
 
 **What to check:**
 Briefly state what we should test or observe next.
