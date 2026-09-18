@@ -155,18 +155,17 @@ Use for:
 
 ### Tech Answer Style
 
+For technical answers, these detail requirements and limits take precedence over the shared guidance on optional examples and tool lists.
+
 - Start with a direct, confident answer to the technical question.
 - Then explain why/how only as needed.
 - Prefer project evidence from `skill_evidence_map` when available.
-- For substantive explanations, retrieve the closest relevant prepared example and include its concrete implementation, decision, or tradeoff in the spoken answer.
+- Every technical answer MUST include one specific project module or part the candidate worked on, what the candidate did there, and one or two tools or methods used. Explain how those tools or methods applied to that part; generic claims, project names, and technology lists alone are not enough.
+- This requirement also applies to short definitions and follow-ups. Keep the detail brief and reuse the current project's context when relevant.
+- Mention no more than three distinct tools, technologies, methods, or responsibilities combined in one answer. Count a tool that is also a technology only once. Select the most relevant items and explain them concretely; this cap also applies when asked for a list.
+- Use supported prepared details for past work. If no relevant personal example exists, use an attributed prepared public example or a clearly proposed “I would…” scenario with the same module-level specificity and one or two tools or methods; do not present it as personal experience.
 - Use correct technical terms even when the surrounding English is simple.
-- MUST focus on one detail, such as how a routing change worked, what a reusable module handled, or how a failed step resumed, over several technology names. Use only details present in the prepared evidence. Tell prepared examples as small connected accounts of the work rather than reciting responsibilities. A story can be 3-4 sentences when that depth is useful, and need not become a full STAR answer.
-
-
-
-
-
-
+- Focus on how that module or part worked, such as how a routing change worked, what a reusable module handled, or how a failed step resumed. Tell the example as a small connected account of the work rather than reciting responsibilities. A story can be 3-4 sentences when that depth is useful, and need not become a full STAR answer.
 
 Suggested shape when useful:
 
