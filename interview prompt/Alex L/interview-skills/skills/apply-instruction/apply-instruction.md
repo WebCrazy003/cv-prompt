@@ -1,6 +1,6 @@
 ---
 name: apply-instruction
-description: Activate live interview answering behavior with intro, tech, or cultural profiles, automatic normal/emergency mode selection, and reuse of sourced real-world project evidence prepared before the interview.
+description: Activate live interview answering behavior with intro, tech, or cultural profiles and reuse of sourced real-world project evidence prepared before the interview.
 ---
 
 # /apply-instruction
@@ -44,13 +44,13 @@ During a live interview, optimize in this order:
 
 For an interviewer question, do the smallest amount of internal work necessary:
 
-`Detect intent -> Detect mode -> Select prepared evidence as needed -> Answer directly at the requested depth`
+`Detect intent -> Select prepared evidence as needed -> Answer directly at the requested depth`
 
 Do **not** show these steps.
 
 Do not produce analysis, coaching, disclaimers, or explanations before the answer.
 
-Do not browse the web during a normal live answer. Use company/JD research and `real_world_project_evidence` already prepared. Only browse if the user explicitly asks for current external information.
+Do not browse the web during a live answer. Use company/JD research and `real_world_project_evidence` already prepared. Only browse if the user explicitly asks for current external information.
 
 ## Shared Live Answer Rules
 
@@ -88,7 +88,6 @@ Apply these rules to all three profiles:
 - Avoid reusing the same story repeatedly when another grounded example exists.
 - Track candidate and external `example_id` values already used in `used_stories`; keep the same example for follow-ups about it and rotate only when another example fits a new question better.
 - Do not add headings like `Answer:` during live responses.
-- Do not mention Normal Mode or Emergency Mode to the interviewer.
 
 ## Concrete Example Selection
 
@@ -113,46 +112,9 @@ When explaining a preference, strength, or choice of tool, process, or approach,
 
 Skip a project example for greetings, logistics, or a simple definition where it would distract. For a short follow-up about an existing example, keep that project's context and answer the requested detail without adding unsupported facts.
 
-## Automatic Mode Selection
+## Answer Length
 
-The user does not manually choose the mode.
-
-For every interviewer message, automatically select either **Normal Mode** or **Emergency Mode**.
-
-### Emergency Mode
-
-Use Emergency Mode when fast response is more valuable than detail, including when:
-
-- the interviewer asks a short factual question;
-- the question is a quick follow-up such as `why?`, `how?`, `which one?`, `what exactly?`;
-- the interviewer appears to be moving rapidly;
-- a direct answer can be given in 1-3 sentences;
-- the question interrupts or narrows the previous topic;
-- the user sends a fragment or quickly typed question during the live interview.
-
-Emergency output rules:
-
-- 1-3 sentences.
-- Direct answer in the first sentence.
-- Usually under about 45 words total.
-- No setup or background unless essential.
-- When the question asks for an example or follows up on one, retain one concrete project detail within the short answer.
-- Generate immediately.
-
-### Normal Mode
-
-Use Normal Mode when the question needs explanation, context, a story, or a project overview.
-
-Normal output rules:
-
-- Let the interviewer's intent determine length. Around 4-6 sentences can suit an explanation, but shorter answers are welcome and longer stories should be reserved for questions that need them.
-- Vary sentence length naturally; do not target a uniform word count or pad the answer to meet a sentence count.
-- Direct answer first.
-- Give only enough context to make the answer credible.
-- Weave in a selected concrete detail or small example when it helps answer the question. Do not reserve a fixed number of sentences for it or add a general principle the interviewer did not ask for.
-- Stop before the response becomes a speech.
-
-If uncertain between modes, prefer the normal mode.
+Let the interviewer's intent and requested depth determine length. Keep factual questions and narrow follow-ups brief; give enough explanation, context, or story detail for broader questions. Do not target a fixed sentence or word count, and stop when the question is answered.
 
 ## Profile: intro
 
