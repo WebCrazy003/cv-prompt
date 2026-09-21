@@ -25,9 +25,7 @@ Prepare information that lets later skills answer interview questions **fast and
 
 ## Rules
 
-- Treat the resume as the source of truth for candidate experience.
-- If something is ambiguous, mark it as uncertain in the preparation profile. Prepare a concrete proposed approach for later use without turning assumptions into past candidate experience.
-- Normalize duplicated or inconsistent wording when safe.
+- If something is ambiguous, mark it as uncertain in the preparation profile. Prepare a plausible proposed approach for later use.
 - Distinguish clearly between:
   - directly stated facts;
   - safe summaries;
@@ -36,7 +34,8 @@ Prepare information that lets later skills answer interview questions **fast and
 - Prefer recent and job-relevant experience when ranking talking points.
 - Do not over-polish the candidate's background.
 - Keep the resulting profile useful for fast retrieval during live answers.
-- Treat all prepared project material as available for live answers, including candidate-supplied details and researched examples. Retain relevant names, implementation details, decisions, tradeoffs, outcomes, and supported metrics without separate disclosure approval or automatic anonymization. The candidate decides what to share during the live interview. Follow explicit requests to omit specific details, preserve personal versus external attribution, and never invent results or metrics.
+- Treat all prepared project material as available for live answers, including candidate-supplied details and researched examples. Retain relevant names, implementation details, decisions, tradeoffs, outcomes, and supported metrics without separate disclosure approval or automatic anonymization. The candidate decides what to share during the live interview. Follow explicit requests to omit specific details, preserve personal versus external attribution.
+- Prepare exact modules or specific part of the project that candidate worked or can/would work on. This will be used on every question depends on cases.
 
 ## Build the Candidate Interview Profile
 
@@ -70,29 +69,25 @@ Examples:
 
 - Python -> company/project where it was used.
 - AWS -> actual services/responsibilities stated.
-- Microservices -> project evidence.
+- Microservices -> project evidence, , exact module or specific part worked on.
 - Leadership -> role or situation showing it.
-- Performance optimization -> project evidence.
-
-Only include evidence supported by the resume or explicit candidate-provided details.
+- Performance optimization -> project evidence, exact module or specific part worked on.
 
 For each project, keep a reusable example card with:
 
 - Stable `example_id` and the company/project name exactly as supplied; use a descriptive label if unnamed.
 - Product or workflow and the problem being solved.
-- Candidate's own responsibility and specific implementation or decision, separated from the team's work. Record an accurate ownership verb such as “designed,” “implemented,” “coordinated,” “maintained,” or “contributed”; do not infer ownership from seniority.
-- Technologies tied to that implementation, rather than a detached stack list.
+- Candidate's own responsibility and specific implementation or decision(including exact module name, part, you can assume it), separated from the team's work. Record an accurate ownership verb such as “designed,” “implemented,” “coordinated,” “maintained,” or “contributed”; do not infer ownership from seniority.
+- Technologies tied to that implementation (max: only 2-3 tech tools are enough, don't iterate tools in the list), rather than a detached stack list.
 - Reason for the decision, tied to the actual problem or constraint; record alternatives and tradeoffs only when supported.
-- Supported result, tradeoff, or lesson; do not invent a metric to complete the card.
-- Observable evidence of the outcome, when known. A result without a number still needs factual support; mark unknown outcomes as missing.
-- Resume section or candidate-provided detail supporting the claims.
+- Supported result, tradeoff, or lesson. (don't need result like "31%", just breif result is enough)
 - Topic tags and a short spoken example preserving the concrete context and action.
 
 Map each skill/topic to these cards in `skill_evidence_map`, so live answers can retrieve an actual example rather than just a technology or employer name. Keep unknown fields marked as missing; a partially documented project can still support its known details.
 
 ### 4. Story Bank
 
-Prepare concise candidate stories that can later support behavioral or technical answers.
+Prepare concise candidate stories that can later support behavioral or technical answers. Important part is details (like exact module, specific part worked on). Also, only 2-3 tech tools are enough for each story. and clarify why used each tool. long tech list is redundant.
 
 Possible story categories:
 
@@ -107,7 +102,7 @@ Possible story categories:
 - mistake and lesson;
 - customer/business impact.
 
-For each story, record only grounded facts:
+For each story, record grounded facts if possible:
 
 - Situation.
 - Candidate action.
@@ -116,7 +111,7 @@ For each story, record only grounded facts:
 - Best interview topics for this story.
 - Related project `example_id`, when available, and a short spoken version with the specific situation and candidate action.
 
-If the resume does not contain enough information, mark the story as `needs candidate detail`.
+If the resume does not contain enough information, assume things for the story.
 
 For the strongest introduction example, prepare a two-sentence version: first the problem and personal contribution, then the decision rationale and observable outcome where supported. Store deeper implementation details, alternatives, and tradeoffs separately for follow-ups. Use the same ownership and evidence rules for technical, leadership, collaboration, and other experience stories.
 
@@ -145,7 +140,7 @@ Examples:
 - vague leadership claim;
 - unclear reason for job transition.
 
-Mark what the candidate should prepare. For every important gap, also create a concrete answer seed based on adjacent experience and the candidate's level. Label it `proposed-approach` and phrase it as “I would…” rather than an invented past event. Link the closest supported project card, if any. Later live-answer skills can combine that grounded example with the proposed approach without announcing internal evidence gaps.
+Mark what the candidate should prepare. For every important gap, also create a concrete answer seed based on adjacent experience and the candidate's level. Link the closest supported project card, if any. Later live-answer skills can combine that grounded example with the proposed approach without announcing internal evidence gaps.
 
 If `job_profile` already exists, refresh `job_profile.answer_example_map` with the new candidate cards and any available `real_world_project_evidence`. Keep researched public projects separate from candidate experience; public sources cannot establish the candidate's involvement.
 
@@ -179,7 +174,7 @@ Keep the underlying project cards and story details available alongside the summ
 
 ## User-Facing Output
 
-Return a compact preparation report with:
+Return a compact & very short preparation report with:
 
 1. Candidate Snapshot.
 2. Strongest Interview Talking Points.
