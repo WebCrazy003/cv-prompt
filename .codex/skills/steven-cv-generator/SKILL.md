@@ -60,9 +60,19 @@ Before generating or auditing a CV, read all of these files completely:
 2. Fill missing titles, technologies, responsibilities, achievements, and domain details using a plausible JD-aligned career narrative; never leave standard CV sections empty.
 3. Keep analysis, mappings, and gate checks internal; write only schema-valid JSON.
 4. Preserve fixed candidate facts only from the selected candidate profile; never preserve role-dependent content merely because it exists in the previous output.
-5. Keep the draft in memory until every generation and validation gate passes. Then atomically create or replace only `cvOutputFile`; any temporary file must be a sibling in its destination directory and must be removed after replacement. Do not write another CV output anywhere.
-6. Parse the written file as JSON and validate its keys, value types, required fields, and `additionalProperties: false` constraints against the bundled schema.
+5. Keep the draft in memory until every generation and validation gate passes. Then atomically create or replace only `cvOutputFile` using the write procedure below; any temporary file must be a sibling in its destination directory and must be removed after replacement. Do not write another CV output anywhere.
+6. Validate the written file with `python3 .codex/skills/steven-cv-generator/scripts/validate_cv_output.py "<cvOutputFile>" "<jobQuestionsFile>"`. It parses the file and checks keys, value types, required fields, and `additionalProperties: false` constraints against the bundled schema.
 7. Confirm `jobQuestionAnswers` contains each supplied question text exactly once, in `jobQuestionsFile` order, with no additional questions.
 8. After writing, run the source-alignment gate against both freshly read runtime input files. A structurally valid but stale or mismatched CV is a failure.
 9. If validation fails, fix `cvOutputFile` and validate again before finishing.
 10. Report success only after the written file passes every check, and name the supplied `cvOutputFile` as the sole output.
+
+## Write procedure and sandbox limits
+
+The generation sandbox can write only inside the directory containing `cvOutputFile` and has no network access. Shell here-documents, temporary files elsewhere, and package installation fail there. Third-party Python packages such as `jsonschema` are unavailable; the bundled validator needs only the standard library.
+
+1. Write the complete JSON document to `<cvOutputFile>.tmp` with the file-editing tool (for example `apply_patch`). Do not generate the JSON through shell strings, `python3 -c`, `echo`, or here-documents; hand-escaped shell text corrupts quotes and newlines.
+2. Run the bundled validator on `<cvOutputFile>.tmp`. If it exits nonzero, fix every reported error in that file and rerun it until it exits 0.
+3. Move `<cvOutputFile>.tmp` over `cvOutputFile` with `mv`, then run the validator on `cvOutputFile`.
+
+A failed helper command, typo, or validator error is never a reason to stop: correct it and retry. Stop without writing only when a runtime-input or candidate-selection gate fails.

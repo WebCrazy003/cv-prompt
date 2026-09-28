@@ -461,5 +461,83 @@ class SebastianValidatorTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
 
 
+def valid_steven_output(questions: list[str]) -> dict[str, object]:
+    return {
+        "personNameOnCV": "Steve Onye",
+        "personLocation": "London, UK",
+        "personEmail": "steve@example.com",
+        "personUniversity": "Example University",
+        "personDegree": "BSc Computer Science",
+        "companyNameApplyJob": "Example Co",
+        "jobTitleApplyJob": "Platform Engineer",
+        "summary": "Platform engineer.",
+        "experience": [
+            {
+                "companyName": "Employer",
+                "jobTitle": "Engineer",
+                "startDate": "01/2020",
+                "endDate": "12/2023",
+                "content": [f"Delivered item {index}." for index in range(6)],
+            }
+        ],
+        "skills": [
+            {"categoryName": "Languages", "skillItems": ["Python"]},
+            {"categoryName": "Cloud", "skillItems": ["AWS"]},
+        ],
+        "jobQuestionAnswers": [
+            {"question": question, "answer": "Because."} for question in questions
+        ],
+    }
+
+
+class StevenOutputValidatorTests(unittest.TestCase):
+    script = SKILLS_ROOT / "steven-cv-generator" / "scripts" / "validate_cv_output.py"
+
+    def run_validator(self, output_text: str) -> subprocess.CompletedProcess[str]:
+        with tempfile.TemporaryDirectory() as temp:
+            _, arguments = make_runtime_workspace(Path(temp))
+            output = Path(arguments[2])
+            output.write_text(output_text, encoding="utf-8")
+            return subprocess.run(
+                [os.sys.executable, os.fspath(self.script), os.fspath(output), arguments[1]],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+    def test_accepts_a_schema_valid_output(self) -> None:
+        document = valid_steven_output(["Why job?", "What would you improve?"])
+        result = self.run_validator(json.dumps(document, indent=2))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_rejects_trailing_escaped_newline(self) -> None:
+        document = valid_steven_output(["Why job?", "What would you improve?"])
+        result = self.run_validator(json.dumps(document) + "\\n\n")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("not valid JSON", result.stderr)
+
+    def test_rejects_schema_violations(self) -> None:
+        cases = {
+            "missing required property": lambda d: d.pop("summary"),
+            "unexpected property": lambda d: d.update(extra="x"),
+            "does not match": lambda d: d["experience"][0].update(startDate="2020-01"),
+            "at least 6 items": lambda d: d["experience"][0]["content"].pop(),
+            "expected string": lambda d: d.update(summary=["x"]),
+        }
+        for message, mutate in cases.items():
+            with self.subTest(message=message):
+                document = valid_steven_output(["Why job?", "What would you improve?"])
+                mutate(document)
+                result = self.run_validator(json.dumps(document))
+                self.assertEqual(result.returncode, 1)
+                self.assertIn(message, result.stderr)
+
+    def test_rejects_question_mismatch(self) -> None:
+        document = valid_steven_output(["What would you improve?", "Why job?"])
+        result = self.run_validator(json.dumps(document))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("jobQuestionAnswers", result.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()
