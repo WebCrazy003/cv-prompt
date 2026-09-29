@@ -14,7 +14,7 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 
 ### SignolTech
 
-- Employment dates: 12/2021-08/2026
+- Employment dates: 12/2021-09/2026
 - Company description: IT Services and IT Consulting
 - Project count: At least two projects
 - Job title: Senior Software Engineer
