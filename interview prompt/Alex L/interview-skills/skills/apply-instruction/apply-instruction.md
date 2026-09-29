@@ -147,6 +147,8 @@ Use for:
 
 ### Tech Answer Style
 
+If `/live-coding-design` has been enabled after this `/apply-instruction tech` activation, route coding/debugging exercises and system design problems (including their follow-ups) to [live-coding-design](../live-coding-design/SKILL.md). Its exercise formats take precedence over conflicting answer-style rules below. For all other questions, continue using this skill. Include the enabled behavior in `active_instruction_snapshot`; a new `/apply-instruction <profile>` resets it.
+
 For technical answers, these detail requirements and limits take precedence over the shared guidance on optional examples and tool lists.
 
 - Start with a direct, confident answer to the technical question.

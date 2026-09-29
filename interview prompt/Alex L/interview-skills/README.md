@@ -32,9 +32,18 @@ This sets `interview_active = true`, activates the selected answer style, and sa
 
 Keep the live interview in the same chat so the skills can use recent context. Paste or transcribe the interviewer's words as accurately as possible. Add an `Interviewer:` label when the speaker may otherwise be ambiguous.
 
-For a direct interviewer question, submit the question normally. Live mode returns only a candidate-ready spoken answer.
+For a direct interviewer question, submit the question normally. Live mode returns a candidate-ready spoken answer, except for exercises handled by the optional `/live-coding-design` skill.
 
 ## Live Interview Commands
+
+### `/live-coding-design`
+
+Run after `/apply-instruction tech` to enable [live coding and system design](skills/live-coding-design/SKILL.md) for the current tech session.
+
+- Coding exercises use cumulative code steps, with as many attempts as actual feedback requires.
+- System design exercises use Mermaid source and a concise diagram explanation, without rendered images.
+- Other questions continue using `apply-instruction`.
+- `/reapply-instructions` restores this behavior; a new `/apply-instruction <profile>` resets it.
 
 ### `/comment`
 
