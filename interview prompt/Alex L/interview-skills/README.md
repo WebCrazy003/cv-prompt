@@ -38,7 +38,7 @@ For a direct interviewer question, submit the question normally. Live mode retur
 
 ### `/live-coding-design`
 
-Run after `/apply-instruction tech` to enable [live coding and system design](skills/live-coding-design/SKILL.md) for the current tech session.
+Run after `/apply-instruction tech` to enable [live coding and system design](skills/live-coding-design/live-coding-design.md) for the current tech session.
 
 - Coding exercises use cumulative code steps, with as many attempts as actual feedback requires.
 - System design exercises use Mermaid source and a concise diagram explanation, without rendered images.
