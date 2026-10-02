@@ -114,6 +114,23 @@ it("resets a terminal tab to five blank questions while preserving defaults", as
   expect(screen.getByText(/Application reset\. Your saved defaults were preserved\./)).toBeInTheDocument();
 });
 
+it("resets every application tab after confirmation", async () => {
+  for (const tab of ["application-1", "application-3"]) sessionStorage.setItem(`cv-web:draft:${tab}:v1`, JSON.stringify({
+    jobDescription: `Job for ${tab}`, questions: ["One", "", "", "", "", "Six"], skillName: "", skillParameters: {}, model: "model-1", effort: "medium",
+  }));
+  vi.stubGlobal("confirm", vi.fn(() => true));
+  const user = userEvent.setup();
+  render(<App />);
+  await screen.findByText("ChatGPT · plus");
+  await user.click(screen.getByRole("button", { name: /Application 3/ }));
+  expect(screen.getByLabelText(/Job description/)).toHaveValue("Job for application-3");
+  await user.click(screen.getByRole("button", { name: "Reset all applications" }));
+  expect(screen.getByLabelText(/Job description/)).toHaveValue("");
+  expect(screen.getAllByLabelText(/^Question \d+$/)).toHaveLength(5);
+  for (const tab of ["application-1", "application-3"]) expect(JSON.parse(sessionStorage.getItem(`cv-web:draft:${tab}:v1`)!)).toMatchObject({ jobDescription: "", questions: ["", "", "", "", ""] });
+  expect(screen.getByText(/All applications reset\./)).toBeInTheDocument();
+});
+
 it("notifies after copying a result action", async () => {
   const writeText = vi.fn(async () => undefined);
   const onNotify = vi.fn();

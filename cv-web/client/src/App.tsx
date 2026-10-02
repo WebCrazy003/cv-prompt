@@ -189,6 +189,7 @@ export function App() {
   const selectedSkill = bootstrap?.skills.find((skill) => skill.name === draft.skillName);
   const selectedModel = bootstrap?.models.find((model) => model.model === draft.model);
   const isRunning = Boolean(run && activeStatuses.has(run.generation.status));
+  const anyRunning = tabs.some((tab) => { const status = runs[tab.id]?.generation.status; return Boolean(status && activeStatuses.has(status)); });
   const parametersValid = useMemo(() => validateParameters(selectedSkill?.parameterSchema, draft.skillParameters), [selectedSkill, draft.skillParameters]);
   const canGenerate = Boolean(settings.outputDirectory && bootstrap?.auth.eligible && selectedSkill?.runnable && selectedModel?.supportedEfforts.includes(draft.effort) && draft.jobDescription.trim() && draft.jobDescription.length <= 100_000 && parametersValid && !isRunning);
 
@@ -281,6 +282,18 @@ export function App() {
     notify("Application reset. Your saved defaults were preserved.");
   }
 
+  function resetAllApplications() {
+    if (!window.confirm("Reset all five applications? Job descriptions, questions, and results will be cleared from every tab.")) return;
+    const preferred = preferredDraft();
+    const nextDraft = bootstrap ? reconcile(preferred, bootstrap).draft : preferred;
+    for (const tab of tabs) saveDraft(tab.id, nextDraft);
+    setDrafts(Object.fromEntries(tabs.map((tab) => [tab.id, nextDraft])) as Record<ApplicationTabId, Draft>);
+    setRuns({});
+    setSelectedTab("application-1");
+    setError("");
+    notify("All applications reset. Your saved defaults were preserved.");
+  }
+
   async function savePdfSettings() {
     setSavingSettings(true);
     setError("");
@@ -314,7 +327,10 @@ export function App() {
         <span>{tab.label}</span><span className={`status-dot ${runs[tab.id]?.generation.status ?? "idle"}`}>{statusLabels[runs[tab.id]?.generation.status ?? ""] ?? "Idle"}</span>
       </button>)}
     </nav>}
-    {page === "applications" && run && ["completed", "failed", "cancelled"].includes(run.generation.status) && <div className="application-actions"><button className="primary" onClick={resetApplication}>Reset application</button></div>}
+    {page === "applications" && <div className="application-actions">
+      {run && ["completed", "failed", "cancelled"].includes(run.generation.status) && <button className="primary" onClick={resetApplication}>Reset application</button>}
+      <button className="secondary" disabled={anyRunning} title={anyRunning ? "Cancel or wait for running generations before resetting all applications" : undefined} onClick={resetAllApplications}>Reset all applications</button>
+    </div>}
 
     {notice && <div className="notice" role="status">{notice}<button onClick={() => setNotice("")} aria-label="Dismiss notice">×</button></div>}
     {toast && <div className="toast" role="status" aria-live="polite">✓ {toast}</div>}

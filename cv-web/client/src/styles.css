@@ -39,7 +39,7 @@ h1 { font-size: clamp(32px, 5vw, 58px); line-height: 1; margin: 0; font-weight: 
 .status-dot.running, .status-dot.starting_codex, .status-dot.preparing, .status-dot.validating { color: #155c45; background: #dcece4; }
 .status-dot.failed, .status-dot.cancelled { color: #963f2d; background: #f3dfda; }
 .status-dot.completed { color: #fff; background: var(--green); }
-.application-actions { display: flex; justify-content: flex-end; margin-bottom: 18px; }
+.application-actions { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 18px; }
 
 .notice, .error-banner, .auth-card { border-radius: 12px; margin: 0 0 18px; padding: 13px 16px; font-size: 14px; }
 .notice { background: #fff3d4; display: flex; justify-content: space-between; }
