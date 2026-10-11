@@ -8,6 +8,7 @@ import type {
   ReasoningEffort,
 } from "../../shared/types.js";
 import type { DiscoveredSkill } from "../skills/discovery.js";
+import { normalizeSkillList } from "../primary-skills.js";
 
 export interface NormalizedQuestion {
   id: string;
@@ -54,6 +55,7 @@ export interface GenerationRecord {
   expiresAt?: string;
   submitted: {
     jobDescription: string;
+    excludedSkills?: string[];
     questions: NormalizedQuestion[];
     skillName: string;
     skillParameters: Record<string, unknown>;
@@ -81,8 +83,10 @@ export interface PersistedGeneration extends Omit<GenerationRecord, "runtime"> {
 }
 
 export function normalizeRequest(request: CreateGenerationRequest): GenerationRecord["submitted"] {
+  const excludedSkills = normalizeSkillList(request.excludedSkills);
   return {
     jobDescription: request.jobDescription.replace(/\r\n/g, "\n"),
+    excludedSkills: excludedSkills.length > 0 ? excludedSkills : undefined,
     questions: request.questions
       .map((text) => text.trim())
       .filter(Boolean)

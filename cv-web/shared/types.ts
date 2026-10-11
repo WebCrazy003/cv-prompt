@@ -77,6 +77,7 @@ export interface CreateGenerationRequest {
   model: string;
   effort: ReasoningEffort;
   jobDescription: string;
+  excludedSkills?: string[];
   questions: string[];
   skillParameters: Record<string, unknown>;
 }
@@ -132,6 +133,15 @@ export interface AccountUsageResponse {
 export interface GenerationResult {
   generation: GenerationSummary;
   content: unknown;
+}
+
+export interface PrimarySkillsRequest {
+  jobDescription: string;
+  model: string;
+}
+
+export interface PrimarySkillsResponse {
+  skills: string[];
 }
 
 export interface InputResponse {

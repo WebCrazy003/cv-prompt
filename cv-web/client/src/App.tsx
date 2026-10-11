@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { APPLICATION_TAB_IDS, GENERATION_CAPACITY } from "../../shared/types";
 import type {
   AccountUsageResponse,
@@ -9,6 +9,7 @@ import type {
   ModelOption,
   ParameterSchema,
   PdfSettings,
+  PrimarySkillsResponse,
   ReasoningEffort,
   SkillOption,
 } from "../../shared/types";
@@ -16,6 +17,8 @@ import { loadDraft, loadPreferences, preferredDraft, saveDraft, savePreferences,
 
 type GenerationPayload = { generation: GenerationSummary; events: GenerationEvent[]; pendingInput?: { requestId: string; questions: Array<{ id: string; header: string; question: string; options?: Array<{ label: string }> }> ; deadline: string }; result?: Record<string, unknown> };
 type BootstrapPayload = BootstrapResponse & { diagnostics?: string[] };
+type SkillChoice = { name: string; included: boolean };
+type SkillReview = { tab: ApplicationTabId; status: "loading" | "ready" | "error"; skills: SkillChoice[]; error?: string };
 
 const tabs: Array<{ id: ApplicationTabId; label: string }> = APPLICATION_TAB_IDS.map((id, index) => ({
   id,
@@ -93,6 +96,9 @@ export function App() {
   const [usageLoading, setUsageLoading] = useState(false);
   const [usageError, setUsageError] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
+  const [skillReview, setSkillReview] = useState<SkillReview>();
+  const skillCache = useRef<Partial<Record<ApplicationTabId, { jobDescription: string; skills: SkillChoice[] }>>>({});
+  const skillRequest = useRef(0);
 
   const updateDraft = useCallback((tab: ApplicationTabId, update: Partial<Draft> | ((draft: Draft) => Draft)) => {
     setDrafts((current) => {
@@ -225,14 +231,57 @@ export function App() {
     } catch (refreshError) { setError(refreshError instanceof Error ? refreshError.message : String(refreshError)); }
   }
 
-  async function generate() {
+  async function reviewPrimarySkills() {
+    const tab = selectedTab;
+    const { jobDescription, model } = draft;
+    setError("");
+    const cached = skillCache.current[tab];
+    if (cached?.jobDescription === jobDescription) {
+      setSkillReview({ tab, status: "ready", skills: cached.skills });
+      return;
+    }
+    const request = ++skillRequest.current;
+    setSkillReview({ tab, status: "loading", skills: [] });
+    try {
+      const { data } = await api<PrimarySkillsResponse>("/api/primary-skills", sessionToken, { method: "POST", body: JSON.stringify({ jobDescription, model }) });
+      if (skillRequest.current !== request) return;
+      const skills = data.skills.map((name) => ({ name, included: true }));
+      skillCache.current[tab] = { jobDescription, skills };
+      setSkillReview({ tab, status: "ready", skills });
+    } catch (skillError) {
+      if (skillRequest.current !== request) return;
+      setSkillReview({ tab, status: "error", skills: [], error: skillError instanceof Error ? skillError.message : String(skillError) });
+    }
+  }
+
+  function updateReviewSkills(skills: SkillChoice[]) {
+    if (!skillReview) return;
+    skillCache.current[skillReview.tab] = { jobDescription: drafts[skillReview.tab].jobDescription, skills };
+    setSkillReview({ ...skillReview, status: "ready", skills });
+  }
+
+  function closeSkillReview() {
+    skillRequest.current += 1;
+    setSkillReview(undefined);
+  }
+
+  function confirmSkillReview() {
+    if (!skillReview) return;
+    const { tab, skills } = skillReview;
+    setSkillReview(undefined);
+    void generate(tab, skills.filter((skill) => !skill.included).map((skill) => skill.name));
+  }
+
+  async function generate(tab: ApplicationTabId, excludedSkills: string[]) {
+    const draft = drafts[tab];
     setError("");
     try {
       const { data } = await api<{ generationId: string }>("/api/generations", sessionToken, {
         method: "POST",
         body: JSON.stringify({
-          applicationTabId: selectedTab,
+          applicationTabId: tab,
           jobDescription: draft.jobDescription,
+          excludedSkills,
           questions: draft.questions,
           skillName: draft.skillName,
           skillParameters: draft.skillParameters,
@@ -241,9 +290,9 @@ export function App() {
         }),
       });
       const nextDraft = { ...draft, generationId: data.generationId };
-      updateDraft(selectedTab, nextDraft);
+      updateDraft(tab, nextDraft);
       persistSelection(nextDraft);
-      await loadGeneration(selectedTab, data.generationId);
+      await loadGeneration(tab, data.generationId);
     } catch (generationError) { setError(generationError instanceof Error ? generationError.message : String(generationError)); }
   }
 
@@ -279,6 +328,7 @@ export function App() {
     const nextDraft = bootstrap ? reconcile(preferred, bootstrap).draft : preferred;
     updateDraft(selectedTab, nextDraft);
     setRuns((current) => ({ ...current, [selectedTab]: undefined }));
+    delete skillCache.current[selectedTab];
     setError("");
     notify("Application reset. Your saved defaults were preserved.");
   }
@@ -290,6 +340,7 @@ export function App() {
     for (const tab of tabs) saveDraft(tab.id, nextDraft);
     setDrafts(Object.fromEntries(tabs.map((tab) => [tab.id, nextDraft])) as Record<ApplicationTabId, Draft>);
     setRuns({});
+    skillCache.current = {};
     setSelectedTab("application-1");
     setError("");
     notify("All applications reset. Your saved defaults were preserved.");
@@ -352,6 +403,7 @@ export function App() {
 
     {notice && <div className="notice" role="status">{notice}<button onClick={() => setNotice("")} aria-label="Dismiss notice">×</button></div>}
     {toast && <div className="toast" role="status" aria-live="polite">✓ {toast}</div>}
+    {skillReview && <PrimarySkillsModal review={skillReview} onChange={updateReviewSkills} onCancel={closeSkillReview} onConfirm={confirmSkillReview} />}
     {error && <div className="error-banner" role="alert">{error}</div>}
     {page === "applications" && !bootstrap?.auth.eligible && !loading && <div className="auth-card"><strong>{bootstrap?.auth.authMode === "apiKey" ? "This application requires ChatGPT sign-in. API-key usage is not supported." : "Codex is not signed in."}</strong>{bootstrap?.auth.authMode === "apiKey" && <code>codex logout</code>}<code>codex login</code><button className="secondary" onClick={() => void refresh()}>Check again</button></div>}
     {page === "applications" && !settings.outputDirectory && <div className="auth-card"><strong>Choose where generated CV PDFs should be saved.</strong><span>Generation remains disabled until an absolute output directory is configured.</span><button className="secondary" onClick={() => setPage("settings")}>Open Settings</button></div>}
@@ -418,7 +470,7 @@ export function App() {
 
         <div className="run-card">
           <div><span className="run-label">Application status</span><strong>{run ? statusLabels[run.generation.status] : "Ready to begin"}</strong>{isRunning && <small className="backend-running"><span />Backend processing is active</small>}{run?.generation.codexStatus && <small>Codex: {run.generation.codexStatus}</small>}</div>
-          {isRunning ? <button className="danger" onClick={() => void cancel()}>Cancel generation</button> : <button className="primary" disabled={!canGenerate} onClick={() => void generate()}>Generate CV</button>}
+          {isRunning ? <button className="danger" onClick={() => void cancel()}>Cancel generation</button> : <button className="primary" disabled={!canGenerate} onClick={() => void reviewPrimarySkills()}>Generate CV</button>}
         </div>
         {run && <ActivityPanel events={run.events ?? []} active={isRunning} />}
         {run?.generation.error && <div className="inline-error">{run.generation.error}</div>}
@@ -468,6 +520,52 @@ function InteractiveInput({ run, token, onDone }: { run: GenerationPayload; toke
     onDone();
   }
   return <div className="input-request"><strong>Codex needs input</strong>{pending.questions.map((question) => <div key={question.id}><label htmlFor={`input-${question.id}`}>{question.question}</label>{question.options?.length ? <select id={`input-${question.id}`} value={answers[question.id] ?? ""} onChange={(event) => setAnswers({ ...answers, [question.id]: event.target.value })}><option value="">Select…</option>{question.options.map((option) => <option key={option.label}>{option.label}</option>)}</select> : <input id={`input-${question.id}`} value={answers[question.id] ?? ""} onChange={(event) => setAnswers({ ...answers, [question.id]: event.target.value })} />}</div>)}<div className="actions"><button className="primary" onClick={() => void submit("accept")}>Continue</button><button className="danger" onClick={() => void submit("cancel")}>Cancel generation</button></div></div>;
+}
+
+function PrimarySkillsModal({ review, onChange, onCancel, onConfirm }: { review: SkillReview; onChange(skills: SkillChoice[]): void; onCancel(): void; onConfirm(): void }) {
+  const [newSkill, setNewSkill] = useState("");
+  const dialog = useRef<HTMLDivElement>(null);
+  const loading = review.status === "loading";
+  const excluded = review.skills.filter((skill) => !skill.included).length;
+
+  useEffect(() => {
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
+    dialog.current?.focus();
+    return () => previous?.focus();
+  }, []);
+
+  function addSkill(event: FormEvent) {
+    event.preventDefault();
+    const name = newSkill.replace(/\s+/g, " ").trim();
+    if (!name) return;
+    const existing = review.skills.some((skill) => skill.name.toLowerCase() === name.toLowerCase());
+    onChange(existing
+      ? review.skills.map((skill) => skill.name.toLowerCase() === name.toLowerCase() ? { ...skill, included: true } : skill)
+      : [...review.skills, { name, included: true }]);
+    setNewSkill("");
+  }
+
+  return <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onCancel(); }}>
+    <div className="modal" role="dialog" aria-modal="true" aria-labelledby="primary-skills-title" aria-describedby="primary-skills-description" tabIndex={-1} ref={dialog} onKeyDown={(event) => { if (event.key === "Escape") onCancel(); }}>
+      <h2 id="primary-skills-title">Confirm primary skills</h2>
+      <p id="primary-skills-description">Uncheck any skill you want left out of the CV. Everything else is generated as usual.</p>
+      {loading && <p className="modal-status" role="status"><span />Finding primary skills in the job description…</p>}
+      {review.status === "error" && <div className="inline-error" role="alert">{review.error} You can add skills below or generate without them.</div>}
+      {review.status === "ready" && review.skills.length === 0 && <p className="modal-status">No primary skills were found. Add any you want the CV to lead with.</p>}
+      {review.skills.length > 0 && <ul className="skill-choices">{review.skills.map((skill, index) => <li key={skill.name}>
+        <label className="checkbox"><input type="checkbox" checked={skill.included} onChange={() => onChange(review.skills.map((item, itemIndex) => itemIndex === index ? { ...item, included: !item.included } : item))} />{skill.name}</label>
+      </li>)}</ul>}
+      {!loading && <form className="add-skill" onSubmit={addSkill}>
+        <input aria-label="Add a skill" value={newSkill} maxLength={100} placeholder="Add a skill, e.g. Go" onChange={(event) => setNewSkill(event.target.value)} />
+        <button className="secondary" type="submit" disabled={!newSkill.trim()}>Add</button>
+      </form>}
+      <div className="modal-actions">
+        <span>{loading ? "" : `${excluded} excluded`}</span>
+        <button className="secondary" onClick={onCancel}>Cancel</button>
+        <button className="primary" disabled={loading} onClick={onConfirm}>Generate CV</button>
+      </div>
+    </div>
+  </div>;
 }
 
 function SettingsPage({ value, savedValue, saving, auth, usage, usageLoading, usageError, onChange, onSave, onRefreshUsage, loggingOut, onLogout }: {

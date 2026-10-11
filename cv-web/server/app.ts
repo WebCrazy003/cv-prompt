@@ -4,7 +4,7 @@ import { basename, join } from "node:path";
 import fastify, { type FastifyInstance } from "fastify";
 import fastifyStatic from "@fastify/static";
 import { ZodError } from "zod";
-import type { CreateGenerationRequest } from "../shared/types.js";
+import type { CreateGenerationRequest, PrimarySkillsResponse } from "../shared/types.js";
 import { BootstrapService } from "./bootstrap.js";
 import type { CodexAppServerClient } from "./codex/client.js";
 import type { AppConfig } from "./config.js";
@@ -14,7 +14,8 @@ import { GenerationStore } from "./generations/store.js";
 import { PdfGenerator } from "./pdf/generator.js";
 import { authorizeMutation, redactSecrets, SESSION_HEADER } from "./security.js";
 import { SettingsService } from "./settings.js";
-import { createGenerationSchema, inputResponseSchema } from "./validation.js";
+import { createGenerationSchema, inputResponseSchema, primarySkillsSchema } from "./validation.js";
+import { extractPrimarySkills } from "./primary-skills.js";
 import { readAccountUsage } from "./codex/catalog.js";
 
 export interface AppServices {
@@ -112,6 +113,19 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
     }
     const record = await coordinator.create(body, skill, pdfOutputDirectory);
     return reply.status(202).send({ generationId: record.id, status: "preparing" });
+  });
+
+  app.post("/api/primary-skills", async (request): Promise<PrimarySkillsResponse> => {
+    const body = primarySkillsSchema.parse(request.body);
+    if (!bootstrap.auth.eligible) throw new AppError(409, "chatgpt_auth_required", "ChatGPT sign-in is required. Run `codex logout`, then `codex login`.");
+    const model = bootstrap.models.find((item) => item.model === body.model);
+    if (!model) throw new AppError(400, "model_unavailable", "The selected model is no longer available. Refresh models.");
+    const skills = await extractPrimarySkills(client, {
+      jobDescription: body.jobDescription.replace(/\r\n/g, "\n"),
+      model,
+      cwd: join(config.runtimeRoot, "primary-skills"),
+    });
+    return { skills };
   });
 
   app.get<{ Params: { id: string } }>("/api/generations/:id", async (request) => {

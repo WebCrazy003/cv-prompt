@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
 import React from "react";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { App, ResultPanel } from "../client/src/App";
@@ -66,6 +66,74 @@ it("starts with exactly five questions and can add another", async () => {
   expect(screen.getAllByLabelText(/^Question \d+$/)).toHaveLength(5);
   await user.click(screen.getByRole("button", { name: "+ Add question" }));
   expect(screen.getAllByLabelText(/^Question \d+$/)).toHaveLength(6);
+});
+
+it("confirms primary skills in a modal before starting a generation", async () => {
+  sessionStorage.setItem("cv-web:draft:application-1:v1", JSON.stringify({
+    jobDescription: "Go, Node.js, PHP and Python engineer", questions: ["", "", "", "", ""], skillName: "steven-cv-generator",
+    skillParameters: { country: "UK", "LK-match": "none" }, model: "model-1", effort: "medium",
+  }));
+  const posts: Array<{ url: string; body: Record<string, unknown> }> = [];
+  vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input);
+    const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json", "x-cv-session-token": "test-token" } });
+    if (init?.method === "POST") posts.push({ url, body: JSON.parse(String(init.body)) });
+    if (url.endsWith("/api/settings")) return json({ outputDirectory: "/tmp/cvs" });
+    if (url.endsWith("/api/primary-skills")) return json({ skills: ["Go", "Node.js", "PHP", "Python"] });
+    if (url.endsWith("/api/generations")) return json({ generationId: "generation-9", status: "preparing" }, 202);
+    if (url.includes("/api/generations/generation-9")) return json({
+      generation: { id: "generation-9", applicationTabId: "application-1", skillName: "steven-cv-generator", model: "model-1", effort: "medium", status: "running", createdAt: new Date().toISOString(), resultAvailable: false, kept: false },
+      events: [],
+    });
+    return json(bootstrap);
+  }));
+  const user = userEvent.setup();
+  render(<App />);
+  await screen.findByText("ChatGPT · plus");
+  const generateButton = screen.getByRole("button", { name: "Generate CV" });
+  await waitFor(() => expect(generateButton).toBeEnabled());
+  await user.click(generateButton);
+
+  const dialog = await screen.findByRole("dialog", { name: "Confirm primary skills" });
+  expect(await within(dialog).findByLabelText("Go")).toBeChecked();
+  expect(posts.find((post) => post.url.endsWith("/api/primary-skills"))?.body).toEqual({ jobDescription: "Go, Node.js, PHP and Python engineer", model: "model-1" });
+  expect(posts.some((post) => post.url.endsWith("/api/generations"))).toBe(false);
+
+  await user.click(within(dialog).getByLabelText("PHP"));
+  await user.click(within(dialog).getByLabelText("Python"));
+  await user.type(within(dialog).getByLabelText("Add a skill"), "Kubernetes{Enter}");
+  expect(within(dialog).getByText("2 excluded")).toBeInTheDocument();
+  await user.click(within(dialog).getByRole("button", { name: "Generate CV" }));
+
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  const generation = posts.find((post) => post.url.endsWith("/api/generations"))?.body;
+  expect(generation).toMatchObject({ excludedSkills: ["PHP", "Python"] });
+  expect(generation).not.toHaveProperty("primarySkills");
+});
+
+it("cancels the primary skill modal without generating", async () => {
+  sessionStorage.setItem("cv-web:draft:application-1:v1", JSON.stringify({
+    jobDescription: "Go engineer", questions: ["", "", "", "", ""], skillName: "steven-cv-generator",
+    skillParameters: { country: "UK", "LK-match": "none" }, model: "model-1", effort: "medium",
+  }));
+  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+    const url = String(input);
+    const json = (data: unknown) => new Response(JSON.stringify(data), { status: 200, headers: { "Content-Type": "application/json", "x-cv-session-token": "test-token" } });
+    if (url.endsWith("/api/settings")) return json({ outputDirectory: "/tmp/cvs" });
+    if (url.endsWith("/api/primary-skills")) return json({ skills: ["Go"] });
+    return json(bootstrap);
+  });
+  vi.stubGlobal("fetch", fetchMock);
+  const user = userEvent.setup();
+  render(<App />);
+  await screen.findByText("ChatGPT · plus");
+  const generateButton = screen.getByRole("button", { name: "Generate CV" });
+  await waitFor(() => expect(generateButton).toBeEnabled());
+  await user.click(generateButton);
+  await within(await screen.findByRole("dialog")).findByLabelText("Go");
+  await user.keyboard("{Escape}");
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(fetchMock.mock.calls.some(([input]) => String(input).endsWith("/api/generations"))).toBe(false);
 });
 
 it("renders the discovered Steven parameter controls", async () => {
