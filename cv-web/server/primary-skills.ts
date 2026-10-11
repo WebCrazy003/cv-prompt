@@ -40,6 +40,11 @@ export function parseExtractedSkills(text: string): string[] {
   return normalizeSkillList(skills);
 }
 
+// Codex exposes no speed tier, so rely on the "luna" family (its fast, affordable models); the catalog lists newest first.
+export function lightestModel(models: readonly ModelOption[]): ModelOption | undefined {
+  return models.find((model) => /luna/i.test(model.model));
+}
+
 export function quickEffort(model: ModelOption): ReasoningEffort {
   return (["low", "medium", "high"] as ReasoningEffort[]).find((effort) => model.supportedEfforts.includes(effort))!;
 }

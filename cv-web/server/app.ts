@@ -15,7 +15,7 @@ import { PdfGenerator } from "./pdf/generator.js";
 import { authorizeMutation, redactSecrets, SESSION_HEADER } from "./security.js";
 import { SettingsService } from "./settings.js";
 import { createGenerationSchema, inputResponseSchema, primarySkillsSchema } from "./validation.js";
-import { extractPrimarySkills } from "./primary-skills.js";
+import { extractPrimarySkills, lightestModel } from "./primary-skills.js";
 import { readAccountUsage } from "./codex/catalog.js";
 
 export interface AppServices {
@@ -118,7 +118,7 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
   app.post("/api/primary-skills", async (request): Promise<PrimarySkillsResponse> => {
     const body = primarySkillsSchema.parse(request.body);
     if (!bootstrap.auth.eligible) throw new AppError(409, "chatgpt_auth_required", "ChatGPT sign-in is required. Run `codex logout`, then `codex login`.");
-    const model = bootstrap.models.find((item) => item.model === body.model);
+    const model = lightestModel(bootstrap.models) ?? bootstrap.models.find((item) => item.model === body.model);
     if (!model) throw new AppError(400, "model_unavailable", "The selected model is no longer available. Refresh models.");
     const skills = await extractPrimarySkills(client, {
       jobDescription: body.jobDescription.replace(/\r\n/g, "\n"),

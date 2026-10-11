@@ -16,7 +16,7 @@ import { redactSecrets } from "../server/security.js";
 import { discoverSkills, type DiscoveredSkill } from "../server/skills/discovery.js";
 import { compileParameterSchema } from "../server/skills/schema.js";
 import { SettingsService } from "../server/settings.js";
-import { extractPrimarySkills, parseExtractedSkills } from "../server/primary-skills.js";
+import { extractPrimarySkills, lightestModel, parseExtractedSkills } from "../server/primary-skills.js";
 import { EventEmitter } from "node:events";
 
 const repositoryRoot = resolve(import.meta.dirname, "..", "..");
@@ -165,6 +165,12 @@ describe("primary skill extraction", () => {
     expect(parseExtractedSkills('{"skills":["Go"," Node.js ","go",""]}')).toEqual(["Go", "Node.js"]);
     expect(() => parseExtractedSkills("not json")).toThrow(/unreadable/);
     expect(() => parseExtractedSkills('{"skills":"Go"}')).toThrow(/unreadable/);
+  });
+
+  it("picks the newest light model and has no pick when none is offered", () => {
+    const model = (name: string) => ({ model: name, displayName: name, supportedEfforts: ["low" as const], isDefault: false });
+    expect(lightestModel([model("gpt-6.1-sol"), model("gpt-6-luna"), model("gpt-5.6-luna")])?.model).toBe("gpt-6-luna");
+    expect(lightestModel([model("gpt-6.1-sol")])).toBeUndefined();
   });
 
   it("runs one quick read-only turn with a strict output schema", async () => {
