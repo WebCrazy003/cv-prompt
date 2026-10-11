@@ -92,6 +92,7 @@ export function App() {
   const [accountUsage, setAccountUsage] = useState<AccountUsageResponse>();
   const [usageLoading, setUsageLoading] = useState(false);
   const [usageError, setUsageError] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const updateDraft = useCallback((tab: ApplicationTabId, update: Partial<Draft> | ((draft: Draft) => Draft)) => {
     setDrafts((current) => {
@@ -294,6 +295,23 @@ export function App() {
     notify("All applications reset. Your saved defaults were preserved.");
   }
 
+  async function logout() {
+    if (!window.confirm("Log out of the current Codex account on this machine? You will need to run `codex login` to sign in again.")) return;
+    setLoggingOut(true);
+    setError("");
+    try {
+      const { data } = await api<BootstrapPayload>("/api/account/logout", sessionToken, { method: "POST" });
+      setBootstrap(data);
+      setAccountUsage(undefined);
+      setUsageError("");
+      notify("Logged out of Codex.");
+    } catch (logoutError) {
+      setError(logoutError instanceof Error ? logoutError.message : String(logoutError));
+    } finally {
+      setLoggingOut(false);
+    }
+  }
+
   async function savePdfSettings() {
     setSavingSettings(true);
     setError("");
@@ -349,6 +367,8 @@ export function App() {
       onChange={setSettingsInput}
       onSave={() => void savePdfSettings()}
       onRefreshUsage={() => void loadAccountUsage()}
+      loggingOut={loggingOut}
+      onLogout={() => void logout()}
     />}
 
     {page === "applications" && <main className="workspace">
@@ -450,7 +470,7 @@ function InteractiveInput({ run, token, onDone }: { run: GenerationPayload; toke
   return <div className="input-request"><strong>Codex needs input</strong>{pending.questions.map((question) => <div key={question.id}><label htmlFor={`input-${question.id}`}>{question.question}</label>{question.options?.length ? <select id={`input-${question.id}`} value={answers[question.id] ?? ""} onChange={(event) => setAnswers({ ...answers, [question.id]: event.target.value })}><option value="">Select…</option>{question.options.map((option) => <option key={option.label}>{option.label}</option>)}</select> : <input id={`input-${question.id}`} value={answers[question.id] ?? ""} onChange={(event) => setAnswers({ ...answers, [question.id]: event.target.value })} />}</div>)}<div className="actions"><button className="primary" onClick={() => void submit("accept")}>Continue</button><button className="danger" onClick={() => void submit("cancel")}>Cancel generation</button></div></div>;
 }
 
-function SettingsPage({ value, savedValue, saving, auth, usage, usageLoading, usageError, onChange, onSave, onRefreshUsage }: {
+function SettingsPage({ value, savedValue, saving, auth, usage, usageLoading, usageError, onChange, onSave, onRefreshUsage, loggingOut, onLogout }: {
   value: string;
   savedValue: string;
   saving: boolean;
@@ -461,6 +481,8 @@ function SettingsPage({ value, savedValue, saving, auth, usage, usageLoading, us
   onChange(value: string): void;
   onSave(): void;
   onRefreshUsage(): void;
+  loggingOut: boolean;
+  onLogout(): void;
 }) {
   const valid = value.trim().startsWith("/") || /^[A-Za-z]:[\\\\/]/.test(value.trim());
   const account = usage?.account ?? auth;
@@ -470,7 +492,10 @@ function SettingsPage({ value, savedValue, saving, auth, usage, usageLoading, us
       <div className="account-details">
         <div><span>Signed in as</span><strong>{account?.email || (auth?.eligible ? "ChatGPT account" : "Not signed in")}</strong></div>
         <div><span>Plan</span><strong>{account?.planType || "—"}</strong></div>
-        <button className="secondary" disabled={!auth?.eligible || usageLoading} onClick={onRefreshUsage}>{usageLoading ? "Refreshing…" : "Refresh usage"}</button>
+        <div className="account-actions">
+          <button className="secondary" disabled={!auth?.eligible || usageLoading} onClick={onRefreshUsage}>{usageLoading ? "Refreshing…" : "Refresh usage"}</button>
+          <button className="danger" disabled={!auth?.authenticated || loggingOut} onClick={onLogout}>{loggingOut ? "Logging out…" : "Log out"}</button>
+        </div>
       </div>
       {usageError && <div className="usage-error" role="alert">{usageError}</div>}
       <div className="usage-cards" aria-busy={usageLoading && !usage}>

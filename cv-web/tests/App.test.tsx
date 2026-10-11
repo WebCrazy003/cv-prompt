@@ -210,3 +210,26 @@ it("shows fresh used and remaining allowance percentages from the signed-in Code
   await user.click(screen.getByRole("button", { name: "Refresh usage" }));
   await waitFor(() => expect(fetchMock.mock.calls.filter(([input]) => String(input) === "/api/account/usage")).toHaveLength(2));
 });
+
+it("logs out of the current Codex account from Settings", async () => {
+  const user = userEvent.setup();
+  const loggedOut = { ...bootstrap, auth: { authenticated: false, eligible: false }, models: [] };
+  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+    const path = String(input);
+    if (path === "/api/settings") return new Response(JSON.stringify({ outputDirectory: "/existing/CVs" }), { status: 200, headers: { "Content-Type": "application/json" } });
+    if (path === "/api/account/usage") return new Response(JSON.stringify({ account: { email: "person@example.com", planType: "plus" }, windows: [], fetchedAt: "2026-09-04T08:00:00.000Z" }), { status: 200, headers: { "Content-Type": "application/json" } });
+    if (path === "/api/account/logout") return new Response(JSON.stringify(loggedOut), { status: 200, headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify(bootstrap), { status: 200, headers: { "Content-Type": "application/json", "x-cv-session-token": "test-token" } });
+  });
+  vi.stubGlobal("fetch", fetchMock);
+  vi.stubGlobal("confirm", vi.fn(() => true));
+
+  render(<App />);
+  await user.click(await screen.findByRole("button", { name: "Settings" }));
+  await screen.findByText("person@example.com");
+  await user.click(screen.getByRole("button", { name: "Log out" }));
+  expect(fetchMock).toHaveBeenCalledWith("/api/account/logout", expect.objectContaining({ method: "POST" }));
+  expect(await screen.findByText(/Logged out of Codex\./)).toBeInTheDocument();
+  expect(screen.getByText("Not signed in", { selector: "strong" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Log out" })).toBeDisabled();
+});

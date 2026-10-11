@@ -83,6 +83,13 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
     return readAccountUsage(client);
   });
 
+  app.post("/api/account/logout", async () => {
+    if (store.activeCount() > 0) throw new AppError(409, "generations_active", "Cancel or wait for running generations before logging out.");
+    await client.request("account/logout", undefined);
+    await bootstrap.refresh();
+    return bootstrap.response(store.activeCount());
+  });
+
   app.post("/api/settings", async (request) => {
     const body = request.body as { outputDirectory?: unknown };
     if (typeof body?.outputDirectory !== "string" || body.outputDirectory.length > 4_096) {
