@@ -8,3 +8,4 @@ cv-web/server/generated/
 .env
 __pycache__/
 *.py[cod]
+.DS_Store
