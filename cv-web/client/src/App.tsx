@@ -96,6 +96,7 @@ export function App() {
   const [usageLoading, setUsageLoading] = useState(false);
   const [usageError, setUsageError] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
   const [skillReview, setSkillReview] = useState<SkillReview>();
   const skillCache = useRef<Partial<Record<ApplicationTabId, { jobDescription: string; skills: SkillChoice[] }>>>({});
   const skillRequest = useRef(0);
@@ -346,8 +347,36 @@ export function App() {
     notify("All applications reset. Your saved defaults were preserved.");
   }
 
+  async function login() {
+    const popup = window.open("", "_blank");
+    setLoggingIn(true);
+    setError("");
+    try {
+      const { data } = await api<{ authUrl: string }>("/api/account/login", sessionToken, { method: "POST" });
+      if (popup) popup.location.href = data.authUrl;
+      else window.open(data.authUrl, "_blank");
+      notify("Finish signing in to ChatGPT in the new tab.");
+      const deadline = Date.now() + 5 * 60_000;
+      while (Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 2_000));
+        const { data: next } = await api<BootstrapPayload>("/api/bootstrap/refresh", sessionToken, { method: "POST" });
+        if (next.auth.eligible) {
+          await refresh();
+          notify("Signed in to Codex.");
+          return;
+        }
+      }
+      setError("Sign-in timed out. Try again, or run `codex login` in a terminal.");
+    } catch (loginError) {
+      popup?.close();
+      setError(loginError instanceof Error ? loginError.message : String(loginError));
+    } finally {
+      setLoggingIn(false);
+    }
+  }
+
   async function logout() {
-    if (!window.confirm("Log out of the current Codex account on this machine? You will need to run `codex login` to sign in again.")) return;
+    if (!window.confirm("Log out of the current Codex account on this machine? You can sign in again with Log in.")) return;
     setLoggingOut(true);
     setError("");
     try {
@@ -421,6 +450,8 @@ export function App() {
       onRefreshUsage={() => void loadAccountUsage()}
       loggingOut={loggingOut}
       onLogout={() => void logout()}
+      loggingIn={loggingIn}
+      onLogin={() => void login()}
     />}
 
     {page === "applications" && <main className="workspace">
@@ -568,7 +599,7 @@ function PrimarySkillsModal({ review, onChange, onCancel, onConfirm }: { review:
   </div>;
 }
 
-function SettingsPage({ value, savedValue, saving, auth, usage, usageLoading, usageError, onChange, onSave, onRefreshUsage, loggingOut, onLogout }: {
+function SettingsPage({ value, savedValue, saving, auth, usage, usageLoading, usageError, onChange, onSave, onRefreshUsage, loggingOut, onLogout, loggingIn, onLogin }: {
   value: string;
   savedValue: string;
   saving: boolean;
@@ -581,6 +612,8 @@ function SettingsPage({ value, savedValue, saving, auth, usage, usageLoading, us
   onRefreshUsage(): void;
   loggingOut: boolean;
   onLogout(): void;
+  loggingIn: boolean;
+  onLogin(): void;
 }) {
   const valid = value.trim().startsWith("/") || /^[A-Za-z]:[\\\\/]/.test(value.trim());
   const account = usage?.account ?? auth;
@@ -592,6 +625,7 @@ function SettingsPage({ value, savedValue, saving, auth, usage, usageLoading, us
         <div><span>Plan</span><strong>{account?.planType || "—"}</strong></div>
         <div className="account-actions">
           <button className="secondary" disabled={!auth?.eligible || usageLoading} onClick={onRefreshUsage}>{usageLoading ? "Refreshing…" : "Refresh usage"}</button>
+          <button className="primary" disabled={auth?.eligible || loggingIn} onClick={onLogin}>{loggingIn ? "Waiting for sign-in…" : "Log in"}</button>
           <button className="danger" disabled={!auth?.authenticated || loggingOut} onClick={onLogout}>{loggingOut ? "Logging out…" : "Log out"}</button>
         </div>
       </div>

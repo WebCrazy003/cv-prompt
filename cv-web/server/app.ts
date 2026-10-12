@@ -84,6 +84,13 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
     return readAccountUsage(client);
   });
 
+  app.post("/api/account/login", async () => {
+    if (store.activeCount() > 0) throw new AppError(409, "generations_active", "Cancel or wait for running generations before logging in.");
+    const result = await client.request<{ authUrl?: string; loginId?: string }>("account/login/start", { type: "chatgpt" });
+    if (!result?.authUrl) throw new AppError(502, "login_unavailable", "Codex did not return a sign-in URL. Run `codex login` in a terminal instead.");
+    return { authUrl: result.authUrl, loginId: result.loginId };
+  });
+
   app.post("/api/account/logout", async () => {
     if (store.activeCount() > 0) throw new AppError(409, "generations_active", "Cancel or wait for running generations before logging out.");
     await client.request("account/logout", undefined);

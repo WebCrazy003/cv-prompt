@@ -301,3 +301,28 @@ it("logs out of the current Codex account from Settings", async () => {
   expect(screen.getByText("Not signed in", { selector: "strong" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Log out" })).toBeDisabled();
 });
+
+it("starts ChatGPT sign-in from Settings and waits for Codex to authenticate", async () => {
+  const user = userEvent.setup();
+  const loggedOut = { ...bootstrap, auth: { authenticated: false, eligible: false }, models: [] };
+  let signedIn = false;
+  const popup = { location: { href: "" }, close: vi.fn() };
+  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+    const path = String(input);
+    const json = (body: unknown) => new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json", "x-cv-session-token": "test-token" } });
+    if (path === "/api/settings") return json({ outputDirectory: "/existing/CVs" });
+    if (path === "/api/account/usage") return json({ account: { email: "person@example.com", planType: "plus" }, windows: [], fetchedAt: "2026-09-04T08:00:00.000Z" });
+    if (path === "/api/account/login") { signedIn = true; return json({ authUrl: "https://auth.example.test/login", loginId: "abc" }); }
+    return json(signedIn ? bootstrap : loggedOut);
+  });
+  vi.stubGlobal("fetch", fetchMock);
+  vi.stubGlobal("open", vi.fn(() => popup));
+
+  render(<App />);
+  await user.click(await screen.findByRole("button", { name: "Settings" }));
+  await user.click(await screen.findByRole("button", { name: "Log in" }));
+  expect(fetchMock).toHaveBeenCalledWith("/api/account/login", expect.objectContaining({ method: "POST" }));
+  await waitFor(() => expect(popup.location.href).toBe("https://auth.example.test/login"));
+  expect(await screen.findByText(/Signed in to Codex\./, undefined, { timeout: 5_000 })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Log in" })).toBeDisabled();
+});
