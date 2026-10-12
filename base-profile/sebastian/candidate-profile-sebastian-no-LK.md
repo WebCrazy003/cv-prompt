@@ -7,15 +7,15 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 - Name: Sebastian Sygula
 - Email: Sebastian.Sygula@proton.me
 - Location: Sokolniki, Łódź Voivodeship, Poland
-- University: Saigon University
+- University: Waseda University
 - Degree: Bachelor's Degree, Computer Science and Communications Engineering
 
 ## Employment history
 
-### Accenture
+### Endava
 
-- Employment dates: 03/2023–08/2026
-- Company description: IT consulting firm
+- Employment dates: 03/2024–10/2026
+- Company description: IT Services and IT Consulting
 - Project count: At least two projects
 - Job title: Not supplied
 - Candidate statement: Worked on several projects with varied technology stacks.
@@ -24,10 +24,10 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 - Responsibilities: Not supplied
 - Achievements and metrics: Not supplied
 
-### Softwire
+### Comarch
 
-- Employment dates: 03/2021–02/2023
-- Company description: IT consulting firm
+- Employment dates: 01/2022–02/2024
+- Company description: Software Development
 - Project count: At least two projects
 - Job title: Not supplied
 - Projects: Not supplied
@@ -35,10 +35,21 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 - Responsibilities: Not supplied
 - Achievements and metrics: Not supplied
 
-### Globant
+### Netguru
 
-- Employment dates: 07/2016–02/2021
-- Company description: IT consulting firm
+- Employment dates: 07/2020–12/2021
+- Company description: IT Services and IT Consulting
+- Project count: At least two projects
+- Job title: Not supplied
+- Projects: Not supplied
+- Technologies: Not supplied
+- Responsibilities: Not supplied
+- Achievements and metrics: Not supplied
+
+### Mercari
+
+- Employment dates: 04/2020–06/2020
+- Company description: Software Development
 - Project count: At least two projects
 - Job title: Not supplied
 - Projects: Not supplied

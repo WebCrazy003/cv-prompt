@@ -14,7 +14,7 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 
 ### Endava
 
-- Employment dates: 03/2024–08/2026
+- Employment dates: 03/2024–10/2026
 - Company description: IT Services and IT Consulting
 - Project count: At least two projects
 - Job title: Senior Full-Stack Engineer
