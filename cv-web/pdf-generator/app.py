@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from docx.text.paragraph import Paragraph
 
 ROOT_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = ROOT_DIR / "frontend"
@@ -282,6 +283,162 @@ def _fix_name_paragraph(document):
     spacing.set(qn("w:before"), str(NAME_TOP_PADDING_TWIPS))
     spacing.set(qn("w:line"), str(NAME_LINE_HEIGHT_TWIPS))
     spacing.set(qn("w:lineRule"), "exact")
+
+
+# ---------------------------------------------------------------------------
+# ATS professional template
+#
+# templates/ats_professional_template.docx is a plain single-column resume with
+# direct (inline) formatting instead of named styles. It is a style carrier in the
+# same sense as cv_template.docx, but its prototypes are located by the sample
+# text each paragraph carries, so editing the sample wording requires updating
+# ATS_PROTOTYPE_TEXT below.
+# ---------------------------------------------------------------------------
+
+ATS_TEMPLATE_FILE = ROOT_DIR / "templates" / "ats_professional_template.docx"
+
+ATS_PROTOTYPE_TEXT = {
+    "name": "YOUR FULL NAME",
+    "headline": "Job Title",
+    "contact": "City, Country  |  you@email.com",
+    "header": "PROFESSIONAL SUMMARY",
+    "summary": "Two to three lines.",
+    "skills": "Skill One",
+    "role": "Job Title\tMon YYYY - Present",
+    "company": "Company Name",
+    "bullet": "• Start with a strong verb.",
+    "degree": "Degree Name",
+    "university": "University Name",
+}
+
+MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
+def _month_year(value):
+    """Render the CV JSON's MM/YYYY dates as the template's "Mon YYYY"."""
+    match = re.fullmatch(r"(0[1-9]|1[0-2])/(\d{4})", value)
+    return f"{MONTHS[int(match.group(1)) - 1]} {match.group(2)}" if match else value
+
+
+def _set_run_text(run, text):
+    for child in list(run):
+        if child.tag not in (qn("w:rPr"), qn("w:tab")):
+            run.remove(child)
+    text_el = OxmlElement("w:t")
+    text_el.set(qn("xml:space"), "preserve")
+    text_el.text = text
+    run.append(text_el)
+
+
+def _clone_runs(proto_element, texts):
+    """Clone a prototype paragraph, filling its first len(texts) runs in order."""
+    new_p = copy.deepcopy(proto_element)
+    runs = new_p.findall(qn("w:r"))
+    for extra in runs[len(texts):]:
+        new_p.remove(extra)
+    for run, text in zip(runs, texts):
+        _set_run_text(run, text)
+    return new_p
+
+
+def harvest_ats_prototypes(document):
+    protos = {}
+    for paragraph in document.paragraphs:
+        text = paragraph.text
+        for key, sample in ATS_PROTOTYPE_TEXT.items():
+            if key in protos:
+                continue
+            matches = text.startswith(sample) if key in ("summary", "skills", "bullet") else text == sample
+            if matches:
+                protos[key] = copy.deepcopy(paragraph._p)
+    missing = sorted(set(ATS_PROTOTYPE_TEXT) - set(protos))
+    if missing:
+        raise ValueError(f"ATS template is missing prototype paragraphs: {', '.join(missing)}")
+    # Keep headings and role lines on the same page as the content they introduce.
+    for key in ("header", "role", "company", "degree"):
+        Paragraph(protos[key], None).paragraph_format.keep_with_next = True
+    return protos
+
+
+def build_ats_docx(template_path, data, output_path):
+    template_path = Path(template_path).expanduser()
+    output_path = Path(output_path).expanduser()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if not template_path.exists():
+        raise FileNotFoundError(f"Template path does not exist: {template_path}")
+
+    document = Document(str(template_path))
+    protos = harvest_ats_prototypes(document)
+
+    body = document.element.body
+    sect_pr = body.find(qn("w:sectPr"))
+    for child in list(body):
+        if child.tag in (qn("w:p"), qn("w:tbl")):
+            body.remove(child)
+
+    def emit(proto_key, *texts):
+        sect_pr.addprevious(_clone_runs(protos[proto_key], texts))
+
+    def text_of(key):
+        return str(data.get(key) or "").strip()
+
+    name = text_of("personNameOnCV")
+    headline = text_of("jobTitleApplyJob")
+    contact = "  |  ".join(part for part in (text_of("personLocation"), text_of("personEmail")) if part)
+    summary = _strip_markers(text_of("summary"))
+    skills = data.get("skills") or []
+    experience = data.get("experience") or []
+    university = text_of("personUniversity")
+    degree = text_of("personDegree")
+
+    if name:
+        emit("name", name.upper())
+    if headline:
+        emit("headline", headline)
+    if contact:
+        emit("contact", contact)
+
+    if summary:
+        emit("header", "PROFESSIONAL SUMMARY")
+        emit("summary", summary)
+
+    if skills:
+        emit("header", "CORE SKILLS")
+        for item in skills:
+            category = str(item.get("categoryName") or "").strip()
+            entries = "  •  ".join(str(entry).strip() for entry in item.get("skillItems") or [])
+            line = f"{category}: {entries}" if category and entries else category or entries
+            if line:
+                emit("skills", line)
+
+    if experience:
+        emit("header", "PROFESSIONAL EXPERIENCE")
+        for item in experience:
+            start = _month_year(str(item.get("startDate") or "").strip())
+            end = _month_year(str(item.get("endDate") or "").strip())
+            dates = " - ".join(part for part in (start, end) if part)
+            emit("role", str(item.get("jobTitle") or "").strip(), dates)
+            company = str(item.get("companyName") or "").strip()
+            if company:
+                emit("company", company)
+            for bullet in item.get("content") or []:
+                emit("bullet", f"• {str(bullet).strip()}")
+
+    if university or degree:
+        emit("header", "EDUCATION")
+        if degree:
+            emit("degree", degree)
+        if university:
+            emit("university", university)
+
+    document.save(str(output_path))
+
+
+# Layouts a skill's runtime contract may select through "pdfTemplate".
+TEMPLATES = {
+    "default": (TEMPLATE_FILE, build_docx),
+    "ats-professional": (ATS_TEMPLATE_FILE, build_ats_docx),
+}
 
 
 # ---------------------------------------------------------------------------

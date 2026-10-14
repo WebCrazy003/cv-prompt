@@ -158,6 +158,17 @@ describe("input serialization and isolation", () => {
     await expect(readFile(join(record.paths.workspace, "base-profile", "steven", "candidate-profile-steven.md"))).rejects.toThrow();
     expect(await readFile(join(record.paths.workspace, "base-profile", "alex", "candidate-profile.md"), "utf8")).toContain("Alex");
   });
+
+  it("records the PDF template a skill contract selects", async () => {
+    const discovery = await discoverSkills(repositoryRoot, join(repositoryRoot, ".codex", "skills"), join(repositoryRoot, "spec", "cv-skill-runtime-contract.schema.json"));
+    const runtime = await temporary();
+    const store = new GenerationStore(runtime);
+    await store.initialize();
+    const sebastian = await store.create(request("application-1"), discovery.byName.get("sebastian-cv-generator")!, join(runtime, "pdf-output"));
+    const alex = await store.create(request("application-2"), discovery.byName.get("alex-cv-generator")!, join(runtime, "pdf-output"));
+    expect(sebastian.pdfTemplate).toBe("ats-professional");
+    expect(alex.pdfTemplate).toBeUndefined();
+  });
 });
 
 describe("primary skill extraction", () => {

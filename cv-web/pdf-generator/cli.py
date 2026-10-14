@@ -10,23 +10,25 @@ import json
 import tempfile
 from pathlib import Path
 
-from app import TEMPLATE_FILE, build_docx, convert_to_pdf
+from app import TEMPLATES, convert_to_pdf
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--template", choices=sorted(TEMPLATES), default="default")
     args = parser.parse_args()
 
     input_path = Path(args.input).resolve()
     output_path = Path(args.output).resolve()
     data = json.loads(input_path.read_text(encoding="utf-8"))
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    template_file, build = TEMPLATES[args.template]
 
     with tempfile.TemporaryDirectory(prefix="cv-pdf-") as temporary:
         docx_path = Path(temporary) / "generated-cv.docx"
-        build_docx(TEMPLATE_FILE, data, docx_path)
+        build(template_file, data, docx_path)
         warning = convert_to_pdf(docx_path, output_path)
 
     if not output_path.is_file() or not output_path.read_bytes().startswith(b"%PDF"):
@@ -36,4 +38,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

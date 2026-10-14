@@ -6,8 +6,15 @@ import { promisify } from "node:util";
 import { AppError } from "../errors.js";
 import { assertContained } from "../fs-utils.js";
 import type { GenerationRecord } from "../generations/types.js";
+import type { PdfTemplate } from "../skills/discovery.js";
 
 const execFileAsync = promisify(execFile);
+
+// Mirrors TEMPLATES in pdf-generator/app.py.
+const TEMPLATE_FILES: Record<PdfTemplate, string> = {
+  default: "cv_template.docx",
+  "ats-professional": join("templates", "ats_professional_template.docx"),
+};
 
 function safeFilename(value: unknown): string {
   const normalized = String(value ?? "").trim().replace(/[^A-Za-z0-9._ -]+/g, "_").replace(/\s+/g, " ").replace(/^[. ]+|[. ]+$/g, "").slice(0, 80).trim();
@@ -49,11 +56,11 @@ export class PdfGenerator {
     private readonly pythonCommand: string,
   ) {}
 
-  async validateInstallation(): Promise<void> {
+  async validateInstallation(template: PdfTemplate = "default"): Promise<void> {
     await Promise.all([
       access(join(this.generatorRoot, "cli.py")),
       access(join(this.generatorRoot, "app.py")),
-      access(join(this.generatorRoot, "cv_template.docx")),
+      access(join(this.generatorRoot, TEMPLATE_FILES[template])),
     ]);
     try {
       await execFileAsync(this.pythonCommand, ["-c", "import docx"], { timeout: 10_000 });
@@ -65,7 +72,7 @@ export class PdfGenerator {
   async generate(record: GenerationRecord): Promise<GeneratedPdf> {
     const outputDirectory = record.pdfOutputDirectory;
     if (!outputDirectory) throw new AppError(500, "pdf_output_directory_missing", "This generation has no PDF output directory snapshot.");
-    await this.validateInstallation();
+    await this.validateInstallation(record.pdfTemplate);
     const result = record.result as { personNameOnCV?: unknown; companyNameApplyJob?: unknown };
     const folder = assertContained(outputDirectory, join(outputDirectory, dateFolder(new Date())), "PDF date folder");
     await mkdir(folder, { recursive: true });
@@ -76,6 +83,7 @@ export class PdfGenerator {
         join(this.generatorRoot, "cli.py"),
         "--input", record.paths.result,
         "--output", record.paths.pdfResult,
+        ...(record.pdfTemplate ? ["--template", record.pdfTemplate] : []),
       ], { cwd: this.generatorRoot, timeout: 180_000, maxBuffer: 1_000_000 }));
     } catch (error) {
       throw new AppError(500, "pdf_generation_failed", `PDF generation failed: ${error instanceof Error ? error.message : String(error)}`);

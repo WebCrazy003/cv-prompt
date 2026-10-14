@@ -7,12 +7,15 @@ import { assertContained } from "../fs-utils.js";
 import { messageOf } from "../errors.js";
 import { compileParameterSchema } from "./schema.js";
 
+export type PdfTemplate = "default" | "ats-professional";
+
 interface RuntimeContract {
   version: 1;
   runtimeParameters: ["jobDescriptionFile", "jobQuestionsFile", "cvOutputFile"];
   outputSchema: "references/cv-output.schema.json";
   candidateDataRoot: string;
   snapshotIncludes: string[];
+  pdfTemplate?: PdfTemplate;
 }
 
 export interface DiscoveredSkill extends SkillOption {

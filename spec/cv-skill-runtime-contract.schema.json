@@ -44,6 +44,10 @@
         "minLength": 1,
         "pattern": "^(?!!)(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*(?:^|/)(?:\\.git|\\.cv-web-runtime|node_modules|build|dist|out|coverage|\\.next)(?:/|$))(?!\\.codex/skills(?:/|$))(?!(?:\\*|\\*\\*|\\*\\*/\\*|\\.)$).+$"
       }
+    },
+    "pdfTemplate": {
+      "description": "PDF layout from cv-web/pdf-generator. Omitted means default.",
+      "enum": ["default", "ats-professional"]
     }
   }
 }

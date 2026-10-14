@@ -66,6 +66,7 @@ export class GenerationStore {
       kept: false,
       submitted: normalizeRequest(request),
       pdfOutputDirectory,
+      pdfTemplate: skill.contract?.pdfTemplate,
       paths: generationPaths(this.runtimeRoot, id, skill.name),
       events: [],
       nextEventId: 1,

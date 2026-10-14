@@ -7,7 +7,7 @@ import type {
   GenerationEvent,
   ReasoningEffort,
 } from "../../shared/types.js";
-import type { DiscoveredSkill } from "../skills/discovery.js";
+import type { DiscoveredSkill, PdfTemplate } from "../skills/discovery.js";
 import { normalizeSkillList } from "../primary-skills.js";
 
 export interface NormalizedQuestion {
@@ -63,6 +63,7 @@ export interface GenerationRecord {
     effort: ReasoningEffort;
   };
   pdfOutputDirectory: string;
+  pdfTemplate?: PdfTemplate;
   paths: GenerationPaths;
   pendingInput?: PendingInput;
   result?: unknown;

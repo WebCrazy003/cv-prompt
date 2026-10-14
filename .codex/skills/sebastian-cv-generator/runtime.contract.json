@@ -9,5 +9,6 @@
   "candidateDataRoot": "base-profile/sebastian",
   "snapshotIncludes": [
     "base-profile/sebastian/candidate-profile-sebastian.md"
-  ]
+  ],
+  "pdfTemplate": "ats-professional"
 }
