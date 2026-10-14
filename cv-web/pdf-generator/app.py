@@ -383,13 +383,15 @@ def build_ats_docx(template_path, data, output_path):
         return str(data.get(key) or "").strip()
 
     name = text_of("personNameOnCV")
-    headline = text_of("jobTitleApplyJob")
     contact = "  |  ".join(part for part in (text_of("personLocation"), text_of("personEmail")) if part)
     summary = _strip_markers(text_of("summary"))
     skills = data.get("skills") or []
     experience = data.get("experience") or []
     university = text_of("personUniversity")
     degree = text_of("personDegree")
+    # The headline is the candidate's latest held title, never the target job's
+    # title. Experience follows the candidate profile, newest employer first.
+    headline = str(experience[0].get("jobTitle") or "").strip() if experience else ""
 
     if name:
         emit("name", name.upper())

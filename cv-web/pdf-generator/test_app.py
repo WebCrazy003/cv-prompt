@@ -54,7 +54,7 @@ class AtsTemplateTests(unittest.TestCase):
             "personNameOnCV": "Sebastian Sygula",
             "personLocation": "Sokolniki, Poland",
             "personEmail": "sebastian@example.com",
-            "jobTitleApplyJob": "Senior Full-Stack Engineer",
+            "jobTitleApplyJob": "Staff Engineer with React & Team Lead",
             "summary": "Engineer summary.",
             "skills": [{"categoryName": "Languages", "skillItems": ["TypeScript", "Python"]}],
             "experience": [{
