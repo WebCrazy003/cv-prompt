@@ -5,7 +5,7 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 ## Basic information
 
 - Name: Sebastian Sygula
-- Email: Sebastian.Sygula@proton.me
+- Email: sebastiansygul@gmail.com
 - Location: Sokolniki, Łódź Voivodeship, Poland
 - University: Waseda University
 - Degree: Bachelor's Degree, Computer Science and Communications Engineering
