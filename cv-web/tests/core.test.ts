@@ -211,13 +211,17 @@ describe("primary skill extraction", () => {
 });
 
 describe("skills and admission", () => {
-  it("discovers all migrated skills and validates Steven parameters", async () => {
+  it("discovers all migrated skills and validates Steven and Sebastian parameters", async () => {
     const discovery = await discoverSkills(repositoryRoot, join(repositoryRoot, ".codex", "skills"), join(repositoryRoot, "spec", "cv-skill-runtime-contract.schema.json"));
-    expect(discovery.options).toHaveLength(5);
+    expect(discovery.options).toHaveLength(4);
     expect(discovery.options.every((skill) => skill.runnable)).toBe(true);
     const steven = discovery.byName.get("steven-cv-generator")!;
     expect(steven.validateParameters({ country: "UK", "LK-match": "none" })).toBe(true);
     expect(steven.validateParameters({ country: "US", "LK-match": "none" })).toBe(false);
+    const sebastian = discovery.byName.get("sebastian-cv-generator")!;
+    expect(sebastian.validateParameters({ "LK-match": "LK-match" })).toBe(true);
+    expect(sebastian.validateParameters({ "LK-match": "none" })).toBe(true);
+    expect(sebastian.validateParameters({})).toBe(false);
   });
 
   it("rejects runtime path names and unknown submitted parameters", () => {

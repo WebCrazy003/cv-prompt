@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "LK-match": {
+      "type": "string",
+      "title": "LinkedIn match",
+      "enum": ["none", "LK-match"]
+    }
+  },
+  "required": ["LK-match"],
+  "additionalProperties": false
+}

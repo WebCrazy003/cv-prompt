@@ -6,7 +6,7 @@ Act as a senior resume writer and ATS optimization specialist. Produce a complet
 
 ## JD-aligned completion
 
-Preserve exact candidate identity, contact details, education, employer names, and employment dates from `candidate-profile-sebastian.md`.
+Preserve exact candidate identity, contact details, education, employer names, and employment dates, and any supplied job titles from the candidate profile selected by `LK-match`.
 
 Always derive the target company, target title, stack, responsibilities, and domain language from `jobDescriptionFile`; derive application questions only from `jobQuestionsFile`. Never inspect an existing `cvOutputFile` or let it supply or override role-dependent content. Generate the summary, inferred job titles, all employer bullets, skills, and question answers solely for the current runtime inputs.
 

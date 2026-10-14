@@ -8,6 +8,7 @@
   "outputSchema": "references/cv-output.schema.json",
   "candidateDataRoot": "base-profile/sebastian",
   "snapshotIncludes": [
+    "base-profile/sebastian/candidate-profile-sebastian-no-LK.md",
     "base-profile/sebastian/candidate-profile-sebastian.md"
   ],
   "pdfTemplate": "ats-professional"

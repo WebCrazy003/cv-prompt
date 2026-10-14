@@ -23,10 +23,8 @@ EXPECTED_SNAPSHOTS = {
         "base-profile/alex/candidate-profile-djinni.md"
     ],
     "sebastian-cv-generator": [
-        "base-profile/sebastian/candidate-profile-sebastian.md"
-    ],
-    "sebastian-cv-generator-no-lk": [
-        "base-profile/sebastian/candidate-profile-sebastian-no-LK.md"
+        "base-profile/sebastian/candidate-profile-sebastian-no-LK.md",
+        "base-profile/sebastian/candidate-profile-sebastian.md",
     ],
     "steven-cv-generator": [
         "base-profile/steven/candidate-profile-steven-no-LK.md",
@@ -35,6 +33,7 @@ EXPECTED_SNAPSHOTS = {
         "base-profile/steven/candidate-profile-steven-UK.md",
     ],
 }
+EXPECTED_PDF_TEMPLATES = {"sebastian-cv-generator": "ats-professional"}
 LEGACY_PATH_FRAGMENTS = (
     "base-profile/job-application.md",
     "base-profile/cv-output.json",
@@ -166,7 +165,7 @@ class RuntimeManifestTests(unittest.TestCase):
                 contract_path = SKILLS_ROOT / skill / "runtime.contract.json"
                 contract = json.loads(contract_path.read_text(encoding="utf-8"))
                 self.assertEqual(
-                    set(contract),
+                    set(contract) - {"pdfTemplate"},
                     {
                         "version",
                         "runtimeParameters",
@@ -174,6 +173,10 @@ class RuntimeManifestTests(unittest.TestCase):
                         "candidateDataRoot",
                         "snapshotIncludes",
                     },
+                )
+                self.assertEqual(
+                    contract.get("pdfTemplate"),
+                    EXPECTED_PDF_TEMPLATES.get(skill),
                 )
                 self.assertEqual(contract["version"], 1)
                 self.assertEqual(contract["runtimeParameters"], RUNTIME_PARAMETERS)
@@ -214,6 +217,19 @@ class RuntimeManifestTests(unittest.TestCase):
         self.assertEqual(schema["required"], ["country", "LK-match"])
         self.assertFalse(schema["additionalProperties"])
         self.assertEqual(schema["properties"]["country"]["enum"], ["poland", "UK"])
+        self.assertEqual(
+            schema["properties"]["LK-match"]["enum"], ["none", "LK-match"]
+        )
+        self.assertTrue(set(schema["properties"]).isdisjoint(RUNTIME_PARAMETERS))
+
+    def test_sebastian_ui_schema_is_restricted_to_user_parameters(self) -> None:
+        schema = json.loads(
+            (SKILLS_ROOT / "sebastian-cv-generator" / "ui.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(schema["required"], ["LK-match"])
+        self.assertFalse(schema["additionalProperties"])
         self.assertEqual(
             schema["properties"]["LK-match"]["enum"], ["none", "LK-match"]
         )
@@ -278,19 +294,36 @@ class SkillInstructionTests(unittest.TestCase):
                 rf"\| `{re.escape(country)}` \| `{re.escape(match)}` \| `[^`]*{re.escape(profile)}` \|",
             )
 
+    def test_sebastian_routes_every_parameter_value(self) -> None:
+        text = (SKILLS_ROOT / "sebastian-cv-generator" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        routes = {
+            "none": "candidate-profile-sebastian-no-LK.md",
+            "LK-match": "candidate-profile-sebastian.md",
+        }
+        for match, profile in routes.items():
+            self.assertRegex(
+                text,
+                rf"\| `{re.escape(match)}` \| `[^`]*{re.escape(profile)}` \|",
+            )
+
     def test_sebastian_commands_use_runtime_output(self) -> None:
-        for skill in ("sebastian-cv-generator", "sebastian-cv-generator-no-lk"):
-            with self.subTest(skill=skill):
-                text = (SKILLS_ROOT / skill / "SKILL.md").read_text(encoding="utf-8")
-                command_lines = [
-                    line for line in text.splitlines() if "validate_employers.py" in line
-                ]
-                self.assertEqual(len(command_lines), 1)
-                self.assertIn("cvOutputFile", command_lines[0])
+        text = (SKILLS_ROOT / "sebastian-cv-generator" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        command_lines = [
+            line
+            for line in text.splitlines()
+            if "python3 .codex/skills/sebastian-cv-generator/scripts/validate_employers.py" in line
+        ]
+        self.assertEqual(len(command_lines), 1)
+        self.assertIn("cvOutputFile", command_lines[0])
+        self.assertIn("selectedCandidateProfile", command_lines[0])
 
 
 class RuntimeInputGateTests(unittest.TestCase):
-    def test_all_five_gates_accept_unique_isolated_paths_without_writing(self) -> None:
+    def test_all_gates_accept_unique_isolated_paths_without_writing(self) -> None:
         for skill in EXPECTED_SNAPSHOTS:
             with self.subTest(skill=skill), tempfile.TemporaryDirectory() as temp:
                 workspace, arguments = make_runtime_workspace(Path(temp), skill)
@@ -414,7 +447,7 @@ class SebastianValidatorTests(unittest.TestCase):
                 ROOT / "base-profile/sebastian/candidate-profile-sebastian.md",
             ),
             (
-                "sebastian-cv-generator-no-lk",
+                "sebastian-cv-generator",
                 ROOT / "base-profile/sebastian/candidate-profile-sebastian-no-LK.md",
             ),
         )
@@ -537,6 +570,10 @@ class StevenOutputValidatorTests(unittest.TestCase):
         result = self.run_validator(json.dumps(document))
         self.assertEqual(result.returncode, 1)
         self.assertIn("jobQuestionAnswers", result.stderr)
+
+
+class SebastianOutputValidatorTests(StevenOutputValidatorTests):
+    script = SKILLS_ROOT / "sebastian-cv-generator" / "scripts" / "validate_cv_output.py"
 
 
 if __name__ == "__main__":

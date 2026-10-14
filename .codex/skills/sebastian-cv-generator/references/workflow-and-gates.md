@@ -4,7 +4,7 @@ Perform these stages in order. Keep intermediate reasoning out of the output fil
 
 ## 0. Runtime Source Gate
 
-After validating every required runtime parameter, read `base-profile/sebastian/candidate-profile-sebastian.md`, `jobDescriptionFile`, and `jobQuestionsFile` directly from disk for this invocation. Do this even if any file was read earlier in the conversation. Do not inspect or reuse `cvOutputFile` as drafting input.
+After validating every required runtime parameter, read the candidate profile selected by `LK-match`, `jobDescriptionFile`, and `jobQuestionsFile` directly from disk for this invocation. Do this even if any file was read earlier in the conversation. Do not inspect or reuse `cvOutputFile` as drafting input.
 
 Record internally a current-job anchor set containing:
 
@@ -100,4 +100,4 @@ This gate fails when the JSON is structurally valid but targets an earlier job.
 
 ## 9. Return the result
 
-After every generation and validation gate passes, atomically create or replace only `cvOutputFile`. Keep any temporary file beside that destination and remove it after replacement; write nowhere else. Parse the written file, validate it against the schema, confirm its `jobQuestionAnswers` text and order against `jobQuestionsFile`, run the employer-uniqueness validator specified in `SKILL.md`, and rerun the source-alignment checks before reporting success.
+After every generation and validation gate passes, atomically create or replace only `cvOutputFile` using the write procedure in `SKILL.md`. Keep any temporary file beside that destination and remove it after replacement; write nowhere else. Run `scripts/validate_cv_output.py` on the written file to parse it, validate it against the schema, and confirm its `jobQuestionAnswers` text and order against `jobQuestionsFile`. Run the employer-uniqueness validator specified in `SKILL.md`. Fix and revalidate until both exit 0, and rerun the source-alignment checks before reporting success.
