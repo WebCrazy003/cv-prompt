@@ -26,11 +26,6 @@ Prepare information that lets later skills answer interview questions **fast and
 ## Rules
 
 - If something is ambiguous, mark it as uncertain in the preparation profile. Prepare a plausible proposed approach for later use.
-- Distinguish clearly between:
-  - directly stated facts;
-  - safe summaries;
-  - likely interview questions;
-  - missing information.
 - Prefer recent and job-relevant experience when ranking talking points.
 - Do not over-polish the candidate's background.
 - Keep the resulting profile useful for fast retrieval during live answers.
