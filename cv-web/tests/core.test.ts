@@ -213,11 +213,20 @@ describe("primary skill extraction", () => {
 describe("skills and admission", () => {
   it("discovers all migrated skills and validates Steven and Sebastian parameters", async () => {
     const discovery = await discoverSkills(repositoryRoot, join(repositoryRoot, ".codex", "skills"), join(repositoryRoot, "spec", "cv-skill-runtime-contract.schema.json"));
-    expect(discovery.options).toHaveLength(4);
+    expect(discovery.options).toHaveLength(5);
     expect(discovery.options.every((skill) => skill.runnable)).toBe(true);
     const steven = discovery.byName.get("steven-cv-generator")!;
     expect(steven.validateParameters({ country: "UK", "LK-match": "none" })).toBe(true);
     expect(steven.validateParameters({ country: "US", "LK-match": "none" })).toBe(false);
+    const trainer = discovery.byName.get("steven-cv-generator-trainer")!;
+    expect(trainer.displayName).toBe("Steven CV Generator - Trainer");
+    expect(trainer.validateParameters({ country: "UK" })).toBe(true);
+    expect(trainer.validateParameters({ country: "poland" })).toBe(true);
+    expect(trainer.validateParameters({ country: "UK", "LK-match": "none" })).toBe(false);
+    expect(trainer.snapshotFiles).toEqual([
+      "base-profile/steven-ai-trainning/candidate-profile-steven-python-ai-POL.md",
+      "base-profile/steven-ai-trainning/candidate-profile-steven-python-ai-UK.md",
+    ]);
     const sebastian = discovery.byName.get("sebastian-cv-generator")!;
     expect(sebastian.validateParameters({ "LK-match": "LK-match" })).toBe(true);
     expect(sebastian.validateParameters({ "LK-match": "none" })).toBe(true);

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Steven CV Generator - Trainer"
+  short_description: "Create Steve Onye's tailored Python/AI trainer CV JSON"
+  default_prompt: "Use $steven-cv-generator-trainer with the supplied country value to select the correct on-disk Python/AI profile and fully regenerate Steve Onye's tailored CV JSON."
