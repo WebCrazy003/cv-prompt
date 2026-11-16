@@ -41,7 +41,13 @@ export async function buildApp(config: AppConfig, client: CodexAppServerClient):
   app.addHook("onClose", async () => clearInterval(cleanupInterval));
   const coordinator = new GenerationCoordinator(store, client, config.repositoryRoot, pdfGenerator);
   const bootstrap = new BootstrapService(config, client);
-  const allowedOrigins = [...new Set([config.origin, `http://127.0.0.1:${config.port}`, "http://127.0.0.1:5173"] )];
+  const allowedOrigins = [...new Set([
+    config.origin,
+    `http://127.0.0.1:${config.port}`,
+    `http://localhost:${config.port}`,
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+  ])];
 
   app.setErrorHandler((error, _request, reply) => {
     if (error instanceof AppError) {

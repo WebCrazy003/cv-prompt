@@ -5,7 +5,7 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 ## Basic information
 
 - Name: Sebastian Sygula
-- Email: sebastiansygul@gmail.com
+- Email: Sebastian.Sygula@proton.me
 - Location: Sokolniki, Łódź Voivodeship, Poland
 - University: Waseda University
 - Degree: Bachelor's Degree, Computer Science and Communications Engineering
@@ -14,7 +14,7 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 
 ### Endava
 
-- Employment dates: 03/2024–10/2026
+- Employment dates: 03/2024–11/2026
 - Company description: IT Services and IT Consulting
 - Project count: At least two projects
 - Job title: Senior Full-Stack Engineer
