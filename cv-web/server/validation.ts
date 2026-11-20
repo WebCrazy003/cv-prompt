@@ -9,6 +9,7 @@ export const createGenerationSchema = z.object({
   applicationTabId: z.enum(APPLICATION_TAB_IDS),
   jobDescription,
   excludedSkills: skillList,
+  addedSkills: skillList,
   questions: z.array(z.string().max(10_000)).max(50),
   skillName: z.string().min(1).max(200),
   skillParameters: z.record(z.string(), z.unknown()),

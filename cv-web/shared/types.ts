@@ -78,6 +78,7 @@ export interface CreateGenerationRequest {
   effort: ReasoningEffort;
   jobDescription: string;
   excludedSkills?: string[];
+  addedSkills?: string[];
   questions: string[];
   skillParameters: Record<string, unknown>;
 }

@@ -17,7 +17,7 @@ import { loadDraft, loadPreferences, preferredDraft, saveDraft, savePreferences,
 
 type GenerationPayload = { generation: GenerationSummary; events: GenerationEvent[]; pendingInput?: { requestId: string; questions: Array<{ id: string; header: string; question: string; options?: Array<{ label: string }> }> ; deadline: string }; result?: Record<string, unknown> };
 type BootstrapPayload = BootstrapResponse & { diagnostics?: string[] };
-type SkillChoice = { name: string; included: boolean };
+type SkillChoice = { name: string; included: boolean; added?: boolean };
 type SkillReview = { tab: ApplicationTabId; status: "loading" | "ready" | "error"; skills: SkillChoice[]; error?: string };
 
 const tabs: Array<{ id: ApplicationTabId; label: string }> = APPLICATION_TAB_IDS.map((id, index) => ({
@@ -270,11 +270,13 @@ export function App() {
     if (!skillReview) return;
     const { tab, skills } = skillReview;
     setSkillReview(undefined);
-    void generate(tab, skills.filter((skill) => !skill.included).map((skill) => skill.name));
+    void generate(tab, skills);
   }
 
-  async function generate(tab: ApplicationTabId, excludedSkills: string[]) {
+  async function generate(tab: ApplicationTabId, skills: SkillChoice[]) {
     const draft = drafts[tab];
+    const excludedSkills = skills.filter((skill) => !skill.included).map((skill) => skill.name);
+    const addedSkills = skills.filter((skill) => skill.included && skill.added).map((skill) => skill.name);
     setError("");
     try {
       const { data } = await api<{ generationId: string }>("/api/generations", sessionToken, {
@@ -283,6 +285,7 @@ export function App() {
           applicationTabId: tab,
           jobDescription: draft.jobDescription,
           excludedSkills,
+          addedSkills,
           questions: draft.questions,
           skillName: draft.skillName,
           skillParameters: draft.skillParameters,
@@ -572,7 +575,7 @@ function PrimarySkillsModal({ review, onChange, onCancel, onConfirm }: { review:
     const existing = review.skills.some((skill) => skill.name.toLowerCase() === name.toLowerCase());
     onChange(existing
       ? review.skills.map((skill) => skill.name.toLowerCase() === name.toLowerCase() ? { ...skill, included: true } : skill)
-      : [...review.skills, { name, included: true }]);
+      : [...review.skills, { name, included: true, added: true }]);
     setNewSkill("");
   }
 

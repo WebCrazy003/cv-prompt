@@ -107,7 +107,7 @@ it("confirms primary skills in a modal before starting a generation", async () =
 
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   const generation = posts.find((post) => post.url.endsWith("/api/generations"))?.body;
-  expect(generation).toMatchObject({ excludedSkills: ["PHP", "Python"] });
+  expect(generation).toMatchObject({ excludedSkills: ["PHP", "Python"], addedSkills: ["Kubernetes"] });
   expect(generation).not.toHaveProperty("primarySkills");
 });
 

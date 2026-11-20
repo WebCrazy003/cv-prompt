@@ -131,6 +131,20 @@ describe("input serialization and isolation", () => {
     expect(normalizeRequest({ ...request(), excludedSkills: [] }).excludedSkills).toBeUndefined();
   });
 
+  it("normalizes added skills and drops any that were also excluded", () => {
+    expect(normalizeRequest({ ...request(), addedSkills: [" Python ", "python", "Go"], excludedSkills: ["go"] }).addedSkills).toEqual(["Python"]);
+    expect(normalizeRequest({ ...request(), addedSkills: [] }).addedSkills).toBeUndefined();
+  });
+
+  it("adds the inclusion rule to the skill instruction only when skills were added", () => {
+    const paths = { jobDescription: "/w/jd.txt", jobQuestions: "/w/q.json", cvOutput: "/w/out.json" };
+    const withSkills = skillInstruction("alex-cv-generator", { submitted: normalizeRequest({ ...request(), addedSkills: ["Python"] }), paths } as never);
+    expect(withSkills).toContain("list each of them in the CV skills section");
+    expect(withSkills).toContain('"addedSkills":["Python"]');
+    const without = skillInstruction("alex-cv-generator", { submitted: normalizeRequest(request()), paths } as never);
+    expect(without).not.toContain("addedSkills");
+  });
+
   it("adds the exclusion rule to the skill instruction only when skills were unchecked", () => {
     const paths = { jobDescription: "/w/jd.txt", jobQuestions: "/w/q.json", cvOutput: "/w/out.json" };
     const withSkills = skillInstruction("alex-cv-generator", { submitted: normalizeRequest({ ...request(), excludedSkills: ["PHP"] }), paths } as never);

@@ -56,6 +56,7 @@ export interface GenerationRecord {
   submitted: {
     jobDescription: string;
     excludedSkills?: string[];
+    addedSkills?: string[];
     questions: NormalizedQuestion[];
     skillName: string;
     skillParameters: Record<string, unknown>;
@@ -85,9 +86,12 @@ export interface PersistedGeneration extends Omit<GenerationRecord, "runtime"> {
 
 export function normalizeRequest(request: CreateGenerationRequest): GenerationRecord["submitted"] {
   const excludedSkills = normalizeSkillList(request.excludedSkills);
+  const excludedKeys = new Set(excludedSkills.map((skill) => skill.toLowerCase()));
+  const addedSkills = normalizeSkillList(request.addedSkills).filter((skill) => !excludedKeys.has(skill.toLowerCase()));
   return {
     jobDescription: request.jobDescription.replace(/\r\n/g, "\n"),
     excludedSkills: excludedSkills.length > 0 ? excludedSkills : undefined,
+    addedSkills: addedSkills.length > 0 ? addedSkills : undefined,
     questions: request.questions
       .map((text) => text.trim())
       .filter(Boolean)
