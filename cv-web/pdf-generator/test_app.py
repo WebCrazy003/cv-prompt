@@ -40,6 +40,19 @@ class LibreOfficeConversionTests(unittest.TestCase):
 
 
 class TemplateRegistryTests(unittest.TestCase):
+    def test_education_years_render_in_every_template(self):
+        with tempfile.TemporaryDirectory(prefix="cv-education-test-") as temporary:
+            for name, (template_file, build) in TEMPLATES.items():
+                with self.subTest(template=name):
+                    output = Path(temporary) / f"{name}.docx"
+                    build(template_file, {
+                        "personUniversity": "Clark University",
+                        "personDegree": "Bachelor's Degree, Information System",
+                        "personEducationYears": "2011-2015",
+                    }, output)
+                    lines = [paragraph.text for paragraph in Document(str(output)).paragraphs]
+                    self.assertTrue(any("Clark University" in line and "2011-2015" in line for line in lines))
+
     def test_contract_schema_lists_every_template(self):
         schema_path = Path(__file__).resolve().parents[2] / "spec" / "cv-skill-runtime-contract.schema.json"
         schema = json.loads(schema_path.read_text(encoding="utf-8"))

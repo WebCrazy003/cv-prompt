@@ -27,6 +27,8 @@ On macOS, use the two Desktop shortcuts: double-click **CV Studio - Start.comman
 
 When a macOS shortcut receives a reduced shell `PATH`, startup also checks the standard standalone install locations and the newest installed OpenAI VS Code extension for its bundled Codex CLI. Set `CODEX_COMMAND` to an explicit executable path to override discovery.
 
+The start script explicitly sets `CV_PDF_PYTHON` to `/usr/bin/python3` on macOS, unless you have supplied an override. Stop and start an already-running app to apply this setting.
+
 Do not expose either port publicly. This is a trusted single-user local application that reuses the local Codex login; it is not a multi-user hosting design.
 
 Useful commands:

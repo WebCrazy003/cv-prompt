@@ -217,6 +217,7 @@ def build_docx(template_path, data, output_path):
     skills = data.get("skills") or []
     university = str(data.get("personUniversity") or "").strip()
     degree = str(data.get("personDegree") or "").strip()
+    education_years = str(data.get("personEducationYears") or "").strip()
 
     if name:
         emit("name", name)
@@ -256,7 +257,7 @@ def build_docx(template_path, data, output_path):
 
     if university or degree:
         emit("header", "Education")
-        line = " | ".join(part for part in (university, degree) if part)
+        line = " | ".join(part for part in (university, degree, education_years) if part)
         emit("education", line)
 
     normalize_fonts(document)
@@ -389,6 +390,7 @@ def build_ats_docx(template_path, data, output_path):
     experience = data.get("experience") or []
     university = text_of("personUniversity")
     degree = text_of("personDegree")
+    education_years = text_of("personEducationYears")
     # The headline is the candidate's latest held title, never the target job's
     # title. Experience follows the candidate profile, newest employer first.
     headline = str(experience[0].get("jobTitle") or "").strip() if experience else ""
@@ -431,7 +433,9 @@ def build_ats_docx(template_path, data, output_path):
         if degree:
             emit("degree", degree)
         if university:
-            emit("university", university)
+            emit("university", " | ".join(part for part in (university, education_years) if part))
+        elif education_years:
+            emit("university", education_years)
 
     document.save(str(output_path))
 

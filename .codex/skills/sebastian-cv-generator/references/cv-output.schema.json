@@ -23,6 +23,7 @@
     "personEmail": { "type": "string", "format": "email" },
     "personUniversity": { "type": "string", "minLength": 1 },
     "personDegree": { "type": "string", "minLength": 1 },
+    "personEducationYears": { "type": "string", "minLength": 1, "description": "Education year or year range copied from the selected candidate profile when supplied." },
     "companyNameApplyJob": { "type": "string", "minLength": 1 },
     "jobTitleApplyJob": { "type": "string", "minLength": 1 },
     "summary": { "type": "string", "minLength": 1 },

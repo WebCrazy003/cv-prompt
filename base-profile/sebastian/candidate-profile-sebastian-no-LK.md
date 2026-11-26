@@ -6,9 +6,10 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 
 - Name: Sebastian Sygula
 - Email: Sebastian.Sygula@proton.me
-- Location: Sokolniki, Łódź Voivodeship, Poland
-- University: Waseda University
-- Degree: Bachelor's Degree, Computer Science and Communications Engineering
+- Location: Łódź, Łódź Voivodeship, Poland
+- University: Clark University
+- Degree: Bachelor's Degree, Information System
+- Year: 2011-2015
 
 ## Employment history
 
@@ -46,10 +47,10 @@ This file provides the fixed candidate frame. A field marked "Not supplied" shou
 - Responsibilities: Not supplied
 - Achievements and metrics: Not supplied
 
-### Mercari
+### West Monroe
 
-- Employment dates: 04/2020–06/2020
-- Company description: Software Development
+- Employment dates: 03/2016–06/2020
+- Company description: IT Services and IT Consulting
 - Project count: At least two projects
 - Job title: Not supplied
 - Projects: Not supplied

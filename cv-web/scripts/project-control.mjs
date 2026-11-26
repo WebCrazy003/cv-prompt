@@ -81,6 +81,10 @@ async function start() {
   const logFd = openSync(logPath, "a");
   const child = spawn(process.execPath, [serverEntry], {
     cwd: projectRoot,
+    env: {
+      ...process.env,
+      CV_PDF_PYTHON: process.env.CV_PDF_PYTHON ?? (process.platform === "darwin" ? "/usr/bin/python3" : "python3"),
+    },
     detached: true,
     stdio: ["ignore", logFd, logFd],
   });
